@@ -1,19 +1,90 @@
-[gd_scene load_steps=3 format=3 uid="uid://bi7e7vm8myxc8"]
+[gd_scene load_steps=17 format=3 uid="uid://bi7e7vm8myxc8"]
 
-[ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_gvspw"]
-[ext_resource type="Texture2D" uid="uid://b37axdpa1v3yc" path="res://pics/hidden.png" id="2_bvmq7"]
+[ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_7x78w"]
+[ext_resource type="Texture2D" uid="uid://b37axdpa1v3yc" path="res://pics/hidden.png" id="2_ndput"]
+[ext_resource type="Texture2D" uid="uid://dxcp8skgg2nn0" path="res://pics/mine.png" id="3_1wfxc"]
+[ext_resource type="Texture2D" uid="uid://daocwjd3f7fho" path="res://pics/mineClicked.png" id="4_r62ho"]
+[ext_resource type="Texture2D" uid="uid://cyhf6iddynxcc" path="res://pics/mineWrong.png" id="5_70wq7"]
+[ext_resource type="Texture2D" uid="uid://bwjbahinapdql" path="res://pics/safe.png" id="6_cq47x"]
+[ext_resource type="Texture2D" uid="uid://b8euc2cv6v17l" path="res://pics/testTileHovered.png" id="7_yvf8k"]
+[ext_resource type="Texture2D" uid="uid://cldtjsgskq8xf" path="res://pics/testTilePressed.png" id="8_f4siv"]
+[ext_resource type="Texture2D" uid="uid://cc1fbrmwnfiy3" path="res://pics/warningOne.png" id="9_uopht"]
+[ext_resource type="Texture2D" uid="uid://do4i31nreahxh" path="res://pics/warningTwo.png" id="10_8y405"]
+[ext_resource type="Texture2D" uid="uid://ctj28tvxnsots" path="res://pics/warningThree.png" id="11_wi4wi"]
+[ext_resource type="Texture2D" uid="uid://p0o42bkp3dya" path="res://pics/warningFour.png" id="12_sjphg"]
+[ext_resource type="Texture2D" uid="uid://baqht52o170x3" path="res://pics/warningFive.png" id="13_mph1c"]
+[ext_resource type="Texture2D" uid="uid://bmyj10gji2cod" path="res://pics/warningSix.png" id="14_bg84n"]
+[ext_resource type="Texture2D" uid="uid://dds0vhbvie4nq" path="res://pics/warningSeven.png" id="15_itsed"]
+[ext_resource type="Texture2D" uid="uid://d2ghqr7m6flod" path="res://pics/warningEight.png" id="16_k35wb"]
 
 [node name="main_scene" type="Node2D"]
-script = ExtResource("1_gvspw")
-
-[node name="sprites" type="Node2D" parent="."]
-visible = false
-
-[node name="hidden_tile" type="Sprite2D" parent="sprites"]
-visible = false
-texture = ExtResource("2_bvmq7")
+script = ExtResource("1_7x78w")
 
 [node name="tiles" type="Node2D" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(450, 192)
+zoom = Vector2(0.25, 0.25)
+
+[node name="sprites" type="Node2D" parent="."]
+
+[node name="hidden" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("2_ndput")
+
+[node name="mine" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("3_1wfxc")
+
+[node name="mine_clicked" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("4_r62ho")
+
+[node name="mine_wrong" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("5_70wq7")
+
+[node name="safe" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("6_cq47x")
+
+[node name="hover" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("7_yvf8k")
+
+[node name="press" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("8_f4siv")
+
+[node name="1" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("9_uopht")
+
+[node name="2" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("10_8y405")
+
+[node name="3" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("11_wi4wi")
+
+[node name="4" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("12_sjphg")
+
+[node name="5" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("13_mph1c")
+
+[node name="6" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("14_bg84n")
+
+[node name="7" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("15_itsed")
+
+[node name="8" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("16_k35wb")
+
+[node name="chunks" type="Node2D" parent="."]

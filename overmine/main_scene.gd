@@ -1,6 +1,6 @@
 extends Node2D
 
-const grid_size_options = [[100,100],[50,50]]
+const grid_size_options = [[8,8],[50,50]]
 var chosen_grid_size = grid_size_options[0]
 var num_of_chunks = Vector2(25,25)
 var split
@@ -13,12 +13,13 @@ var midpoint
 var chunk_dict = {}
 var gamestart = false
 var initial_chunk_pos = Vector2(0,0)
-var number_of_mines = 720
+var number_of_mines = 10
 var unused_pos = []
 var moveable = false
 var local_mous_pos
 var current_boundary
-var name_conv = 0
+var tile_name_conv = 0
+var chunk_name_conv = 0
 var current_neighbors = []
 
 #in form of node name: pos, type etc
@@ -30,18 +31,24 @@ var test_load = preload("res://test.tscn")
 var chunk_load = preload("res://chunk_loc.tscn")
 var tile_holder_load = preload("res://tile_holder.tscn")
 
+#############################################################################	
+#############################################################################	
+#############################################################################
+
 func _ready() -> void:
 	
 	chunk_size.x= chosen_grid_size[0] * 16
 	chunk_size.y= chosen_grid_size[1] * 16
-	split = -floor(num_of_chunks.x/2)
+	split = -floor(num_of_chunks/2)
+	$Camera2D.position = chunk_size/2 
 	place_chunk_loc()
 	spawn_tiles()
-	var viewport_size = get_viewport_rect().size
-	#$Camera2D.position = viewport_size/2#+ Vector2(chosen_grid_size[0],chosen_grid_size[1]) * 16
-# feed how big visible space is and where to initialize 1st cell
 
-func _process(delta: float) -> void:
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func _process(_delta: float) -> void:
 	
 	if moveable == true:
 		var difference = local_mous_pos - get_global_mouse_position()
@@ -49,22 +56,27 @@ func _process(delta: float) -> void:
 	
 	#check mouse pos closest to chunk, if drawn ok, if not draw given pos
 	#var start at Vector2(-640,360)
-	#var nearest_chunk_pos = Vector2()
-	#
-	#nearest_chunk_pos.x = floor(get_global_mouse_position().x/chunk_size.x) * chunk_size.x + initial_chunk_pos.x
-	#nearest_chunk_pos.y = floor(get_global_mouse_position().y/chunk_size.y) * chunk_size.y + initial_chunk_pos.y
-	#
-	#print(get_global_mouse_position())
-	#
-	#if start == true:
-		#for i in current_neighbors:
-			#if i == nearest_chunk_pos:
-				#draw_chunk(i)
-				#break
+	var nearest_chunk_pos = Vector2()
 	
+	nearest_chunk_pos.x = floor(get_global_mouse_position().x/chunk_size.x) * chunk_size.x + initial_chunk_pos.x
+	nearest_chunk_pos.y = floor(get_global_mouse_position().y/chunk_size.y) * chunk_size.y + initial_chunk_pos.y
+	
+
+	if start == true:
+		for i in current_neighbors:
+			if i == nearest_chunk_pos:
+				draw_chunk(i)
+				break
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
 	
 func spawn_tiles():
-	var start = initial_pos + chunk_size * split
+	var start_pos = Vector2()  
+	start_pos.x = initial_pos.x + chunk_size.x * split.x
+	start_pos.y = initial_pos.y + chunk_size.y * split.y
+	
 	var x_tiles = chosen_grid_size[0] * num_of_chunks.x
 	var y_tiles = chosen_grid_size[1] * num_of_chunks.y
 	#first need to find positions for each tile
@@ -76,11 +88,15 @@ func spawn_tiles():
 		for y in y_tiles:
 			#var tile = tile_load.instantiate()
 			#$tiles.add_child(tile)
-			var tile_pos = Vector2(start.x + x_length * x, start.y + y_length * y )
+			var tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
 			unused_pos.append(tile_pos)
 			tile_dict[tile_pos] = ['none', 'unknown', 0, true]
 	
 	draw_chunk(initial_chunk_pos)
+
+#############################################################################	
+#############################################################################	
+#############################################################################
 
 func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("restart"):
@@ -107,6 +123,9 @@ func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("right_click"):
 		start = true
 		
+#############################################################################	
+#############################################################################	
+#############################################################################
 
 func initiate_board(click_pos):
 	gamestart = true
@@ -131,11 +150,19 @@ func initiate_board(click_pos):
 		update_neighbors(rand_tile_pos,'mine')
 	
 	pre_click_check(click_pos)
-	
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
 func update_dict(pos,type,value,is_hidden):
 	tile_dict[pos][1] = type
 	tile_dict[pos][2] = value
 	tile_dict[pos][3] = is_hidden
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
 
 func update_neighbors(pos,type):	
 	var neighbors = create_neighbors(pos,x_length,y_length)
@@ -162,7 +189,10 @@ func update_neighbors(pos,type):
 					if tile_dict[i][1] == 'unknown' or tile_dict[i][1] == 'warning':
 						if tile_dict[i][3] == true:
 							pre_click_check(i)
-						
+
+#############################################################################	
+#############################################################################	
+#############################################################################						
 					
 func pre_click_check(pos):
 	var node_path = 'tiles/' + tile_dict[pos][0]
@@ -178,6 +208,10 @@ func pre_click_check(pos):
 				get_node(node_path).clicked(tile_dict[get_node(node_path).position])
 				update_neighbors(pos,'safe')
 
+#############################################################################	
+#############################################################################	
+#############################################################################
+
 func create_neighbors(pos,x,y):
 	var n = Vector2(pos.x, pos.y - y)
 	var ne = Vector2(pos.x + x, pos.y - y)
@@ -192,111 +226,74 @@ func create_neighbors(pos,x,y):
 	
 	return neighbors
 	
+#############################################################################	
+#############################################################################	
+#############################################################################
+	
 func draw_chunk(pos):
-	#print(get_child(3).get_child(1).get_child(2).get_children().size())
 	#check what is drawn
 	
 	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y)
-	
-	var neighbors = current_neighbors
-	neighbors.append(pos)
+	var dont_erase = current_neighbors
 	var to_draw = []
-	for i in neighbors:
-		#if chunk_dict[i][1] == false:
-		to_draw.append(i)
+	dont_erase.append(pos)
+	delete_chunk(dont_erase)
 	
-	
-	delete_chunk(to_draw)
-	
-	
-	#var start_pos = Vector2(-chosen_grid_size[0],-chosen_grid_size[1]) * 16 + Vector2(8,8)#Vector2(8,8) + Vector2(chosen_grid_size[0] * 16 * 1.5 + $Camera2D.position.x,chosen_grid_size[1] * 16 * 1.5 + $Camera2D.position.y)
-	
+	for i in dont_erase:
+		if chunk_dict.has(i):
+			if chunk_dict[i][1] == false:
+				to_draw.append(i)
+				
 	for i in to_draw:
-		#var start_pos = i + Vector2(float(chosen_grid_size[0])/2.0,float(chosen_grid_size[1])/2.0) * 16 + Vector2(8,8)
+		var chunk = chunk_load.instantiate()
+		var r = randf()
+		$chunks.add_child(chunk)
+		chunk_dict[i][0] = chunk.name
+		chunk_dict[i][1] = true
+		chunk.position = i
+		chunk.modulate = Color(r,r,r)
+		
 		for x in chosen_grid_size[0]:
 			for y in chosen_grid_size[1]:
 				var tile = tile_load.instantiate()
-				var node_path = 'chunks/' + chunk_dict[i][0]
-				#var node_pathv2 = get_node(node_path).get_child(0)
-				#node_pathv2.add_child(tile)
-				get_node(node_path).add_child(tile)
+				var path_2_node = 'chunks/' + chunk_dict[i][0]
+				get_node(path_2_node).add_child(tile)
 				tile.position = Vector2(x,y) * 16 
-				#if tile_dict[tile.position][0] == 'unknown':
-#					tile.name = 'tile' + str(name_conv)
 				var new_texture = get_node("sprites/hidden").texture
 				tile.texture = new_texture
-				
-				name_conv += 1
+				tile_name_conv += 1
 	
-		chunk_dict[i][1] = true
-		var node_path = 'chunks/' + chunk_dict[i][0] + '/Area2D/CollisionShape2D'
-		get_node(node_path).get_parent().monitoring = true
-		get_node(node_path).get_parent().visible = true
-		
-		
-	
-#func draw_block(pos):
-	##check what is drawn
-	#var start_pos = Vector2(-chosen_grid_size[0],-chosen_grid_size[1]) * 16 + Vector2(8,8)#Vector2(8,8) + Vector2(chosen_grid_size[0] * 16 * 1.5 + $Camera2D.position.x,chosen_grid_size[1] * 16 * 1.5 + $Camera2D.position.y)
-	
-	#var block_size = 3
-	#var block_length = Vector2()
-	#block_length.x = chosen_grid_size[0] * block_size
-	#block_length.y = chosen_grid_size[1] * block_size
-	#for x in block_length.x:
-		#for y in block_length.y:
-			#var tile = tile_load.instantiate()
-			#$tiles.add_child(tile)
-			#tile.position = Vector2(x,y) * 16 + start_pos
-			#tile.name = 'tile' + str(name_conv)
-			#var new_texture = get_node("sprites/hidden").texture
-			#tile.texture = new_texture
-			#name_conv += 1
-	
+#############################################################################	
+#############################################################################	
+#############################################################################
+
 func place_chunk_loc():
 	
-	var start = chunk_size * split
+	var start_pos = Vector2()
+	start_pos.x = chunk_size.x * split.x
+	start_pos.y = chunk_size.y * split.y
+	var chunk_position = Vector2()
+	
 	for x in num_of_chunks.x:
 		for y in num_of_chunks.y:
-			var chunk = chunk_load.instantiate()
-			$chunks.add_child(chunk)
-			#var tile_holder = tile_holder_load.instantiate()
-			#chunk.add_child(tile_holder)
-			chunk.position = start + Vector2(x,y)*chunk_size
-			var rand = randf()
-			chunk.modulate = Color(rand,rand,rand)
-			chunk_dict[chunk.position] = [chunk.name, false]
-			chunk.get_child(0).get_child(0).shape.extents = chunk_size/2
-			chunk.get_child(0).get_child(0).position = chunk.get_child(0).get_child(0).position + chunk_size/2
-			var node_path = 'chunks/' + chunk_dict[chunk.position][0] + '/Area2D/CollisionShape2D'
-			get_node(node_path).get_parent().monitoring = false
-			get_node(node_path).get_parent().visible = false
+			chunk_position = start_pos + Vector2(x,y)*chunk_size
+			chunk_dict[chunk_position] = ['not_named',false]
 			
-	
+#############################################################################	
+#############################################################################	
+#############################################################################
 			
-	
-func delete_chunk(to_draw):
+func delete_chunk(dont_erase):
 	var delete = true
-	#print(to_draw)
-	for child in $chunks.get_children():
+	for chunk in $chunks.get_children():
 		
-		for pos in to_draw:
-			if child.position == pos:
+		for pos in dont_erase:
+			if chunk.position == pos:
 				delete = false
-				#print(child.position)
+				
 		if delete == true:
-			child.get_child(0).monitoring = false
-			child.get_child(0).visible = false
-			for a in child.get_children():
-				if a.name != 'Area2D':
-					remove_child(a)
-					a.queue_free()
-			#if child.get_children().size() > 3:
-				#child.get_child(2).queue_free()
-			#else:
-				#child.get_child(1).queue_free()
-				#var tile_holder = tile_holder_load.instantiate()
-				#child.add_child(tile_holder)
+			chunk_dict[chunk.position][1] = false
+			chunk.queue_free()
 		delete = true
 	
 
