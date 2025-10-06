@@ -1,0 +1,16 @@
+{
+    "alphabet": "0123456789 ",
+    "sprite_path": "timer_score.aseprite",
+    "atlas": {
+        "rows": 2,
+        "cols": 7,
+        "grid_width": 14,
+        "grid_height": 21,
+        "common_width": 14,
+        "character_widths": {
+        }
+    },
+    "default_spacing": 0,
+    "kerning": {
+    }
+}

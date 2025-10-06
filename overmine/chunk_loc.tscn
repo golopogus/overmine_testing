@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cww8jwxptw5r5"]
+
+[ext_resource type="Script" uid="uid://cqymhwsgq6kcv" path="res://chunk_loc.gd" id="1_srkhj"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3ok5g"]
+
+[node name="chunk_loc" type="Node2D"]
+script = ExtResource("1_srkhj")
+
+[node name="Area2D" type="Area2D" parent="."]
+z_index = 10
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_3ok5g")
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]

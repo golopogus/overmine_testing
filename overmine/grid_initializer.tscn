@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://vvnjhibv6lga"]
+
+[ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_xxkj3"]
+[ext_resource type="Texture2D" uid="uid://b37axdpa1v3yc" path="res://pics/hidden.png" id="2_8b554"]
+
+[node name="main_scene" type="Node2D"]
+script = ExtResource("1_xxkj3")
+
+[node name="sprites" type="Node2D" parent="."]
+
+[node name="hidden_tile" type="Sprite2D" parent="sprites"]
+texture = ExtResource("2_8b554")
