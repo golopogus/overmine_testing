@@ -23,6 +23,7 @@ script = ExtResource("1_2c62f")
 [node name="tiles" type="Node2D" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
 
 [node name="sprites" type="Node2D" parent="."]
 
@@ -49,10 +50,6 @@ texture = ExtResource("6_6jybn")
 [node name="hover" type="Sprite2D" parent="sprites"]
 visible = false
 texture = ExtResource("7_84odl")
-
-[node name="press" type="Sprite2D" parent="sprites"]
-visible = false
-texture = ExtResource("8_ak604")
 
 [node name="1" type="Sprite2D" parent="sprites"]
 visible = false
@@ -85,5 +82,9 @@ texture = ExtResource("15_o7u2a")
 [node name="8" type="Sprite2D" parent="sprites"]
 visible = false
 texture = ExtResource("16_ijoax")
+
+[node name="press" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("8_ak604")
 
 [node name="chunks" type="Node2D" parent="."]
