@@ -1,8 +1,9 @@
 extends Node2D
 
-const grid_size_options = [[8,8],[50,50]]
+const grid_size_options = [[10,10],[50,50]]
 var chosen_grid_size = grid_size_options[0]
-var num_of_chunks = Vector2(25,25)
+var bounds = Vector2()
+var num_of_chunks = Vector2(100,100)
 var split
 var initial_pos = Vector2(8,8)
 var chunk_size = Vector2()
@@ -13,7 +14,7 @@ var midpoint
 var chunk_dict = {}
 var gamestart = false
 var initial_chunk_pos = Vector2(0,0)
-var number_of_mines = 10
+var number_of_mines_per_chunk = 10
 var unused_pos = []
 var moveable = false
 var local_mous_pos
@@ -21,6 +22,8 @@ var current_boundary
 var tile_name_conv = 0
 var chunk_name_conv = 0
 var current_neighbors = []
+var upper_bounds
+var lower_bounds 
 
 #in form of node name: pos, type etc
 # pos = [tile.name, 'unknown' (type), value, true (hidden)]
@@ -42,7 +45,7 @@ func _ready() -> void:
 	split = -floor(num_of_chunks/2)
 	$Camera2D.position = chunk_size/2 
 	place_chunk_loc()
-	spawn_tiles()
+	place_tile_loc()
 
 #############################################################################	
 #############################################################################	
@@ -55,7 +58,7 @@ func _process(_delta: float) -> void:
 		$Camera2D.position += difference
 	
 	#check mouse pos closest to chunk, if drawn ok, if not draw given pos
-	#var start at Vector2(-640,360)
+	
 	var nearest_chunk_pos = Vector2()
 	
 	nearest_chunk_pos.x = floor(get_global_mouse_position().x/chunk_size.x) * chunk_size.x + initial_chunk_pos.x
@@ -67,32 +70,7 @@ func _process(_delta: float) -> void:
 			if i == nearest_chunk_pos:
 				draw_chunk(i)
 				break
-	
-#############################################################################	
-#############################################################################	
-#############################################################################
-	
-func spawn_tiles():
-	var start_pos = Vector2()  
-	start_pos.x = initial_pos.x + chunk_size.x * split.x
-	start_pos.y = initial_pos.y + chunk_size.y * split.y
-	
-	var x_tiles = chosen_grid_size[0] * num_of_chunks.x
-	var y_tiles = chosen_grid_size[1] * num_of_chunks.y
-	#first need to find positions for each tile
-	x_length = $sprites/hidden.texture.get_width()
-	y_length = $sprites/hidden.texture.get_height()
-	midpoint = Vector2(x_length/2,y_length/2)
 
-	for x in x_tiles:
-		for y in y_tiles:
-			#var tile = tile_load.instantiate()
-			#$tiles.add_child(tile)
-			var tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
-			unused_pos.append(tile_pos)
-			tile_dict[tile_pos] = ['none', 'unknown', 0, true]
-	
-	draw_chunk(initial_chunk_pos)
 
 #############################################################################	
 #############################################################################	
@@ -122,6 +100,43 @@ func _unhandled_input(_event: InputEvent) -> void:
 	
 	if Input.is_action_just_pressed("right_click"):
 		start = true
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+	
+func place_tile_loc():
+	
+	var start_pos = Vector2()  
+	start_pos.x = initial_pos.x + chunk_size.x * split.x
+	start_pos.y = initial_pos.y + chunk_size.y * split.y
+	
+	lower_bounds = start_pos
+	upper_bounds = start_pos + Vector2(chunk_size.x * num_of_chunks.x, chunk_size.y * num_of_chunks.y)
+	
+	
+	var x_tiles = chosen_grid_size[0] * num_of_chunks.x
+	var y_tiles = chosen_grid_size[1] * num_of_chunks.y
+	#first need to find positions for each tile
+	x_length = $sprites/hidden.texture.get_width()
+	y_length = $sprites/hidden.texture.get_height()
+	midpoint = Vector2(x_length/2,y_length/2)
+	
+	
+	var neighbors = []
+	var tile_pos = Vector2()
+	for x in x_tiles:
+		for y in y_tiles:
+			tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
+			unused_pos.append(tile_pos)
+			#might not need this
+			neighbors = create_neighbors(tile_pos,x_length,y_length)
+			tile_dict[tile_pos] = ['none', 'unknown', 0, true, neighbors]
+	
+	randomize_mine_placement(x_tiles, y_tiles)
+	
+	draw_chunk(initial_chunk_pos)
+
 		
 #############################################################################	
 #############################################################################	
@@ -140,7 +155,7 @@ func initiate_board(click_pos):
 	#randomize mines around start
 	var used_mine_positions = []
 	
-	for mine in number_of_mines:
+	for mine in number_of_mines_per_chunk:
 		
 		#converting row, column numbering to position
 		var rand_tile_pos = unused_pos[randi_range(0,len(unused_pos) - 1)]
@@ -213,6 +228,7 @@ func pre_click_check(pos):
 #############################################################################
 
 func create_neighbors(pos,x,y):
+	
 	var n = Vector2(pos.x, pos.y - y)
 	var ne = Vector2(pos.x + x, pos.y - y)
 	var e = Vector2(pos.x + x, pos.y)
@@ -222,11 +238,17 @@ func create_neighbors(pos,x,y):
 	var w = Vector2(pos.x - x, pos.y)
 	var nw = Vector2(pos.x - x, pos.y - y)
 	
-	var neighbors = [n,ne,e,se,s,sw,w,nw]
+	var pre_neighbors = [n,ne,e,se,s,sw,w,nw]
+	var neighbors = []
+	for i in pre_neighbors:
+		if i.x >= lower_bounds.x and i.x <= upper_bounds.x and i.y >= lower_bounds.y and i.y <= upper_bounds.y:
+			neighbors.append(i)
+			
+	
 	
 	return neighbors
 	
-#############################################################################	
+############################################################################	
 #############################################################################	
 #############################################################################
 	
@@ -296,7 +318,33 @@ func delete_chunk(dont_erase):
 			chunk.queue_free()
 		delete = true
 	
+func randomize_mine_placement(x,y):
+	#var total_tiles = x * y
+	var tiles_per_chunk = chosen_grid_size[0] * chosen_grid_size[1]
+	var unused_tile_pos_x = []
+	var unused_tile_pos_y = []
+	
+	for i in tiles_per_chunk:
+		unused_tile_pos_x.append(i)
+		unused_tile_pos_y.append(i)
+	
+	for chunk in $chunks.get_children():
+		
+		for mine in number_of_mines_per_chunk:
+			
+			var rand_tile_pos = []
+			rand_tile_pos.x = unused_tile_pos_x[randi_range(0, len(unused_tile_pos_x) - 1)]
+			rand_tile_pos.y = unused_tile_pos_y[randi_range(0, len(unused_tile_pos_y) - 1)]
+			
+			unused_tile_pos_x.erase(rand_tile_pos.x)
+			unused_tile_pos_y.erase(rand_tile_pos.y)
+			
+			var global_mine_pos = rand_tile_pos + initial_pos + chunk.position
+			tile_dict[global_mine_pos][1] = 'mine'
+			
 
+			
+			
 
 
 
