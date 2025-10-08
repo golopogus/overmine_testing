@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=18 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
 [ext_resource type="Texture2D" uid="uid://b37axdpa1v3yc" path="res://pics/hidden.png" id="2_gyfs4"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://daocwjd3f7fho" path="res://pics/mineClicked.png" id="4_u0ygc"]
 [ext_resource type="Texture2D" uid="uid://cyhf6iddynxcc" path="res://pics/mineWrong.png" id="5_7th4q"]
 [ext_resource type="Texture2D" uid="uid://bwjbahinapdql" path="res://pics/safe.png" id="6_6jybn"]
+[ext_resource type="Texture2D" uid="uid://ca0jslq4eyb41" path="res://pics/foundMine.png" id="6_u0ygc"]
 [ext_resource type="Texture2D" uid="uid://b8euc2cv6v17l" path="res://pics/testTileHovered.png" id="7_84odl"]
 [ext_resource type="Texture2D" uid="uid://cldtjsgskq8xf" path="res://pics/testTilePressed.png" id="8_ak604"]
 [ext_resource type="Texture2D" uid="uid://cc1fbrmwnfiy3" path="res://pics/warningOne.png" id="9_vimvf"]
@@ -23,7 +24,6 @@ script = ExtResource("1_2c62f")
 [node name="tiles" type="Node2D" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.25, 0.25)
 
 [node name="sprites" type="Node2D" parent="."]
 
@@ -33,15 +33,7 @@ texture = ExtResource("2_gyfs4")
 
 [node name="mine" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("3_m35m6")
-
-[node name="mine_clicked" type="Sprite2D" parent="sprites"]
-visible = false
 texture = ExtResource("4_u0ygc")
-
-[node name="mine_wrong" type="Sprite2D" parent="sprites"]
-visible = false
-texture = ExtResource("5_7th4q")
 
 [node name="safe" type="Sprite2D" parent="sprites"]
 visible = false
@@ -50,6 +42,10 @@ texture = ExtResource("6_6jybn")
 [node name="hover" type="Sprite2D" parent="sprites"]
 visible = false
 texture = ExtResource("7_84odl")
+
+[node name="mark" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("6_u0ygc")
 
 [node name="1" type="Sprite2D" parent="sprites"]
 visible = false
@@ -82,6 +78,14 @@ texture = ExtResource("15_o7u2a")
 [node name="8" type="Sprite2D" parent="sprites"]
 visible = false
 texture = ExtResource("16_ijoax")
+
+[node name="mine_right" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("3_m35m6")
+
+[node name="mine_wrong" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("5_7th4q")
 
 [node name="press" type="Sprite2D" parent="sprites"]
 visible = false
