@@ -24,7 +24,6 @@ script = ExtResource("1_2c62f")
 [node name="tiles" type="Node2D" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(3, 3)
 
 [node name="sprites" type="Node2D" parent="."]
 
