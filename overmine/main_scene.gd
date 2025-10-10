@@ -33,8 +33,8 @@ func _ready() -> void:
 	chunk_size.x= chosen_grid_size[0] * 16
 	chunk_size.y= chosen_grid_size[1] * 16
 	chunk_split = -floor(num_of_chunks/2)
-	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2
-	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2
+	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
+	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
 	place_chunk_loc()
 	place_tile_loc()
 
@@ -71,7 +71,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
 	
 	if Input.is_action_just_pressed("left_click"):
-		
+		print(nearest_tile_pos)
 		if tile_dict.has(nearest_tile_pos):
 			if gamestart == false:
 				current_chunk = get_nearest(nearest_tile_pos,'chunk')
@@ -141,10 +141,9 @@ func randomize_mine_placement(pos):
 
 	var unused_tile_grid = get_chunk_grid()
 	var unused_tile_pos = convert_grid_to_pos(unused_tile_grid,pos)
-	
+
 	for i in safe_tiles:
 		unused_tile_pos.erase(i)
-	print(unused_tile_pos)
 	if chunk_dict[pos][2] == false:
 		for mine in number_of_mines_per_chunk:
 			
@@ -163,7 +162,9 @@ func randomize_mine_placement(pos):
 					tile_dict[i][2] += 1
 						
 		chunk_dict[pos][2] = true
-	#safe_tiles = []
+	print("Mines placed for chunk:", pos)
+	
+	
 
 func convert_grid_to_pos(grid,pos):
 	var new_grid = []
@@ -243,8 +244,10 @@ func draw_chunk(pos):
 
 func check_chunk_boundary(pos):
 	
-	var x_bounds = [0,chosen_grid_size[0] - 1]
+	var x_bounds = [0,chosen_grid_size[0] - 1] 
+	
 	var y_bounds = [0,chosen_grid_size[1] -1]
+	var global_bounds = [Vector2(x_bounds[0],y_bounds[0]) * 16 + initial_pos + pos + Vector2(-16,-16), Vector2(x_bounds[1],y_bounds[1]) * 16 + initial_pos + pos + Vector2(16,16)]
 	var jump = 3
 	var sim_size = Vector2()
 	var border = []
@@ -267,14 +270,16 @@ func check_chunk_boundary(pos):
 			var top_row_pos_global = (top_row_pos * 16) + initial_pos + pos
 			var tiles_above_pos = create_neighbors(top_row_pos_global,x_length,y_length,'TOP')
 			for i in tiles_above_pos:
-				border.append(i)
+				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
+					border.append(i)
 			#check_if_safe_neighbor(tile_above_pos)
 			
 			var bottom_row_pos = Vector2(x,y_bounds[1])
 			var bottom_row_pos_global = (bottom_row_pos * 16) + initial_pos + pos
 			var tiles_below_pos = create_neighbors(bottom_row_pos_global,x_length,y_length,'BOTTOM')
 			for i in tiles_below_pos:
-				border.append(i)
+				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
+					border.append(i)
 			
 			#check_if_safe_neighbor(tile_below_pos)
 		
@@ -286,14 +291,16 @@ func check_chunk_boundary(pos):
 			var left_col_pos_global = (left_col_pos * 16) + initial_pos + pos
 			var tiles_left_of_pos = create_neighbors(left_col_pos_global,x_length,y_length,'LEFT')
 			for i in tiles_left_of_pos:
-				border.append(i)
+				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
+					border.append(i)
 			
 			var right_row_pos = Vector2(x_bounds[1],y)
 			var right_row_pos_global = (right_row_pos * 16) + initial_pos + pos
 			var tiles_right_of_pos = create_neighbors(right_row_pos_global,x_length,y_length,'RIGHT')
 			for i in tiles_right_of_pos:
-				border.append(i)
-	
+				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
+					border.append(i)
+
 	convert_to_safe_tile(border)
 	
 #############################################################################	
@@ -320,7 +327,8 @@ func start_game(click_pos):
 	
 	for i in chunk_neighbors:
 		randomize_mine_placement(i)	
-
+	
+	await get_tree().process_frame
 	clicked(click_pos)
 
 
@@ -336,9 +344,12 @@ func convert_to_safe_tile(array):
 #############################################################################						
 					
 func clicked(pos):
-
+	
+	
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	#await randomize_mine_placement(nearest_chunk_pos)
 	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos][0] + '/' + tile_dict[pos][0]
+	print("Click processing started")
 	if chunk_dict[nearest_chunk_pos][1] == true:
 		if tile_dict[pos][3] == false:
 			tile_dict[pos][3] = true
@@ -358,7 +369,7 @@ func clicked(pos):
 			get_node(node_path).texture = new_texture
 			
 	elif chunk_dict[nearest_chunk_pos][1] == false:
-		#print(tile_dict[pos][2])
+		
 		tile_dict[pos][3] = true
 		if chunk_dict[nearest_chunk_pos][2] == false:
 			if tile_dict[pos][1] == 'unknown':
@@ -367,15 +378,13 @@ func clicked(pos):
 			check_chunk_boundary(nearest_chunk_pos)
 		
 			randomize_mine_placement(nearest_chunk_pos)
-
+			await get_tree().process_frame
 		if tile_dict[pos][1] == 'unknown':
 				tile_dict[pos][1] = 'safe'
 		if tile_dict[pos][1] == 'safe':
-			#print(tile_dict[pos][2])
 			update_safe_neighbors(pos)
 			
-		
-		#chunk_dict[i][2] = false
+	
 		
 		
 	
@@ -385,24 +394,40 @@ func clicked(pos):
 #############################################################################
 
 func update_safe_neighbors(pos):	
-	
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	if chunk_dict[nearest_chunk_pos][2] == false:
+		await randomize_mine_placement(nearest_chunk_pos)
 	var neighbors
 	
 	neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
 
-	var safe_count = 0
-	var theoretical_safe_count = neighbors.size()
+	var safe = true
 	
 	for i in neighbors:
-		if tile_dict[i][1] != 'mine':
-			safe_count += 1
+		if tile_dict[i][1] == 'mine':
+			safe = false
 			
-	if safe_count == theoretical_safe_count:
+	if safe == true:
 		for i in neighbors:
+	
 			if tile_dict[i][3] == false:
 				if tile_dict[i][1] != 'mine':
 					clicked(i)
 
+	#var safe = true
+	#
+	#for i in neighbors:
+		#if tile_dict[i][1] != 'mine':
+			#safe = false
+			#
+	#if safe == true:
+		#for i in neighbors:
+			#if tile_dict[i][3] == false:
+				#if tile_dict[i][1] != 'mine':
+					#print(tile_dict[i][1])
+					#print(i)
+#
+					#clicked(i)
 	
 #############################################################################	
 #############################################################################	
@@ -529,21 +554,3 @@ func get_nearest(pos, val):
 			nearest.y = floor(pos.y/y_length) * y_length + initial_pos.y
 	
 	return nearest
-
-
-	
-
-
-
-			
-		
-		
-			
-		
-		
-	
-	
-	
-	
-	
-	
