@@ -30,11 +30,14 @@ var tile_holder_load = preload("res://tile_holder.tscn")
 
 func _ready() -> void:
 	
-	chunk_size.x= chosen_grid_size[0] * 16
-	chunk_size.y= chosen_grid_size[1] * 16
+	# Initialize Values
+	x_length = $sprites/hidden.texture.get_width()
+	y_length = $sprites/hidden.texture.get_height()
+	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
 	chunk_split = -floor(num_of_chunks/2)
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
+	
 	place_chunk_loc()
 	place_tile_loc()
 
@@ -71,7 +74,6 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
 	
 	if Input.is_action_just_pressed("left_click"):
-		print(nearest_tile_pos)
 		if tile_dict.has(nearest_tile_pos):
 			if gamestart == false:
 				current_chunk = get_nearest(nearest_tile_pos,'chunk')
@@ -119,15 +121,12 @@ func place_tile_loc():
 	var start_pos = Vector2()  
 	var x_tiles = chosen_grid_size[0] * num_of_chunks.x
 	var y_tiles = chosen_grid_size[1] * num_of_chunks.y
-
-	x_length = $sprites/hidden.texture.get_width()
-	y_length = $sprites/hidden.texture.get_height()
-
 	var tile_pos = Vector2()
 
 	for x in x_tiles:
 		for y in y_tiles:
-			tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
+			tile_pos = start_pos + Vector2(x_length,y_length) * Vector2(x,y)
+			#tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
 			if tile_dict.has(tile_pos) == false:
 				tile_dict[tile_pos] = ['none', 'unknown', 0, false,false]
 					
@@ -150,31 +149,17 @@ func randomize_mine_placement(pos):
 			var rand_tile_pos = Vector2()
 			
 			rand_tile_pos = unused_tile_pos[randi_range(0, len(unused_tile_pos)-1)]					
-			unused_tile_pos.erase(rand_tile_pos)
-			
-			#var global_mine_pos = (rand_tile_pos * 16) + initial_pos + pos				
-
+			unused_tile_pos.erase(rand_tile_pos)		
 			tile_dict[rand_tile_pos][1] = 'mine'
+			
 			var neighbors = create_neighbors(rand_tile_pos,x_length,y_length, 'ALL')
+			
 			for i in neighbors:
 				if tile_dict[i][1] != 'mine':
 					tile_dict[i][1] = 'warning'
 					tile_dict[i][2] += 1
 						
 		chunk_dict[pos][2] = true
-	print("Mines placed for chunk:", pos)
-	
-	
-
-func convert_grid_to_pos(grid,pos):
-	var new_grid = []
-	for i in grid:
-		var new_pos = (i * 16) + initial_pos + pos
-		new_grid.append(new_pos)
-	return new_grid
-		
-		
-		
 						
 #############################################################################	
 #█▀▀ █░█ █░█ █▄░█ █▄▀ █ █▄░█ █▀▀
@@ -199,7 +184,7 @@ func draw_chunk(pos):
 	for i in to_draw:
 		
 		var chunk = chunk_load.instantiate()
-		#var r = randf_range(.5,1)
+
 		$chunks.add_child(chunk)
 		chunk_dict[i][0] = chunk.name
 		chunk_dict[i][1] = true
@@ -209,14 +194,13 @@ func draw_chunk(pos):
 			safe_tiles = []
 			check_chunk_boundary(i)
 			randomize_mine_placement(i)	
-	#	chunk.modulate = Color(r,r,r)
 		for x in chosen_grid_size[0]:
 			for y in chosen_grid_size[1]:
 				
 				var tile = tile_load.instantiate()
 				var path_2_node = 'chunks/' + chunk_dict[i][0]
 				var tile_type
-				var global_pos = Vector2(x,y) * 16 + initial_pos + i
+				var global_pos = Vector2(x,y) * Vector2(x_length, y_length) + initial_pos + i
 				
 				get_node(path_2_node).add_child(tile)
 				tile.global_position = global_pos
@@ -247,7 +231,8 @@ func check_chunk_boundary(pos):
 	var x_bounds = [0,chosen_grid_size[0] - 1] 
 	
 	var y_bounds = [0,chosen_grid_size[1] -1]
-	var global_bounds = [Vector2(x_bounds[0],y_bounds[0]) * 16 + initial_pos + pos + Vector2(-16,-16), Vector2(x_bounds[1],y_bounds[1]) * 16 + initial_pos + pos + Vector2(16,16)]
+	var global_bounds = [Vector2(x_bounds[0],y_bounds[0]) * Vector2(x_length, y_length) + initial_pos + pos - Vector2(x_length, y_length),
+						 Vector2(x_bounds[1],y_bounds[1]) * Vector2(x_length, y_length) + initial_pos + pos + Vector2(x_length, y_length)]
 	var jump = 3
 	var sim_size = Vector2()
 	var border = []
@@ -267,41 +252,41 @@ func check_chunk_boundary(pos):
 		if x % jump == 0:
 		
 			var top_row_pos = Vector2(x,y_bounds[0])
-			var top_row_pos_global = (top_row_pos * 16) + initial_pos + pos
+			var top_row_pos_global = (top_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
 			var tiles_above_pos = create_neighbors(top_row_pos_global,x_length,y_length,'TOP')
+			
 			for i in tiles_above_pos:
 				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
 					border.append(i)
-			#check_if_safe_neighbor(tile_above_pos)
 			
 			var bottom_row_pos = Vector2(x,y_bounds[1])
-			var bottom_row_pos_global = (bottom_row_pos * 16) + initial_pos + pos
+			var bottom_row_pos_global = (bottom_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
 			var tiles_below_pos = create_neighbors(bottom_row_pos_global,x_length,y_length,'BOTTOM')
+			
 			for i in tiles_below_pos:
 				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
 					border.append(i)
-			
-			#check_if_safe_neighbor(tile_below_pos)
 		
 	for y in int(sim_size.y):
 		
 		if y % jump == 0:
 			
 			var left_col_pos = Vector2(x_bounds[0],y)
-			var left_col_pos_global = (left_col_pos * 16) + initial_pos + pos
+			var left_col_pos_global = (left_col_pos * Vector2(x_length, y_length)) + initial_pos + pos
 			var tiles_left_of_pos = create_neighbors(left_col_pos_global,x_length,y_length,'LEFT')
+			
 			for i in tiles_left_of_pos:
 				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
 					border.append(i)
 			
 			var right_row_pos = Vector2(x_bounds[1],y)
-			var right_row_pos_global = (right_row_pos * 16) + initial_pos + pos
+			var right_row_pos_global = (right_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
 			var tiles_right_of_pos = create_neighbors(right_row_pos_global,x_length,y_length,'RIGHT')
+			
 			for i in tiles_right_of_pos:
 				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
 					border.append(i)
 
-	convert_to_safe_tile(border)
 	
 #############################################################################	
 #############################################################################	
@@ -312,44 +297,31 @@ func start_game(click_pos):
 	gamestart = true
 	
 	var safe_neighbors = create_neighbors(click_pos,x_length,y_length, 'ALL')
+	
 	safe_neighbors.append(click_pos)
 	
 	for i in safe_neighbors:
 		tile_dict[i][1] = 'safe'
-		
-	convert_to_safe_tile(safe_neighbors)
+		safe_tiles.append(i)
 	 
 	var chunk_pos = get_nearest(click_pos,'chunk')
 	var chunk_neighbors = create_neighbors(chunk_pos,chunk_size.x,chunk_size.y, 'ALL')
 	
 	chunk_neighbors.append(chunk_pos)
 	
-	
 	for i in chunk_neighbors:
 		randomize_mine_placement(i)	
 	
-	await get_tree().process_frame
 	clicked(click_pos)
-
-
-	
-func convert_to_safe_tile(array):
-	
-	for pos in array:
-		
-		if tile_dict[pos][1] == 'safe':
-			safe_tiles.append(pos)
+			
 #############################################################################	
 #############################################################################	
 #############################################################################						
 					
 func clicked(pos):
-	
-	
+		
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
-	#await randomize_mine_placement(nearest_chunk_pos)
 	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos][0] + '/' + tile_dict[pos][0]
-	print("Click processing started")
 	if chunk_dict[nearest_chunk_pos][1] == true:
 		if tile_dict[pos][3] == false:
 			tile_dict[pos][3] = true
@@ -369,66 +341,36 @@ func clicked(pos):
 			get_node(node_path).texture = new_texture
 			
 	elif chunk_dict[nearest_chunk_pos][1] == false:
-		
 		tile_dict[pos][3] = true
 		if chunk_dict[nearest_chunk_pos][2] == false:
-			if tile_dict[pos][1] == 'unknown':
-				tile_dict[pos][1] = 'safe'
 			safe_tiles = []
+			safe_tiles.append(pos)
 			check_chunk_boundary(nearest_chunk_pos)
-		
 			randomize_mine_placement(nearest_chunk_pos)
-			await get_tree().process_frame
 		if tile_dict[pos][1] == 'unknown':
 				tile_dict[pos][1] = 'safe'
 		if tile_dict[pos][1] == 'safe':
 			update_safe_neighbors(pos)
 			
-	
-		
-		
-	
-		
 #############################################################################	
 #############################################################################	
 #############################################################################
 
 func update_safe_neighbors(pos):	
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	
 	if chunk_dict[nearest_chunk_pos][2] == false:
 		await randomize_mine_placement(nearest_chunk_pos)
+	
 	var neighbors
 	
 	neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
 
-	var safe = true
-	
 	for i in neighbors:
-		if tile_dict[i][1] == 'mine':
-			safe = false
-			
-	if safe == true:
-		for i in neighbors:
-	
-			if tile_dict[i][3] == false:
-				if tile_dict[i][1] != 'mine':
-					clicked(i)
+		if tile_dict[i][3] == false:
+			if tile_dict[i][1] != 'mine':
+				clicked(i)
 
-	#var safe = true
-	#
-	#for i in neighbors:
-		#if tile_dict[i][1] != 'mine':
-			#safe = false
-			#
-	#if safe == true:
-		#for i in neighbors:
-			#if tile_dict[i][3] == false:
-				#if tile_dict[i][1] != 'mine':
-					#print(tile_dict[i][1])
-					#print(i)
-#
-					#clicked(i)
-	
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -452,44 +394,28 @@ func delete_chunk(dont_erase):
 #############################################################################
 
 func create_neighbors(pos,x,y,dir):
+	
 	var pre_neighbors
+	var n = pos + Vector2(0,-1) * Vector2(x,y)
+	var ne = pos + Vector2(1,-1) * Vector2(x,y)
+	var nw = pos + Vector2(-1,-1) * Vector2(x,y)
+	var s = pos + Vector2(0,1) * Vector2(x,y)
+	var se = pos + Vector2(1,1) * Vector2(x,y)
+	var sw = pos + Vector2(-1,1) * Vector2(x,y)
+	var w = pos + Vector2(-1,0) * Vector2(x,y)
+	var e = pos + Vector2(1,0) * Vector2(x,y)
+	
 	match dir:
-		
+	
 		'TOP':
-			var n = Vector2(pos.x, pos.y - y)
-			var ne = Vector2(pos.x + x, pos.y - y)
-			var nw = Vector2(pos.x - x, pos.y - y)
-			
-			pre_neighbors = [nw,n,ne]
+			pre_neighbors = [n,ne,nw]
 		'BOTTOM':
-			var se = Vector2(pos.x + x, pos.y + y)
-			var s = Vector2(pos.x, pos.y + y)
-			var sw = Vector2(pos.x - x, pos.y + y)
-			
 			pre_neighbors = [sw,s,se]
 		'RIGHT':
-			var ne = Vector2(pos.x + x, pos.y - y)
-			var e = Vector2(pos.x + x, pos.y)
-			var se = Vector2(pos.x + x, pos.y + y)
-			
 			pre_neighbors = [ne,e,se]
 		'LEFT':
-			var sw = Vector2(pos.x - x, pos.y + y)
-			var w = Vector2(pos.x - x, pos.y)
-			var nw = Vector2(pos.x - x, pos.y - y)
-			
 			pre_neighbors = [nw,w,sw]
-
 		'ALL':
-			var n = Vector2(pos.x, pos.y - y)
-			var ne = Vector2(pos.x + x, pos.y - y)
-			var e = Vector2(pos.x + x, pos.y)
-			var se = Vector2(pos.x + x, pos.y + y)
-			var s = Vector2(pos.x, pos.y + y)
-			var sw = Vector2(pos.x - x, pos.y + y)
-			var w = Vector2(pos.x - x, pos.y)
-			var nw = Vector2(pos.x - x, pos.y - y)
-	
 			pre_neighbors = [n,ne,e,se,s,sw,w,nw]
 			
 	var neighbors = []
@@ -544,13 +470,30 @@ func mark(pos,chunk_pos):
 func get_nearest(pos, val):
 	
 	var nearest = Vector2()
+	
 	match val:
 		'chunk':
-			nearest.x = floor(pos.x/chunk_size.x) * chunk_size.x + initial_chunk_pos.x
-			nearest.y = floor(pos.y/chunk_size.y) * chunk_size.y + initial_chunk_pos.y
-		
+			nearest = floor(pos / chunk_size) * chunk_size + initial_pos
 		'tile':
-			nearest.x = floor(pos.x/x_length) * x_length + initial_pos.x
-			nearest.y = floor(pos.y/y_length) * y_length + initial_pos.y
-	
+			nearest = floor(pos / Vector2(x_length,y_length)) * Vector2(x_length,y_length) + initial_pos
 	return nearest
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func convert_grid_to_pos(grid,pos):
+	
+	var new_grid = []
+	for i in grid:
+		var new_pos = (i * Vector2(x_length, y_length)) + initial_pos + pos
+		new_grid.append(new_pos)
+	return new_grid
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+	
+
+		
+		
