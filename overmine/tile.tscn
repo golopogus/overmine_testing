@@ -1,7 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://smxg2n7ampru"]
-
-[ext_resource type="Texture2D" uid="uid://d2ghqr7m6flod" path="res://pics/warningEight.png" id="1_n3f48"]
+[gd_scene format=3 uid="uid://smxg2n7ampru"]
 
 [node name="tile" type="Sprite2D"]
-texture = ExtResource("1_n3f48")
 centered = false

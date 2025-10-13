@@ -1,27 +1,204 @@
-[gd_scene load_steps=18 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=35 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
-[ext_resource type="Texture2D" uid="uid://b37axdpa1v3yc" path="res://pics/hidden.png" id="2_gyfs4"]
-[ext_resource type="Texture2D" uid="uid://dxcp8skgg2nn0" path="res://pics/mine.png" id="3_m35m6"]
-[ext_resource type="Texture2D" uid="uid://daocwjd3f7fho" path="res://pics/mineClicked.png" id="4_u0ygc"]
-[ext_resource type="Texture2D" uid="uid://cyhf6iddynxcc" path="res://pics/mineWrong.png" id="5_7th4q"]
-[ext_resource type="Texture2D" uid="uid://bwjbahinapdql" path="res://pics/safe.png" id="6_6jybn"]
-[ext_resource type="Texture2D" uid="uid://ca0jslq4eyb41" path="res://pics/foundMine.png" id="6_u0ygc"]
-[ext_resource type="Texture2D" uid="uid://b8euc2cv6v17l" path="res://pics/testTileHovered.png" id="7_84odl"]
-[ext_resource type="Texture2D" uid="uid://cldtjsgskq8xf" path="res://pics/testTilePressed.png" id="8_ak604"]
-[ext_resource type="Texture2D" uid="uid://cc1fbrmwnfiy3" path="res://pics/warningOne.png" id="9_vimvf"]
-[ext_resource type="Texture2D" uid="uid://do4i31nreahxh" path="res://pics/warningTwo.png" id="10_ghshe"]
-[ext_resource type="Texture2D" uid="uid://ctj28tvxnsots" path="res://pics/warningThree.png" id="11_fv2he"]
-[ext_resource type="Texture2D" uid="uid://p0o42bkp3dya" path="res://pics/warningFour.png" id="12_5smuj"]
-[ext_resource type="Texture2D" uid="uid://baqht52o170x3" path="res://pics/warningFive.png" id="13_y5ved"]
-[ext_resource type="Texture2D" uid="uid://bmyj10gji2cod" path="res://pics/warningSix.png" id="14_kv3aw"]
-[ext_resource type="Texture2D" uid="uid://dds0vhbvie4nq" path="res://pics/warningSeven.png" id="15_o7u2a"]
-[ext_resource type="Texture2D" uid="uid://d2ghqr7m6flod" path="res://pics/warningEight.png" id="16_ijoax"]
+[ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
+[ext_resource type="Texture2D" uid="uid://cd82ver13at5d" path="res://pics/hidden.png" id="2_gyfs4"]
+[ext_resource type="Texture2D" uid="uid://brf8whh3klgi4" path="res://pics/mine.png" id="3_m35m6"]
+[ext_resource type="Texture2D" uid="uid://d2otfn7c6mhwi" path="res://pics/mineClicked.png" id="4_u0ygc"]
+[ext_resource type="Texture2D" uid="uid://tr6a0hueci6v" path="res://pics/big_middle.png" id="4_vimvf"]
+[ext_resource type="Texture2D" uid="uid://drnmfun5hayvq" path="res://pics/mineWrong.png" id="5_7th4q"]
+[ext_resource type="Texture2D" uid="uid://buci5wrycpxsq" path="res://pics/temp_right.png" id="5_ghshe"]
+[ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="6_5smuj"]
+[ext_resource type="Texture2D" uid="uid://di0m0dfxhx64u" path="res://pics/safe.png" id="6_6jybn"]
+[ext_resource type="Texture2D" uid="uid://clol8ea4x4onc" path="res://pics/temp_left.png" id="6_fv2he"]
+[ext_resource type="Texture2D" uid="uid://hrdxaw0p0iq" path="res://pics/foundMine.png" id="6_u0ygc"]
+[ext_resource type="Texture2D" uid="uid://fg2buvvgeklp" path="res://pics/testTileHovered.png" id="7_84odl"]
+[ext_resource type="Texture2D" uid="uid://waukt442lf8j" path="res://pics/clickSmiley.png" id="7_y5ved"]
+[ext_resource type="Texture2D" uid="uid://gvxla0phgrw5" path="res://pics/temp_back_3.png" id="8_5smuj"]
+[ext_resource type="Texture2D" uid="uid://ceuk5xbfgwur5" path="res://pics/testTilePressed.png" id="8_ak604"]
+[ext_resource type="Texture2D" uid="uid://dmwihnbs60adg" path="res://pics/lostSmiley.png" id="8_kv3aw"]
+[ext_resource type="Texture2D" uid="uid://c7dp0b4wb6hml" path="res://pics/warningOne.png" id="9_vimvf"]
+[ext_resource type="Texture2D" uid="uid://bmgfg288gs2hi" path="res://pics/warningTwo.png" id="10_ghshe"]
+[ext_resource type="Texture2D" uid="uid://bbgltsjg4nhqu" path="res://pics/game_normal.png" id="10_kv3aw"]
+[ext_resource type="Texture2D" uid="uid://dnf68j8byt4q7" path="res://pics/game_hover.png" id="10_y5ved"]
+[ext_resource type="Texture2D" uid="uid://dgymjr8wxw4nl" path="res://pics/warningThree.png" id="11_fv2he"]
+[ext_resource type="Texture2D" uid="uid://bkf5cvt060m34" path="res://pics/game_pop_up.png" id="11_j8kkg"]
+[ext_resource type="Texture2D" uid="uid://dke3j5b4uljme" path="res://pics/warningFour.png" id="12_5smuj"]
+[ext_resource type="Texture2D" uid="uid://dadeby3cai72m" path="res://pics/upgrades_normal.png" id="12_yh4yk"]
+[ext_resource type="Texture2D" uid="uid://c37box6si2thi" path="res://pics/upgrades_hover.png" id="13_p8s74"]
+[ext_resource type="Texture2D" uid="uid://dtucikbn2aty5" path="res://pics/warningFive.png" id="13_y5ved"]
+[ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="14_kv3aw"]
+[ext_resource type="Texture2D" uid="uid://dl5ovepkeek2b" path="res://pics/upgrade_pop_up.png" id="14_yh4yk"]
+[ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="15_o7u2a"]
+[ext_resource type="Texture2D" uid="uid://c5xvtrm81utmf" path="res://pics/warningEight.png" id="16_ijoax"]
+[ext_resource type="Texture2D" uid="uid://cbuaotppc1l85" path="res://pics/drone_idle.png" id="32_o4fqm"]
+[ext_resource type="Texture2D" uid="uid://c42hiv14qeuvx" path="res://pics/drone_scan.png" id="33_gfmxp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yh4yk"]
+size = Vector2(87, 238)
 
 [node name="main_scene" type="Node2D"]
 script = ExtResource("1_2c62f")
 
-[node name="tiles" type="Node2D" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
+z_index = 1
+position = Vector2(80.5, 68.5)
+metadata/_edit_group_ = true
+
+[node name="normal" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
+texture = ExtResource("6_5smuj")
+
+[node name="clicked" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
+visible = false
+texture = ExtResource("7_y5ved")
+
+[node name="bomb" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
+visible = false
+texture = ExtResource("8_kv3aw")
+
+[node name="off_rez" type="Control" parent="CanvasLayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="mid_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 20.0
+offset_top = -20.0
+offset_right = 1220.0
+offset_bottom = 700.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="mid" type="TextureRect" parent="CanvasLayer/off_rez/mid_box"]
+layout_mode = 2
+texture = ExtResource("4_vimvf")
+
+[node name="right_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 866.0
+offset_right = 1240.0
+offset_bottom = 720.0
+grow_horizontal = 0
+
+[node name="right" type="TextureRect" parent="CanvasLayer/off_rez/right_box"]
+layout_mode = 2
+texture = ExtResource("5_ghshe")
+
+[node name="left_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
+layout_mode = 0
+offset_right = 382.0
+offset_bottom = 720.0
+
+[node name="left" type="TextureRect" parent="CanvasLayer/off_rez/left_box"]
+layout_mode = 2
+texture = ExtResource("6_fv2he")
+
+[node name="normal_rez" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="game" type="TextureRect" parent="CanvasLayer/normal_rez"]
+show_behind_parent = true
+layout_mode = 0
+offset_right = 640.0
+offset_bottom = 360.0
+texture = ExtResource("8_5smuj")
+
+[node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 23.0
+offset_right = 40.0
+offset_bottom = 38.0
+texture_normal = ExtResource("10_kv3aw")
+texture_hover = ExtResource("10_y5ved")
+
+[node name="game_menu" type="TextureRect" parent="CanvasLayer/normal_rez"]
+visible = false
+z_index = 2
+layout_mode = 0
+offset_left = 40.0
+offset_top = 20.0
+offset_right = 127.0
+offset_bottom = 41.0
+texture = ExtResource("11_j8kkg")
+
+[node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game_menu"]
+z_index = 3
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 84.0
+offset_bottom = 18.0
+texture_normal = ExtResource("12_yh4yk")
+texture_hover = ExtResource("13_p8s74")
+metadata/_edit_group_ = true
+
+[node name="game_menu_area" type="Area2D" parent="CanvasLayer/normal_rez/game_menu"]
+z_index = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="CanvasLayer/normal_rez/game_menu/game_menu_area"]
+polygon = PackedVector2Array(0, 0, 87, 0, 87, 21, 0, 21, 0, 18, -32, 18, -32, 3, 0, 3)
+
+[node name="upgrades_menu" type="TextureRect" parent="CanvasLayer/normal_rez"]
+visible = false
+layout_mode = 0
+offset_left = 127.0
+offset_top = 20.0
+offset_right = 214.0
+offset_bottom = 258.0
+texture = ExtResource("14_yh4yk")
+metadata/_edit_group_ = true
+
+[node name="upgrade_menu_area" type="Area2D" parent="CanvasLayer/normal_rez/upgrades_menu"]
+position = Vector2(-89, -1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CanvasLayer/normal_rez/upgrades_menu/upgrade_menu_area"]
+position = Vector2(132.5, 120)
+shape = SubResource("RectangleShape2D_yh4yk")
+
+[node name="Button" type="Button" parent="CanvasLayer/normal_rez"]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 51.0
+offset_right = 229.0
+offset_bottom = 82.0
+text = "+1 Score Multiplier X"
+
+[node name="Button2" type="Button" parent="CanvasLayer/normal_rez"]
+layout_mode = 0
+offset_left = 450.0
+offset_top = 52.0
+offset_right = 566.0
+offset_bottom = 83.0
+text = "+1 Drone X"
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+offset_left = 18.0
+offset_top = 62.0
+offset_right = 60.0
+offset_bottom = 74.0
+theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_font_sizes/font_size = 11
+text = "1000000"
+horizontal_alignment = 2
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
@@ -92,3 +269,23 @@ visible = false
 texture = ExtResource("8_ak604")
 
 [node name="chunks" type="Node2D" parent="."]
+
+[node name="drone" type="Node2D" parent="."]
+z_index = 5
+position = Vector2(327, 214)
+metadata/_edit_group_ = true
+
+[node name="body" type="Sprite2D" parent="drone"]
+position = Vector2(0, -10)
+texture = ExtResource("32_o4fqm")
+hframes = 6
+
+[node name="scanner" type="Sprite2D" parent="drone"]
+position = Vector2(0, -10)
+texture = ExtResource("33_gfmxp")
+hframes = 8
+
+[connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
+[connection signal="mouse_entered" from="CanvasLayer/normal_rez/game_menu/game_menu_area" to="." method="_on_game_menu_2_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/normal_rez/game_menu/game_menu_area" to="." method="_on_area_2d_mouse_exited"]
+[connection signal="pressed" from="CanvasLayer/normal_rez/Button" to="." method="_on_button_pressed"]

@@ -1,6 +1,7 @@
 extends Node2D
 
-const grid_size_options = [[8,8],[50,50],[4,4]]
+var round_points = 0
+const grid_size_options = [[20,20],[50,50],[4,4]]
 var chosen_grid_size = grid_size_options[0]
 var num_of_chunks = Vector2(10,10)
 var chunk_split
@@ -11,13 +12,19 @@ var y_length
 var start = false
 var chunk_dict = {}
 var gamestart = false
+var score_multilier = 1
+var num_of_drones = 0
 var initial_chunk_pos = Vector2(0,0)
-var number_of_mines_per_chunk = 10
+var number_of_mines_per_chunk = 80
 var moveable = false
 var local_mous_pos
+var cost_of_mult = 100
+var cost_of_drone = 200
 var current_neighbors = []
+var stored_pos = Vector2()
 var current_chunk
 var safe_tiles = []
+var in_game_menu = false
 var tile_dict = {} # pos = [tile.name, 'unknown' (type), value, true (hidden),marked]
 var tile_load = preload("res://tile.tscn")
 var test_load = preload("res://test.tscn")
@@ -31,13 +38,29 @@ var tile_holder_load = preload("res://tile_holder.tscn")
 func _ready() -> void:
 	
 	# Initialize Values
+	#var screen_size = DisplayServer.screen_get_size()
+	#
+	#if screen_size.x / screen_size.y == 16/9:
+		#
+		#$CanvasLayer/off_rez.visible = false
+		#$CanvasLayer/normal_rez.visible = true
+	#else: 
+		#
+		#$CanvasLayer/off_rez.visible = true
+		#$CanvasLayer/normal_rez.visible = false
+		
+	#get_viewport().size = DisplayServer.screen_get_size()
+	
 	x_length = $sprites/hidden.texture.get_width()
 	y_length = $sprites/hidden.texture.get_height()
+	$CanvasLayer/sprite_holder/normal.visible = true
 	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
 	chunk_split = -floor(num_of_chunks/2)
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
-	
+	update_points()
+	$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier $' + str(cost_of_mult)
+	$CanvasLayer/normal_rez/Button2.text = '+1 Drone $' + str(cost_of_drone)
 	place_chunk_loc()
 	place_tile_loc()
 
@@ -73,27 +96,49 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_tile_pos = get_nearest(mouse_pos, 'tile')
 	var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
 	
+	#
+	#if Input.is_action_just_pressed("left_click"):
+		#stored_pos = $Camera2D.position
+	#
 	if Input.is_action_just_pressed("left_click"):
-		if tile_dict.has(nearest_tile_pos):
-			if gamestart == false:
-				current_chunk = get_nearest(nearest_tile_pos,'chunk')
-				start_game(nearest_tile_pos)
-			else:
-				clicked(nearest_tile_pos)
-	
+		
+		if in_game_menu == false:
+			$CanvasLayer/normal_rez/game_menu.visible = false
+			
+		stored_pos = nearest_tile_pos
+		$CanvasLayer/sprite_holder/bomb.visible = false
+		$CanvasLayer/sprite_holder/normal.visible = false
+		$CanvasLayer/sprite_holder/clicked.visible = true
+		
+	if Input.is_action_just_released("left_click"):
+		
+		if nearest_tile_pos == stored_pos:
+			if tile_dict.has(nearest_tile_pos):
+				if gamestart == false:
+					current_chunk = get_nearest(nearest_tile_pos,'chunk')
+					start_game(nearest_tile_pos)
+				else:
+					clicked(nearest_tile_pos)
+		
+		else:
+			$CanvasLayer/sprite_holder/bomb.visible = false
+			$CanvasLayer/sprite_holder/normal.visible = true
+			$CanvasLayer/sprite_holder/clicked.visible = false
+		
 	if Input.is_action_just_pressed("right_click"):
 		
 		mark(nearest_tile_pos, nearest_chunk_pos)
 				
 	if Input.is_action_just_pressed("ui_up"):
 		get_tree().reload_current_scene()
-	#
-	if Input.is_action_pressed("restart"):
+	
+
+	if Input.is_action_pressed("pan"):
 		if moveable == false:
 			local_mous_pos = get_global_mouse_position()
 		moveable = true
 		
-	if Input.is_action_just_released("restart"):
+	if Input.is_action_just_released("pan"):
 		moveable = false
 
 					
@@ -339,6 +384,20 @@ func clicked(pos):
 			var new_texture = get_node(sprite_path).texture
 			
 			get_node(node_path).texture = new_texture
+			if tile_type == 'mine':
+				$CanvasLayer/sprite_holder/bomb.visible = true
+				$CanvasLayer/sprite_holder/normal.visible = false
+				$CanvasLayer/sprite_holder/clicked.visible = false
+			else:
+				$CanvasLayer/sprite_holder/bomb.visible = false
+				$CanvasLayer/sprite_holder/normal.visible = true
+				$CanvasLayer/sprite_holder/clicked.visible = false
+			round_points += 1 * score_multilier
+			update_points()
+		else:
+			$CanvasLayer/sprite_holder/bomb.visible = false
+			$CanvasLayer/sprite_holder/normal.visible = true
+			$CanvasLayer/sprite_holder/clicked.visible = false
 			
 	elif chunk_dict[nearest_chunk_pos][1] == false:
 		tile_dict[pos][3] = true
@@ -493,7 +552,28 @@ func convert_grid_to_pos(grid,pos):
 #############################################################################	
 #############################################################################	
 #############################################################################
-	
 
-		
-		
+func update_points():
+	
+	$CanvasLayer/Label.text = str(round_points)
+
+func _on_texture_button_pressed() -> void:
+	
+	$CanvasLayer/normal_rez/game_menu.visible = true
+
+
+func _on_area_2d_mouse_exited() -> void:
+	
+	in_game_menu = false
+
+func _on_game_menu_2_mouse_entered() -> void:
+	
+	in_game_menu = true
+
+func _on_button_pressed() -> void:
+	if round_points >= cost_of_mult:
+		round_points -= cost_of_mult
+		score_multilier += 1
+		cost_of_mult += 10
+		$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier' + str(cost_of_mult)
+		update_points()
