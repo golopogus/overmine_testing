@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=39 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
 [ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
@@ -31,8 +31,29 @@
 [ext_resource type="Texture2D" uid="uid://dl5ovepkeek2b" path="res://pics/upgrade_pop_up.png" id="14_yh4yk"]
 [ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="15_o7u2a"]
 [ext_resource type="Texture2D" uid="uid://c5xvtrm81utmf" path="res://pics/warningEight.png" id="16_ijoax"]
-[ext_resource type="Texture2D" uid="uid://cbuaotppc1l85" path="res://pics/drone_idle.png" id="32_o4fqm"]
-[ext_resource type="Texture2D" uid="uid://c42hiv14qeuvx" path="res://pics/drone_scan.png" id="33_gfmxp"]
+[ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="32_o4fqm"]
+[ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="33_gfmxp"]
+
+[sub_resource type="Animation" id="Animation_o4fqm"]
+resource_name = "drone_flying"
+length = 0.25
+loop_mode = 1
+step = 0.05
+
+[sub_resource type="Animation" id="Animation_gfmxp"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_1n88h"]
+resource_name = "scanning"
+length = 5.2
+step = 0.2
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_opjno"]
+_data = {
+&"RESET": SubResource("Animation_gfmxp"),
+&"drone_flying": SubResource("Animation_o4fqm"),
+&"scanning": SubResource("Animation_1n88h")
+}
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yh4yk"]
 size = Vector2(87, 238)
@@ -40,7 +61,13 @@ size = Vector2(87, 238)
 [node name="main_scene" type="Node2D"]
 script = ExtResource("1_2c62f")
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_opjno")
+}
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
 z_index = 1
@@ -268,24 +295,20 @@ texture = ExtResource("5_7th4q")
 visible = false
 texture = ExtResource("8_ak604")
 
+[node name="mine_scan" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("32_o4fqm")
+
+[node name="not_mine_scan" type="Sprite2D" parent="sprites"]
+visible = false
+texture = ExtResource("33_gfmxp")
+
 [node name="chunks" type="Node2D" parent="."]
 
-[node name="drone" type="Node2D" parent="."]
-z_index = 5
-position = Vector2(327, 214)
-metadata/_edit_group_ = true
-
-[node name="body" type="Sprite2D" parent="drone"]
-position = Vector2(0, -10)
-texture = ExtResource("32_o4fqm")
-hframes = 6
-
-[node name="scanner" type="Sprite2D" parent="drone"]
-position = Vector2(0, -10)
-texture = ExtResource("33_gfmxp")
-hframes = 8
+[node name="drones" type="Node2D" parent="."]
 
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="mouse_entered" from="CanvasLayer/normal_rez/game_menu/game_menu_area" to="." method="_on_game_menu_2_mouse_entered"]
 [connection signal="mouse_exited" from="CanvasLayer/normal_rez/game_menu/game_menu_area" to="." method="_on_area_2d_mouse_exited"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/normal_rez/Button2" to="." method="_on_button_2_pressed"]

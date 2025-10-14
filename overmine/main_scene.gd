@@ -1,7 +1,7 @@
 extends Node2D
 
 var round_points = 0
-const grid_size_options = [[20,20],[50,50],[4,4]]
+const grid_size_options = [[8,8],[50,50],[8,8]]
 var chosen_grid_size = grid_size_options[0]
 var num_of_chunks = Vector2(10,10)
 var chunk_split
@@ -15,7 +15,7 @@ var gamestart = false
 var score_multilier = 1
 var num_of_drones = 0
 var initial_chunk_pos = Vector2(0,0)
-var number_of_mines_per_chunk = 80
+var number_of_mines_per_chunk = 10
 var moveable = false
 var local_mous_pos
 var cost_of_mult = 100
@@ -24,32 +24,29 @@ var current_neighbors = []
 var stored_pos = Vector2()
 var current_chunk
 var safe_tiles = []
+var tiles_in_current_chunk = []
 var in_game_menu = false
 var tile_dict = {} # pos = [tile.name, 'unknown' (type), value, true (hidden),marked]
 var tile_load = preload("res://tile.tscn")
 var test_load = preload("res://test.tscn")
 var chunk_load = preload("res://chunk_loc.tscn")
 var tile_holder_load = preload("res://tile_holder.tscn")
+var mouse_in = false
 
 #############################################################################	
 #############################################################################	
 #############################################################################
 
-func _ready() -> void:
+func _notification(what: int) -> void:
 	
-	# Initialize Values
-	#var screen_size = DisplayServer.screen_get_size()
-	#
-	#if screen_size.x / screen_size.y == 16/9:
-		#
-		#$CanvasLayer/off_rez.visible = false
-		#$CanvasLayer/normal_rez.visible = true
-	#else: 
-		#
-		#$CanvasLayer/off_rez.visible = true
-		#$CanvasLayer/normal_rez.visible = false
+	if what == NOTIFICATION_WM_MOUSE_ENTER:
+		mouse_in = true
+	
+	if what == NOTIFICATION_WM_MOUSE_EXIT:
+		mouse_in = false
 		
-	#get_viewport().size = DisplayServer.screen_get_size()
+
+func _ready() -> void:
 	
 	x_length = $sprites/hidden.texture.get_width()
 	y_length = $sprites/hidden.texture.get_height()
@@ -58,6 +55,7 @@ func _ready() -> void:
 	chunk_split = -floor(num_of_chunks/2)
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
+	
 	update_points()
 	$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier $' + str(cost_of_mult)
 	$CanvasLayer/normal_rez/Button2.text = '+1 Drone $' + str(cost_of_drone)
@@ -70,11 +68,23 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	
-	if moveable == true:
+	if moveable and mouse_in:
+		
 		
 		var difference = local_mous_pos - get_global_mouse_position()
 		
-		$Camera2D.position += difference
+		if difference.x > 0:
+			if $Camera2D.position.x + difference.x < initial_chunk_pos.x + chunk_size.x * num_of_chunks.x:
+				$Camera2D.position.x += difference.x/$Camera2D.zoom.x
+		elif difference.x < 0:
+			if $Camera2D.position.x + difference.x > initial_chunk_pos.x + chunk_size.x:
+				$Camera2D.position.x += difference.x/$Camera2D.zoom.x
+		if difference.y > 0:
+			if $Camera2D.position.y + difference.y < initial_chunk_pos.y + chunk_size.y * num_of_chunks.y:
+				$Camera2D.position.y += difference.y/$Camera2D.zoom.y	
+		elif difference.y < 0:
+			if $Camera2D.position.y + difference.y > initial_chunk_pos.y + chunk_size.y:
+				$Camera2D.position.y += difference.y/$Camera2D.zoom.y
 
 	var nearest_chunk_pos = Vector2()
 	var chunk_follow_pos = $Camera2D.position
@@ -96,10 +106,6 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_tile_pos = get_nearest(mouse_pos, 'tile')
 	var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
 	
-	#
-	#if Input.is_action_just_pressed("left_click"):
-		#stored_pos = $Camera2D.position
-	#
 	if Input.is_action_just_pressed("left_click"):
 		
 		if in_game_menu == false:
@@ -141,6 +147,18 @@ func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_just_released("pan"):
 		moveable = false
 
+
+	#if Input.is_action_just_pressed("zoom_in"):
+	if _event is InputEventMouseButton:
+		if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
+			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
+				$Camera2D.zoom *= 2
+		
+	if _event is InputEventMouseButton:
+		if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
+			if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
+				$Camera2D.zoom /= 2
+		
 					
 #############################################################################
 #█ █▄░█ █ ▀█▀ █ ▄▀█ ▀█▀ █ █▄░█ █▀▀   █▀▀ █▀█ █ █▀▄
@@ -149,14 +167,20 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 func place_chunk_loc():
 	
+	
 	var start_pos = Vector2()
 	var chunk_position = Vector2()
+	
+	$Camera2D.limit_left = start_pos.x
+	$Camera2D.limit_right = num_of_chunks.x * chunk_size.x
+	$Camera2D.limit_top = start_pos.y
+	$Camera2D.limit_bottom = num_of_chunks.y * chunk_size.y
 	
 	for x in num_of_chunks.x:
 		for y in num_of_chunks.y:
 			chunk_position = start_pos + Vector2(x,y)*chunk_size
 			chunk_dict[chunk_position] = ['not_named',false,false]
-			
+	
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -212,16 +236,16 @@ func randomize_mine_placement(pos):
 #############################################################################
 
 func draw_chunk(pos):
-
-	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
 	
-	var dont_erase = current_neighbors
 	var to_draw = []
+	tiles_in_current_chunk = []
 	
-	dont_erase.append(pos)
-	delete_chunk(dont_erase)
+	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
+	current_neighbors.append(pos)
+	#send_dicts()
+	delete_chunk(current_neighbors)
 	
-	for i in dont_erase:
+	for i in current_neighbors:
 		if chunk_dict.has(i):
 			if chunk_dict[i][1] == false:
 				to_draw.append(i)
@@ -266,7 +290,7 @@ func draw_chunk(pos):
 				var new_texture = get_node(sprite_path).texture		
 				
 				tile.texture = new_texture
-
+					
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -577,3 +601,34 @@ func _on_button_pressed() -> void:
 		cost_of_mult += 10
 		$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier' + str(cost_of_mult)
 		update_points()
+
+func send_dicts():
+	
+	var grid = get_chunk_grid()
+	var positions = convert_grid_to_pos(grid,current_chunk)
+	return positions
+
+
+
+func _on_button_2_pressed() -> void:
+	
+	var drone_load = preload("res://drone.tscn")
+	var drone = drone_load.instantiate()
+	$drones.add_child(drone)
+	drone.position = current_chunk
+	
+func check_clicked(pos,val):
+	
+	if val == 'CLICKED':
+		return tile_dict[pos][3]
+	else:
+		var nearest_chunk_pos = get_nearest(pos, 'chunk')
+		var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos][0] + '/' + tile_dict[pos][0]
+		if tile_dict[pos][1] == 'mine':
+			var sprite_path = $sprites/mine_scan.texture
+			get_node(node_path).texture = sprite_path
+		else:
+			var sprite_path = $sprites/not_mine_scan.texture
+			get_node(node_path).texture = sprite_path
+
+			
