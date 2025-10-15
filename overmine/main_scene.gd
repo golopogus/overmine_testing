@@ -1,8 +1,9 @@
 extends Node2D
 
+signal cur_chunk()
 var round_points = 0
-const grid_size_options = [[8,8],[50,50],[8,8]]
-var chosen_grid_size = grid_size_options[0]
+const grid_size_options = [[8,8],[50,50],[40,40]]
+var chosen_grid_size = grid_size_options[2]
 var num_of_chunks = Vector2(10,10)
 var chunk_split
 var initial_pos = Vector2(0,0)
@@ -15,7 +16,7 @@ var gamestart = false
 var score_multilier = 1
 var num_of_drones = 0
 var initial_chunk_pos = Vector2(0,0)
-var number_of_mines_per_chunk = 10
+var number_of_mines_per_chunk = 320
 var moveable = false
 var local_mous_pos
 var cost_of_mult = 100
@@ -23,6 +24,7 @@ var cost_of_drone = 200
 var current_neighbors = []
 var stored_pos = Vector2()
 var current_chunk
+var visible_area
 var safe_tiles = []
 var tiles_in_current_chunk = []
 var in_game_menu = false
@@ -55,7 +57,6 @@ func _ready() -> void:
 	chunk_split = -floor(num_of_chunks/2)
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
-	
 	update_points()
 	$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier $' + str(cost_of_mult)
 	$CanvasLayer/normal_rez/Button2.text = '+1 Drone $' + str(cost_of_drone)
@@ -73,17 +74,19 @@ func _process(_delta: float) -> void:
 		
 		var difference = local_mous_pos - get_global_mouse_position()
 		
+		
+		###NEEDS ADJSUTING
 		if difference.x > 0:
-			if $Camera2D.position.x + difference.x < initial_chunk_pos.x + chunk_size.x * num_of_chunks.x:
+			if $Camera2D.position.x + difference.x < initial_chunk_pos.x + chunk_size.x * num_of_chunks.x + 32:
 				$Camera2D.position.x += difference.x/$Camera2D.zoom.x
 		elif difference.x < 0:
-			if $Camera2D.position.x + difference.x > initial_chunk_pos.x + chunk_size.x:
+			if $Camera2D.position.x + difference.x > initial_chunk_pos.x + chunk_size.x - 32:
 				$Camera2D.position.x += difference.x/$Camera2D.zoom.x
 		if difference.y > 0:
-			if $Camera2D.position.y + difference.y < initial_chunk_pos.y + chunk_size.y * num_of_chunks.y:
+			if $Camera2D.position.y + difference.y < initial_chunk_pos.y + chunk_size.y * num_of_chunks.y + 32:
 				$Camera2D.position.y += difference.y/$Camera2D.zoom.y	
 		elif difference.y < 0:
-			if $Camera2D.position.y + difference.y > initial_chunk_pos.y + chunk_size.y:
+			if $Camera2D.position.y + difference.y > initial_chunk_pos.y + chunk_size.y - 32:
 				$Camera2D.position.y += difference.y/$Camera2D.zoom.y
 
 	var nearest_chunk_pos = Vector2()
@@ -142,6 +145,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_pressed("pan"):
 		if moveable == false:
 			local_mous_pos = get_global_mouse_position()
+			
 		moveable = true
 		
 	if Input.is_action_just_released("pan"):
@@ -197,7 +201,7 @@ func place_tile_loc():
 			tile_pos = start_pos + Vector2(x_length,y_length) * Vector2(x,y)
 			#tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
 			if tile_dict.has(tile_pos) == false:
-				tile_dict[tile_pos] = ['none', 'unknown', 0, false,false]
+				tile_dict[tile_pos] = ['none', 'unknown', 0, false,false,'NONE']
 					
 	draw_chunk(initial_chunk_pos)
 
@@ -237,6 +241,7 @@ func randomize_mine_placement(pos):
 
 func draw_chunk(pos):
 	
+	
 	var to_draw = []
 	tiles_in_current_chunk = []
 	
@@ -244,7 +249,6 @@ func draw_chunk(pos):
 	current_neighbors.append(pos)
 	#send_dicts()
 	delete_chunk(current_neighbors)
-	
 	for i in current_neighbors:
 		if chunk_dict.has(i):
 			if chunk_dict[i][1] == false:
@@ -283,6 +287,11 @@ func draw_chunk(pos):
 				else:
 					if tile_dict[global_pos][4] == true:
 						tile_type = 'mark'
+					elif tile_dict[global_pos][5] != 'NONE':
+						if tile_dict[global_pos][5] == 'MINE':
+							tile_type = 'mine_scan'
+						else:
+							tile_type = 'not_mine_scan'
 					else:
 						tile_type = 'hidden'
 						
@@ -606,6 +615,7 @@ func send_dicts():
 	
 	var grid = get_chunk_grid()
 	var positions = convert_grid_to_pos(grid,current_chunk)
+	#var node_path = 'chunks/' +  chunk_dict[current_chunk][0]
 	return positions
 
 
@@ -620,15 +630,27 @@ func _on_button_2_pressed() -> void:
 func check_clicked(pos,val):
 	
 	if val == 'CLICKED':
-		return tile_dict[pos][3]
+		if tile_dict[pos][3] == true or tile_dict[pos][4] == true or tile_dict[pos][5] != 'NONE':
+			return true
+		else: 
+			return false
 	else:
 		var nearest_chunk_pos = get_nearest(pos, 'chunk')
 		var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos][0] + '/' + tile_dict[pos][0]
-		if tile_dict[pos][1] == 'mine':
-			var sprite_path = $sprites/mine_scan.texture
-			get_node(node_path).texture = sprite_path
+		if nearest_chunk_pos in current_neighbors:
+			if tile_dict[pos][1] == 'mine':
+				var sprite_path = $sprites/mine_scan.texture
+				tile_dict[pos][5] = 'MINE_SCAN'
+				get_node(node_path).texture = sprite_path
+			else:
+				var sprite_path = $sprites/not_mine_scan.texture
+				tile_dict[pos][5] = "SAFE_SCAN"
+				get_node(node_path).texture = sprite_path
 		else:
-			var sprite_path = $sprites/not_mine_scan.texture
-			get_node(node_path).texture = sprite_path
+			if tile_dict[pos][1] == 'mine':
+				tile_dict[pos][5] = 'MINE_SCAN'
+			else:
+				tile_dict[pos][5] = "SAFE_SCAN"
+
 
 			

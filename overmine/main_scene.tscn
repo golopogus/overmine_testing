@@ -67,7 +67,6 @@ libraries = {
 }
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
 z_index = 1

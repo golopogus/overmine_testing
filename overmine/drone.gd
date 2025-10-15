@@ -12,9 +12,11 @@ var scanning_tile = Vector2()
 var poss_tiles = []
 var checked_tiles = []
 var scan_pos
-var speed = 1
+var speed = 10
 var tile_info
+var search_area = []
 func _ready() -> void:
+	
 	
 	$body_animation.play("always")
 	x_length = 16
@@ -31,7 +33,7 @@ func _process(_delta: float) -> void:
 		var dir = get_dir_to()
 		velocity = speed * dir
 		
-		if (position - scan_pos).length() <= 1:
+		if (position - scan_pos).length() <= 10:
 			velocity = Vector2()
 			dir = Vector2()
 			position = scan_pos
@@ -46,9 +48,15 @@ func _process(_delta: float) -> void:
 
 func get_scan_loc():
 	
+	##FIX DROONES TO UPDATE WHEN LEAVING CHUNK
 	
 	var tiles = get_parent().get_parent().send_dicts()
 	#print(tiles)
+	
+	#var camera_pos = get_parent().send_camera_loc()
+	#search_area = [Vector2(camera_pos.x - 304,camera_pos.y - 85),Vector2(camera_pos.x + 305,camera_pos.y + 85)]
+	
+	
 	for i in tiles:
 		if get_parent().get_parent().check_clicked(i,'CLICKED') == false:
 			poss_tiles.append(i)
