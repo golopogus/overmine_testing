@@ -2,6 +2,8 @@ extends Node2D
 
 signal cur_chunk()
 var round_points = 0
+var upgrade_in_hand = false
+var upgrade
 const grid_size_options = [[8,8],[50,50],[40,40]]
 var chosen_grid_size = grid_size_options[2]
 var num_of_chunks = Vector2(10,10)
@@ -110,29 +112,38 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
 	
 	if Input.is_action_just_pressed("left_click"):
+		#if upgrade_in_hand == false:
+		if upgrade_in_hand == false:
+			if in_game_menu == false:
+				$CanvasLayer/normal_rez/game_menu.visible = false
+				
+			stored_pos = nearest_tile_pos
+			$CanvasLayer/sprite_holder/bomb.visible = false
+			$CanvasLayer/sprite_holder/normal.visible = false
+			$CanvasLayer/sprite_holder/clicked.visible = true
 		
-		if in_game_menu == false:
-			$CanvasLayer/normal_rez/game_menu.visible = false
-			
-		stored_pos = nearest_tile_pos
-		$CanvasLayer/sprite_holder/bomb.visible = false
-		$CanvasLayer/sprite_holder/normal.visible = false
-		$CanvasLayer/sprite_holder/clicked.visible = true
+		if upgrade_in_hand == true:
+			if tile_dict[nearest_tile_pos][3] == true:
+				upgrade.place(nearest_tile_pos)
+				upgrade_in_hand = false
+				upgrade = 'NONE'
 		
 	if Input.is_action_just_released("left_click"):
 		
-		if nearest_tile_pos == stored_pos:
-			if tile_dict.has(nearest_tile_pos):
-				if gamestart == false:
-					current_chunk = get_nearest(nearest_tile_pos,'chunk')
-					start_game(nearest_tile_pos)
-				else:
-					clicked(nearest_tile_pos)
+		if upgrade_in_hand == false:
+			if nearest_tile_pos == stored_pos:
+				if tile_dict.has(nearest_tile_pos):
+					if gamestart == false:
+						current_chunk = get_nearest(nearest_tile_pos,'chunk')
+						start_game(nearest_tile_pos)
+					else:
+						clicked(nearest_tile_pos)
 		
-		else:
-			$CanvasLayer/sprite_holder/bomb.visible = false
-			$CanvasLayer/sprite_holder/normal.visible = true
-			$CanvasLayer/sprite_holder/clicked.visible = false
+			else:
+				$CanvasLayer/sprite_holder/bomb.visible = false
+				$CanvasLayer/sprite_holder/normal.visible = true
+				$CanvasLayer/sprite_holder/clicked.visible = false
+			
 		
 	if Input.is_action_just_pressed("right_click"):
 		
@@ -634,6 +645,15 @@ func check_clicked(pos,val):
 			return true
 		else: 
 			return false
+	
+	elif val == 'DRILL':
+		var new_pos = pos - Vector2(8,8)
+		return tile_dict[new_pos][3]
+	
+	elif val == 'WHAT':
+		var new_pos = pos - Vector2(8,8)
+		return tile_dict[new_pos][1]
+
 	else:
 		var nearest_chunk_pos = get_nearest(pos, 'chunk')
 		var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos][0] + '/' + tile_dict[pos][0]
@@ -654,3 +674,14 @@ func check_clicked(pos,val):
 
 
 			
+
+
+func _on_button_3_pressed() -> void:
+	var driller_load = preload("res://driller.tscn")
+	var driller = driller_load.instantiate()
+	add_child(driller)
+	#drone.position = current_chunk
+	upgrade_in_hand = true
+	upgrade = driller
+	driller.clicked()
+	

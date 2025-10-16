@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://ch5gx2echw1pr"]
+
+[ext_resource type="Texture2D" uid="uid://cch27j4srnavi" path="res://pics/driller.png" id="1_6k60k"]
+[ext_resource type="Script" uid="uid://biqa6i6do2t00" path="res://driller.gd" id="2_uoven"]
+
+[node name="driller" type="Sprite2D"]
+z_index = 3
+texture = ExtResource("1_6k60k")
+script = ExtResource("2_uoven")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.25
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
