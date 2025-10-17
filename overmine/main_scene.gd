@@ -1,6 +1,6 @@
 extends Node2D
 
-signal cur_chunk()
+var bomb_radius = 0
 var round_points = 0
 var upgrade_in_hand = false
 var upgrade
@@ -79,18 +79,19 @@ func _process(_delta: float) -> void:
 		
 		
 		###NEEDS ADJSUTING
-		if difference.x > 0:
-			if $Camera2D.position.x + difference.x < initial_chunk_pos.x + chunk_size.x * num_of_chunks.x + 32:
-				$Camera2D.position.x += difference.x/$Camera2D.zoom.x
-		elif difference.x < 0:
-			if $Camera2D.position.x + difference.x > initial_chunk_pos.x + chunk_size.x - 32:
-				$Camera2D.position.x += difference.x/$Camera2D.zoom.x
-		if difference.y > 0:
-			if $Camera2D.position.y + difference.y < initial_chunk_pos.y + chunk_size.y * num_of_chunks.y + 32:
-				$Camera2D.position.y += difference.y/$Camera2D.zoom.y	
-		elif difference.y < 0:
-			if $Camera2D.position.y + difference.y > initial_chunk_pos.y + chunk_size.y - 32:
-				$Camera2D.position.y += difference.y/$Camera2D.zoom.y
+		if $Camera2D.zoom == Vector2(1,1):
+			if difference.x > 0:
+				if $Camera2D.position.x + difference.x < initial_chunk_pos.x + chunk_size.x * num_of_chunks.x + 64:
+					$Camera2D.position.x += difference.x/$Camera2D.zoom.x
+			elif difference.x < 0:
+				if $Camera2D.position.x + difference.x > initial_chunk_pos.x + chunk_size.x - 64:
+					$Camera2D.position.x += difference.x/$Camera2D.zoom.x
+			if difference.y > 0:
+				if $Camera2D.position.y + difference.y < initial_chunk_pos.y + chunk_size.y * num_of_chunks.y + 64:
+					$Camera2D.position.y += difference.y/$Camera2D.zoom.y	
+			elif difference.y < 0:
+				if $Camera2D.position.y + difference.y > initial_chunk_pos.y + chunk_size.y - 64:
+					$Camera2D.position.y += difference.y/$Camera2D.zoom.y
 
 	var nearest_chunk_pos = Vector2()
 	var chunk_follow_pos = $Camera2D.position
@@ -418,7 +419,7 @@ func clicked(pos):
 			if tile_dict[pos][1] == 'unknown':
 				tile_dict[pos][1] = 'safe'
 			if tile_dict[pos][1] == 'safe':
-				update_safe_neighbors(pos)
+				update_safe_neighbors(pos,'safe')
 				
 			var tile_type = tile_dict[pos][1]
 			
@@ -430,6 +431,7 @@ func clicked(pos):
 			
 			get_node(node_path).texture = new_texture
 			if tile_type == 'mine':
+				update_safe_neighbors(pos,'mine')
 				$CanvasLayer/sprite_holder/bomb.visible = true
 				$CanvasLayer/sprite_holder/normal.visible = false
 				$CanvasLayer/sprite_holder/clicked.visible = false
@@ -455,7 +457,7 @@ func clicked(pos):
 		if tile_dict[pos][1] == 'unknown':
 				tile_dict[pos][1] = 'safe'
 		if tile_dict[pos][1] == 'safe':
-			update_safe_neighbors(pos)
+			update_safe_neighbors(pos,'safe')
 			
 		if tile_dict[pos][1] != 'mine':
 			round_points += 1 * score_multilier
@@ -465,7 +467,7 @@ func clicked(pos):
 #############################################################################	
 #############################################################################
 
-func update_safe_neighbors(pos):	
+func update_safe_neighbors(pos,type):	
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
 	
 	if chunk_dict[nearest_chunk_pos][2] == false:
@@ -474,12 +476,19 @@ func update_safe_neighbors(pos):
 	var neighbors
 	
 	neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
-
-	for i in neighbors:
-		if tile_dict[i][3] == false:
-			if tile_dict[i][1] != 'mine':
+	
+	if type == 'safe':
+		for i in neighbors:
+			if tile_dict[i][3] == false:
+				if tile_dict[i][1] != 'mine':
+					clicked(i) 
+	elif type == 'mine':
+		await get_tree().create_timer(.1).timeout
+		for i in neighbors:
+			if tile_dict[i][3] == false:
 				clicked(i)
-
+	
+	
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -661,7 +670,8 @@ func check_clicked(pos,val):
 	
 	elif val == 'DRILL':
 		var new_pos = pos - Vector2(8,8)
-		return tile_dict[new_pos][3]
+		if tile_dict.has(new_pos):
+			return tile_dict[new_pos][3]
 	
 	elif val == 'WHAT':
 		var new_pos = pos - Vector2(8,8)
@@ -702,4 +712,41 @@ func _on_button_3_pressed() -> void:
 		upgrade_in_hand = true
 		upgrade = driller
 		driller.clicked()
+
+func create_explosion(pos,x,y,dir):
+	
+	var pre_neighbors
+	var n = pos + Vector2(0,-1) * Vector2(x,y)
+	var ne = pos + Vector2(1,-1) * Vector2(x,y)
+	var nw = pos + Vector2(-1,-1) * Vector2(x,y)
+	var s = pos + Vector2(0,1) * Vector2(x,y)
+	var se = pos + Vector2(1,1) * Vector2(x,y)
+	var sw = pos + Vector2(-1,1) * Vector2(x,y)
+	var w = pos + Vector2(-1,0) * Vector2(x,y)
+	var e = pos + Vector2(1,0) * Vector2(x,y)
+	
+	match dir:
+	
+		'TOP':
+			pre_neighbors = [n,ne,nw]
+		'BOTTOM':
+			pre_neighbors = [sw,s,se]
+		'RIGHT':
+			pre_neighbors = [ne,e,se]
+		'LEFT':
+			pre_neighbors = [nw,w,sw]
+		'ALL':
+			pre_neighbors = [n,ne,e,se,s,sw,w,nw]
+			
+	var neighbors = []
+
+	for i in pre_neighbors:
+		var nearest_chunk_pos = get_nearest(i,'chunk')
+		
+		if chunk_dict.has(nearest_chunk_pos):
+			neighbors.append(i)
+				
+	return neighbors
+
+
 		
