@@ -34,14 +34,14 @@
 [ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="32_o4fqm"]
 [ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="33_gfmxp"]
 
+[sub_resource type="Animation" id="Animation_gfmxp"]
+length = 0.001
+
 [sub_resource type="Animation" id="Animation_o4fqm"]
 resource_name = "drone_flying"
 length = 0.25
 loop_mode = 1
 step = 0.05
-
-[sub_resource type="Animation" id="Animation_gfmxp"]
-length = 0.001
 
 [sub_resource type="Animation" id="Animation_1n88h"]
 resource_name = "scanning"
@@ -211,18 +211,18 @@ text = "+1 Score Multiplier X"
 
 [node name="Button3" type="Button" parent="CanvasLayer/normal_rez"]
 layout_mode = 0
-offset_left = 312.0
-offset_top = 56.0
-offset_right = 445.0
-offset_bottom = 79.0
+offset_left = 285.0
+offset_top = 51.0
+offset_right = 439.0
+offset_bottom = 82.0
 text = "driller"
 
 [node name="Button2" type="Button" parent="CanvasLayer/normal_rez"]
 layout_mode = 0
-offset_left = 450.0
-offset_top = 52.0
-offset_right = 566.0
-offset_bottom = 83.0
+offset_left = 440.0
+offset_top = 53.0
+offset_right = 577.0
+offset_bottom = 84.0
 text = "+1 Drone X"
 
 [node name="Label" type="Label" parent="CanvasLayer"]

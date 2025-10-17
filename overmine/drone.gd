@@ -12,11 +12,13 @@ var scanning_tile = Vector2()
 var poss_tiles = []
 var checked_tiles = []
 var scan_pos
-var speed = 10
+var speed = 1
 var tile_info
 var search_area = []
+var battery = 3
+var g_pos = Vector2()
+
 func _ready() -> void:
-	
 	
 	$body_animation.play("always")
 	x_length = 16
@@ -26,19 +28,28 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	
-	if scanning == false:
-		get_scan_loc()
-	
-	if moving == true:
-		var dir = get_dir_to()
-		velocity = speed * dir
+	if battery > 0:
+		if scanning == false:
+			get_scan_loc()
 		
-		if (position - scan_pos).length() <= 10:
-			velocity = Vector2()
-			dir = Vector2()
-			position = scan_pos
-			#print(position, scan_pos)
-			start_scanning()
+		if moving == true:
+			var dir = get_dir_to()
+			velocity = speed * dir
+			
+			if (global_position - scan_pos).length() <= 1:
+				velocity = Vector2()
+				dir = Vector2()
+				global_position = scan_pos
+				#print(position, scan_pos)
+				start_scanning()
+	
+	else:
+		var dir = (get_parent().position - global_position).normalized()
+		velocity = speed * dir 
+		
+		if (global_position - get_parent().position).length() <= 1:
+			get_parent().charging()
+		
 		
 		
 	
@@ -61,29 +72,34 @@ func get_scan_loc():
 		if get_parent().get_parent().check_clicked(i,'CLICKED') == false:
 			poss_tiles.append(i)
 	
-	var rand_int = randi() % len(poss_tiles)
-	scan_pos = poss_tiles[rand_int] + Vector2(8,8)
-	moving = true
-	scanning = true
+	if len(poss_tiles) > 0:
+		
+		var rand_int = randi() % len(poss_tiles)
+		scan_pos = poss_tiles[rand_int] + Vector2(8,8)
+		moving = true
+		scanning = true
 	#est_scan_pos.x = randi_range(scannable_chunk.x,scannable_chunk.x + chunk_size - x_length)
 	#est_scan_pos.y = randi_range(scannable_chunk.y,scannable_chunk.y + chunk_size - y_length)
 	
 func get_dir_to():
 		
-	var dir = (scan_pos - position).normalized()
+	var dir = (scan_pos - global_position).normalized()
 	
 	return dir
 
 func start_scanning():
-	moving = false
-	$AnimationPlayer.play("scanning")
-	$Timer.start()
-	
+	if get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'CLICKED') == false:
+		moving = false
+		$AnimationPlayer.play("scanning")
+		$Timer.start()
+	else:
+		scanning = false
 
 
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	$AnimationPlayer.stop()
 	scanning = false
+	battery -= 1
 	
 	
 	

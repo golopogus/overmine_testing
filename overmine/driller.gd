@@ -8,6 +8,7 @@ var dir = Vector2.LEFT
 var next_pos = Vector2()
 var reade = false
 var click = false
+var health = 3
 func _process(_delta: float) -> void:
 
 	if position == next_pos and reade == true:
@@ -37,17 +38,18 @@ func drill_block(pos):
 	next_pos = pos + dir * 16
 	#print(get_parent().check_clicked(pos,'DRILL'))
 	if get_parent().check_clicked(next_pos,'DRILL') == false:
-		print('yay')
 		drilling = true
 		reade = false
 		speed = 0
 		position = pos
 		await get_parent().clicked(next_pos - Vector2(8,8))
-		#if get_parent().check_clicked(next_pos,'WHAT') == 'mine':
-			#queue_free()
-		#else:
-			#$Timer.start()
+		if get_parent().check_clicked(next_pos,'WHAT') == 'mine':
+			health -= 1
+			if health == 0:
+				queue_free()
+		
 		$Timer.start()
+
 
 	
 		

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://cavydil331im0"]
+
+[ext_resource type="Texture2D" uid="uid://d1d7gscvuw5o2" path="res://pics/drone_base.png" id="1_3557c"]
+[ext_resource type="Script" uid="uid://biki6fnryo0vb" path="res://drone_base.gd" id="2_sulth"]
+
+[node name="drone_base" type="Sprite2D"]
+texture = ExtResource("1_3557c")
+offset = Vector2(8, 8)
+script = ExtResource("2_sulth")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 3.0
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

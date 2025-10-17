@@ -21,8 +21,9 @@ var initial_chunk_pos = Vector2(0,0)
 var number_of_mines_per_chunk = 320
 var moveable = false
 var local_mous_pos
-var cost_of_mult = 100
-var cost_of_drone = 200
+var cost_of_mult = 10
+var cost_of_drone = 20
+var cost_of_drill = 10
 var current_neighbors = []
 var stored_pos = Vector2()
 var current_chunk
@@ -299,7 +300,7 @@ func draw_chunk(pos):
 					if tile_dict[global_pos][4] == true:
 						tile_type = 'mark'
 					elif tile_dict[global_pos][5] != 'NONE':
-						if tile_dict[global_pos][5] == 'MINE':
+						if tile_dict[global_pos][5] == 'MINE_SCAN':
 							tile_type = 'mine_scan'
 						else:
 							tile_type = 'not_mine_scan'
@@ -436,8 +437,8 @@ func clicked(pos):
 				$CanvasLayer/sprite_holder/bomb.visible = false
 				$CanvasLayer/sprite_holder/normal.visible = true
 				$CanvasLayer/sprite_holder/clicked.visible = false
-			round_points += 1 * score_multilier
-			update_points()
+				round_points += 1 * score_multilier
+				update_points()
 		else:
 			$CanvasLayer/sprite_holder/bomb.visible = false
 			$CanvasLayer/sprite_holder/normal.visible = true
@@ -445,6 +446,7 @@ func clicked(pos):
 			
 	elif chunk_dict[nearest_chunk_pos][1] == false:
 		tile_dict[pos][3] = true
+
 		if chunk_dict[nearest_chunk_pos][2] == false:
 			safe_tiles = []
 			safe_tiles.append(pos)
@@ -454,6 +456,10 @@ func clicked(pos):
 				tile_dict[pos][1] = 'safe'
 		if tile_dict[pos][1] == 'safe':
 			update_safe_neighbors(pos)
+			
+		if tile_dict[pos][1] != 'mine':
+			round_points += 1 * score_multilier
+			update_points()
 			
 #############################################################################	
 #############################################################################	
@@ -632,11 +638,18 @@ func send_dicts():
 
 
 func _on_button_2_pressed() -> void:
-	
-	var drone_load = preload("res://drone.tscn")
-	var drone = drone_load.instantiate()
-	$drones.add_child(drone)
-	drone.position = current_chunk
+	if round_points >= cost_of_drone:
+		round_points -= cost_of_drone
+		cost_of_drone += 10
+		$CanvasLayer/normal_rez/Button2.text = '+1 Drone' + str(cost_of_drone)
+		update_points()
+		var drone_base_load = preload("res://drone_base.tscn")
+		var drone_base = drone_base_load.instantiate()
+		add_child(drone_base)
+		#drone.position = current_chunk
+		upgrade_in_hand = true
+		upgrade = drone_base
+		drone_base.clicked()
 	
 func check_clicked(pos,val):
 	
@@ -677,11 +690,16 @@ func check_clicked(pos,val):
 
 
 func _on_button_3_pressed() -> void:
-	var driller_load = preload("res://driller.tscn")
-	var driller = driller_load.instantiate()
-	add_child(driller)
-	#drone.position = current_chunk
-	upgrade_in_hand = true
-	upgrade = driller
-	driller.clicked()
-	
+	if round_points >= cost_of_drill:
+		round_points -= cost_of_drill
+		cost_of_drill += 10
+		$CanvasLayer/normal_rez/Button3.text = '+1 Drill' + str(cost_of_drill)
+		update_points()
+		var driller_load = preload("res://driller.tscn")
+		var driller = driller_load.instantiate()
+		add_child(driller)
+		#drone.position = current_chunk
+		upgrade_in_hand = true
+		upgrade = driller
+		driller.clicked()
+		
