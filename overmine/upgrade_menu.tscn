@@ -1,0 +1,314 @@
+[gd_scene load_steps=17 format=3 uid="uid://ciloja465wfxs"]
+
+[ext_resource type="Script" uid="uid://cjg72pfna4smc" path="res://upgrade_menu.gd" id="1_rc40j"]
+[ext_resource type="Texture2D" uid="uid://u4f45sb3y3f4" path="res://pics/upgrades/mine_radius.png" id="1_tns61"]
+[ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_rc40j"]
+[ext_resource type="Texture2D" uid="uid://ywikxrkwlv00" path="res://pics/upgrades/drone_speed.png" id="3_royjv"]
+[ext_resource type="Texture2D" uid="uid://0ujcj17w1xkh" path="res://pics/upgrades/drone_add.png" id="4_8up1e"]
+[ext_resource type="Texture2D" uid="uid://dib3d6ss0digj" path="res://pics/upgrades/drill_add.png" id="5_s4vx0"]
+[ext_resource type="Texture2D" uid="uid://cwhpwe6qp8vji" path="res://pics/upgrades/battery_speed.png" id="6_eggx2"]
+[ext_resource type="Texture2D" uid="uid://c520aqj1cbv1b" path="res://pics/upgrades/call_it_in.png" id="7_2e1ct"]
+[ext_resource type="Texture2D" uid="uid://mv6h4nfp1nsx" path="res://pics/upgrades/battery_increase.png" id="8_amsiy"]
+[ext_resource type="Texture2D" uid="uid://b11nh1lx0vemx" path="res://pics/upgrades/strike.png" id="9_m2eo0"]
+[ext_resource type="Texture2D" uid="uid://c3ycufq1afyqn" path="res://pics/upgrades/steel_heart.png" id="10_2fk8l"]
+[ext_resource type="Texture2D" uid="uid://cxrnucakg6ekh" path="res://pics/upgrades/speed_up_drill.png" id="11_y2cob"]
+[ext_resource type="Texture2D" uid="uid://dhp2nu4w18uie" path="res://pics/upgrades/size_up_drill.png" id="12_bb8fm"]
+[ext_resource type="Texture2D" uid="uid://c446lqg3lwv0o" path="res://pics/upgrades/scan_increase.png" id="13_0hsiy"]
+[ext_resource type="Texture2D" uid="uid://lf0yk7kxpyl4" path="res://pics/upgrades/multiplier.png" id="14_tjw0k"]
+[ext_resource type="Texture2D" uid="uid://bo32haemyp75" path="res://pics/upgrades/durability.png" id="15_jdi7e"]
+
+[node name="upgrade_menu" type="ColorRect"]
+offset_top = 2.0
+offset_right = 640.0
+offset_bottom = 362.0
+script = ExtResource("1_rc40j")
+
+[node name="close" type="Button" parent="."]
+layout_mode = 0
+offset_left = 603.0
+offset_top = 5.0
+offset_right = 633.0
+offset_bottom = 36.0
+text = "X"
+
+[node name="mine_radius" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 8.0
+offset_right = 33.0
+offset_bottom = 32.0
+texture_normal = ExtResource("1_tns61")
+
+[node name="text" type="Label" parent="mine_radius"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 6.0
+offset_right = 161.0
+offset_bottom = 29.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Mine Radius (X/X)"
+
+[node name="drone_speed" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 198.0
+offset_top = 6.0
+offset_right = 222.0
+offset_bottom = 30.0
+texture_normal = ExtResource("3_royjv")
+
+[node name="text" type="Label" parent="drone_speed"]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 5.0
+offset_right = 160.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Drone Speed (X/X)"
+
+[node name="drone_add" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 199.0
+offset_top = 43.0
+offset_right = 223.0
+offset_bottom = 67.0
+texture_normal = ExtResource("4_8up1e")
+
+[node name="text" type="Label" parent="drone_add"]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 5.0
+offset_right = 160.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Drone Add"
+
+[node name="drill_add" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 199.0
+offset_top = 79.0
+offset_right = 223.0
+offset_bottom = 103.0
+texture_normal = ExtResource("5_s4vx0")
+
+[node name="text" type="Label" parent="drill_add"]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 5.0
+offset_right = 160.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Drill Add"
+
+[node name="battery_speed" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 289.0
+offset_right = 36.0
+offset_bottom = 313.0
+texture_normal = ExtResource("6_eggx2")
+
+[node name="text" type="Label" parent="battery_speed"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 37.0
+offset_right = 166.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Call it in (X/X)"
+
+[node name="call_it_in" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 322.0
+offset_right = 37.0
+offset_bottom = 346.0
+texture_normal = ExtResource("7_2e1ct")
+
+[node name="text" type="Label" parent="call_it_in"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = -61.0
+offset_right = 161.0
+offset_bottom = -38.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Mine Radius Increase (X/X)"
+
+[node name="battery_plus" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 254.0
+offset_right = 36.0
+offset_bottom = 278.0
+texture_normal = ExtResource("8_amsiy")
+
+[node name="text" type="Label" parent="battery_plus"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 41.0
+offset_right = 162.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Battery Charge (X/X)"
+
+[node name="mark" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 222.0
+offset_right = 36.0
+offset_bottom = 246.0
+texture_normal = ExtResource("9_m2eo0")
+
+[node name="text" type="Label" parent="mark"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 7.0
+offset_right = 162.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Ability to Mark Strike (X/X)"
+
+[node name="steel_heart" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 192.0
+offset_right = 36.0
+offset_bottom = 216.0
+texture_normal = ExtResource("10_2fk8l")
+
+[node name="text" type="Label" parent="steel_heart"]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 4.0
+offset_right = 162.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Steel Heart (X/X)"
+
+[node name="drill_speed" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 161.0
+offset_right = 35.0
+offset_bottom = 185.0
+texture_normal = ExtResource("11_y2cob")
+
+[node name="text" type="Label" parent="drill_speed"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 5.0
+offset_right = 163.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Drill Speed (X/X)"
+
+[node name="drill_size" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 127.0
+offset_right = 36.0
+offset_bottom = 151.0
+texture_normal = ExtResource("12_bb8fm")
+
+[node name="text" type="Label" parent="drill_size"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 4.0
+offset_right = 163.0
+offset_bottom = 27.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Drill Size (X/X)"
+
+[node name="scan_size" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 95.0
+offset_right = 34.0
+offset_bottom = 119.0
+texture_normal = ExtResource("13_0hsiy")
+
+[node name="text" type="Label" parent="scan_size"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 5.0
+offset_right = 163.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Scan Radius (X/X)"
+
+[node name="click_mult" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 65.0
+offset_right = 33.0
+offset_bottom = 89.0
+texture_normal = ExtResource("14_tjw0k")
+
+[node name="text" type="Label" parent="click_mult"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 5.0
+offset_right = 163.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Click Multiplier (Next x0)"
+
+[node name="drill_dur" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 36.0
+offset_right = 32.0
+offset_bottom = 60.0
+texture_normal = ExtResource("15_jdi7e")
+
+[node name="text" type="Label" parent="drill_dur"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 5.0
+offset_right = 163.0
+offset_bottom = 28.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_rc40j")
+theme_override_font_sizes/font_size = 11
+text = "Drill Durability (X/X)"
+
+[connection signal="pressed" from="close" to="." method="_on_close_pressed"]
+[connection signal="pressed" from="mine_radius" to="." method="_on_mine_radius_pressed"]
+[connection signal="pressed" from="drone_speed" to="." method="_on_drone_speed_pressed"]
+[connection signal="pressed" from="drone_add" to="." method="_on_drone_add_pressed"]
+[connection signal="pressed" from="drill_add" to="." method="_on_drill_add_pressed"]
+[connection signal="pressed" from="battery_speed" to="." method="_on_battery_speed_pressed"]
+[connection signal="pressed" from="call_it_in" to="." method="_on_call_it_in_pressed"]
+[connection signal="pressed" from="battery_plus" to="." method="_on_battery_plus_pressed"]
+[connection signal="pressed" from="mark" to="." method="_on_mark_pressed"]
+[connection signal="pressed" from="steel_heart" to="." method="_on_steel_heart_pressed"]
+[connection signal="pressed" from="drill_speed" to="." method="_on_drill_speed_pressed"]
+[connection signal="pressed" from="drill_size" to="." method="_on_drill_size_pressed"]
+[connection signal="pressed" from="scan_size" to="." method="_on_scan_size_pressed"]
+[connection signal="pressed" from="click_mult" to="." method="_on_click_mult_pressed"]
+[connection signal="pressed" from="drill_dur" to="." method="_on_drill_dur_pressed"]

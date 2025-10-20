@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=34 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
 [ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
@@ -22,13 +22,9 @@
 [ext_resource type="Texture2D" uid="uid://bbgltsjg4nhqu" path="res://pics/game_normal.png" id="10_kv3aw"]
 [ext_resource type="Texture2D" uid="uid://dnf68j8byt4q7" path="res://pics/game_hover.png" id="10_y5ved"]
 [ext_resource type="Texture2D" uid="uid://dgymjr8wxw4nl" path="res://pics/warningThree.png" id="11_fv2he"]
-[ext_resource type="Texture2D" uid="uid://bkf5cvt060m34" path="res://pics/game_pop_up.png" id="11_j8kkg"]
 [ext_resource type="Texture2D" uid="uid://dke3j5b4uljme" path="res://pics/warningFour.png" id="12_5smuj"]
-[ext_resource type="Texture2D" uid="uid://dadeby3cai72m" path="res://pics/upgrades_normal.png" id="12_yh4yk"]
-[ext_resource type="Texture2D" uid="uid://c37box6si2thi" path="res://pics/upgrades_hover.png" id="13_p8s74"]
 [ext_resource type="Texture2D" uid="uid://dtucikbn2aty5" path="res://pics/warningFive.png" id="13_y5ved"]
 [ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="14_kv3aw"]
-[ext_resource type="Texture2D" uid="uid://dl5ovepkeek2b" path="res://pics/upgrade_pop_up.png" id="14_yh4yk"]
 [ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="15_o7u2a"]
 [ext_resource type="Texture2D" uid="uid://c5xvtrm81utmf" path="res://pics/warningEight.png" id="16_ijoax"]
 [ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="32_o4fqm"]
@@ -54,9 +50,6 @@ _data = {
 &"drone_flying": SubResource("Animation_o4fqm"),
 &"scanning": SubResource("Animation_1n88h")
 }
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_yh4yk"]
-size = Vector2(87, 238)
 
 [node name="main_scene" type="Node2D"]
 script = ExtResource("1_2c62f")
@@ -137,15 +130,39 @@ texture = ExtResource("6_fv2he")
 [node name="normal_rez" type="Control" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 640.0
+offset_bottom = 360.0
 mouse_filter = 2
 
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/normal_rez"]
+layout_mode = 0
+offset_top = 2.0
+offset_right = 639.0
+offset_bottom = 360.0
+
+[node name="close" type="Button" parent="CanvasLayer/normal_rez/ColorRect"]
+layout_mode = 0
+offset_left = 286.0
+offset_top = 3.0
+offset_right = 316.0
+offset_bottom = 34.0
+text = "X"
+
+[node name="Button" type="Button" parent="CanvasLayer/normal_rez/ColorRect"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 9.0
+offset_right = 142.0
+offset_bottom = 40.0
+text = "Score Multiplier"
+
 [node name="game" type="TextureRect" parent="CanvasLayer/normal_rez"]
+visible = false
 show_behind_parent = true
 layout_mode = 0
 offset_right = 640.0
 offset_bottom = 360.0
+mouse_filter = 2
 texture = ExtResource("8_5smuj")
 
 [node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game"]
@@ -156,50 +173,6 @@ offset_right = 40.0
 offset_bottom = 38.0
 texture_normal = ExtResource("10_kv3aw")
 texture_hover = ExtResource("10_y5ved")
-
-[node name="game_menu" type="TextureRect" parent="CanvasLayer/normal_rez"]
-visible = false
-z_index = 2
-layout_mode = 0
-offset_left = 40.0
-offset_top = 20.0
-offset_right = 127.0
-offset_bottom = 41.0
-texture = ExtResource("11_j8kkg")
-
-[node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game_menu"]
-z_index = 3
-layout_mode = 0
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 84.0
-offset_bottom = 18.0
-texture_normal = ExtResource("12_yh4yk")
-texture_hover = ExtResource("13_p8s74")
-metadata/_edit_group_ = true
-
-[node name="game_menu_area" type="Area2D" parent="CanvasLayer/normal_rez/game_menu"]
-z_index = 2
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="CanvasLayer/normal_rez/game_menu/game_menu_area"]
-polygon = PackedVector2Array(0, 0, 87, 0, 87, 21, 0, 21, 0, 18, -32, 18, -32, 3, 0, 3)
-
-[node name="upgrades_menu" type="TextureRect" parent="CanvasLayer/normal_rez"]
-visible = false
-layout_mode = 0
-offset_left = 127.0
-offset_top = 20.0
-offset_right = 214.0
-offset_bottom = 258.0
-texture = ExtResource("14_yh4yk")
-metadata/_edit_group_ = true
-
-[node name="upgrade_menu_area" type="Area2D" parent="CanvasLayer/normal_rez/upgrades_menu"]
-position = Vector2(-89, -1)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CanvasLayer/normal_rez/upgrades_menu/upgrade_menu_area"]
-position = Vector2(132.5, 120)
-shape = SubResource("RectangleShape2D_yh4yk")
 
 [node name="Button" type="Button" parent="CanvasLayer/normal_rez"]
 layout_mode = 0
@@ -224,6 +197,14 @@ offset_top = 53.0
 offset_right = 577.0
 offset_bottom = 84.0
 text = "+1 Drone X"
+
+[node name="heart_container" type="HBoxContainer" parent="CanvasLayer/normal_rez"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 352.0
+offset_right = 40.0
+offset_bottom = 352.0
+mouse_filter = 2
 
 [node name="Label" type="Label" parent="CanvasLayer"]
 offset_left = 18.0
@@ -316,8 +297,6 @@ texture = ExtResource("33_gfmxp")
 [node name="drones" type="Node2D" parent="."]
 
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
-[connection signal="mouse_entered" from="CanvasLayer/normal_rez/game_menu/game_menu_area" to="." method="_on_game_menu_2_mouse_entered"]
-[connection signal="mouse_exited" from="CanvasLayer/normal_rez/game_menu/game_menu_area" to="." method="_on_area_2d_mouse_exited"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/Button2" to="." method="_on_button_2_pressed"]

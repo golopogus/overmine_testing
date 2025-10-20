@@ -1,6 +1,8 @@
 extends Node2D
 
-var bomb_radius = 0
+var mine_radius = 0 # max 3
+var flag_correct = true
+var lives = 1
 var round_points = 0
 var upgrade_in_hand = false
 var upgrade
@@ -36,6 +38,7 @@ var tile_load = preload("res://tile.tscn")
 var test_load = preload("res://test.tscn")
 var chunk_load = preload("res://chunk_loc.tscn")
 var tile_holder_load = preload("res://tile_holder.tscn")
+var upgrade_load = preload("res://upgrade_menu.tscn")
 var mouse_in = false
 
 #############################################################################	
@@ -53,6 +56,7 @@ func _notification(what: int) -> void:
 
 func _ready() -> void:
 	
+	
 	x_length = $sprites/hidden.texture.get_width()
 	y_length = $sprites/hidden.texture.get_height()
 	$CanvasLayer/sprite_holder/normal.visible = true
@@ -61,6 +65,7 @@ func _ready() -> void:
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
 	update_points()
+	update_lives(0)
 	$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier $' + str(cost_of_mult)
 	$CanvasLayer/normal_rez/Button2.text = '+1 Drone $' + str(cost_of_drone)
 	place_chunk_loc()
@@ -155,14 +160,20 @@ func _unhandled_input(_event: InputEvent) -> void:
 		get_tree().reload_current_scene()
 	
 
-	if Input.is_action_pressed("pan"):
+	if Input.is_action_pressed("restart"):
+		
 		if moveable == false:
 			local_mous_pos = get_global_mouse_position()
 			
 		moveable = true
 		
-	if Input.is_action_just_released("pan"):
+	if Input.is_action_just_released("restart"):
 		moveable = false
+	
+	if Input.is_action_just_pressed("add"):
+		update_lives(1)
+	if Input.is_action_just_pressed("subtract"):
+		update_lives(-1)
 
 
 	#if Input.is_action_just_pressed("zoom_in"):
@@ -418,9 +429,8 @@ func clicked(pos):
 			tile_dict[pos][3] = true
 			if tile_dict[pos][1] == 'unknown':
 				tile_dict[pos][1] = 'safe'
-			if tile_dict[pos][1] == 'safe':
-				update_safe_neighbors(pos,'safe')
-				
+			#if tile_dict[pos][1] == 'safe':
+				#update_safe_neighbors(pos,'safe')
 			var tile_type = tile_dict[pos][1]
 			
 			if tile_dict[pos][1] == 'warning':
@@ -430,17 +440,18 @@ func clicked(pos):
 			var new_texture = get_node(sprite_path).texture
 			
 			get_node(node_path).texture = new_texture
-			if tile_type == 'mine':
-				update_safe_neighbors(pos,'mine')
-				$CanvasLayer/sprite_holder/bomb.visible = true
-				$CanvasLayer/sprite_holder/normal.visible = false
-				$CanvasLayer/sprite_holder/clicked.visible = false
-			else:
-				$CanvasLayer/sprite_holder/bomb.visible = false
-				$CanvasLayer/sprite_holder/normal.visible = true
-				$CanvasLayer/sprite_holder/clicked.visible = false
-				round_points += 1 * score_multilier
-				update_points()
+			#if tile_type == 'mine':
+				#if mine_radius > 0:
+					#update_safe_neighbors(pos,'mine')
+				#$CanvasLayer/sprite_holder/bomb.visible = true
+				#$CanvasLayer/sprite_holder/normal.visible = false
+				#$CanvasLayer/sprite_holder/clicked.visible = false
+			#else:
+				#$CanvasLayer/sprite_holder/bomb.visible = false
+				#$CanvasLayer/sprite_holder/normal.visible = true
+				#$CanvasLayer/sprite_holder/clicked.visible = false
+				#round_points += 1 * score_multilier
+				#update_points()
 		else:
 			$CanvasLayer/sprite_holder/bomb.visible = false
 			$CanvasLayer/sprite_holder/normal.visible = true
@@ -456,12 +467,21 @@ func clicked(pos):
 			randomize_mine_placement(nearest_chunk_pos)
 		if tile_dict[pos][1] == 'unknown':
 				tile_dict[pos][1] = 'safe'
-		if tile_dict[pos][1] == 'safe':
-			update_safe_neighbors(pos,'safe')
-			
-		if tile_dict[pos][1] != 'mine':
-			round_points += 1 * score_multilier
-			update_points()
+		#if tile_dict[pos][1] == 'safe':
+			#update_safe_neighbors(pos,'safe')
+			#
+		#if tile_dict[pos][1] != 'mine':
+			#round_points += 1 * score_multilier
+			#update_points()
+	if tile_dict[pos][1] == 'safe':
+		update_safe_neighbors(pos,'safe')
+		
+	if tile_dict[pos][1] != 'mine':
+		round_points += 1 * score_multilier
+		update_points()
+	if tile_dict[pos][1] == 'mine':
+		if mine_radius > 0:
+			update_safe_neighbors(pos,'mine')
 			
 #############################################################################	
 #############################################################################	
@@ -474,17 +494,20 @@ func update_safe_neighbors(pos,type):
 		await randomize_mine_placement(nearest_chunk_pos)
 	
 	var neighbors
+	var mine_neighbors
 	
-	neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
+	
 	
 	if type == 'safe':
+		neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
 		for i in neighbors:
 			if tile_dict[i][3] == false:
 				if tile_dict[i][1] != 'mine':
 					clicked(i) 
 	elif type == 'mine':
+		mine_neighbors = create_explosion(pos)
 		await get_tree().create_timer(.1).timeout
-		for i in neighbors:
+		for i in mine_neighbors:
 			if tile_dict[i][3] == false:
 				clicked(i)
 	
@@ -580,6 +603,10 @@ func mark(pos,chunk_pos):
 			
 		var new_texture = get_node(sprite_path).texture		
 		get_node(node_path).texture = new_texture
+	
+	if tile_dict[pos][1] != 'mine':
+		flag_correct = false
+		
 		
 #############################################################################	
 #############################################################################	
@@ -616,26 +643,16 @@ func update_points():
 	
 	$CanvasLayer/Label.text = str(round_points)
 
-func _on_texture_button_pressed() -> void:
-	
-	$CanvasLayer/normal_rez/game_menu.visible = true
-
-
-func _on_area_2d_mouse_exited() -> void:
-	
-	in_game_menu = false
-
-func _on_game_menu_2_mouse_entered() -> void:
-	
-	in_game_menu = true
-
 func _on_button_pressed() -> void:
-	if round_points >= cost_of_mult:
-		round_points -= cost_of_mult
-		score_multilier += 1
-		cost_of_mult += 10
-		$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier' + str(cost_of_mult)
-		update_points()
+	
+	var upgrade_menu = upgrade_load.instantiate()
+	$CanvasLayer/normal_rez.add_child(upgrade_menu)
+	#if round_points >= cost_of_mult:
+		#round_points -= cost_of_mult
+		#score_multilier += 1
+		#cost_of_mult += 10
+		#$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier' + str(cost_of_mult)
+		#update_points()
 
 func send_dicts():
 	
@@ -646,19 +663,19 @@ func send_dicts():
 
 
 
-func _on_button_2_pressed() -> void:
-	if round_points >= cost_of_drone:
-		round_points -= cost_of_drone
-		cost_of_drone += 10
-		$CanvasLayer/normal_rez/Button2.text = '+1 Drone' + str(cost_of_drone)
-		update_points()
-		var drone_base_load = preload("res://drone_base.tscn")
-		var drone_base = drone_base_load.instantiate()
-		add_child(drone_base)
-		#drone.position = current_chunk
-		upgrade_in_hand = true
-		upgrade = drone_base
-		drone_base.clicked()
+#func _on_button_2_pressed() -> void:
+	#if round_points >= cost_of_drone:
+		#round_points -= cost_of_drone
+		#cost_of_drone += 10
+		#$CanvasLayer/normal_rez/Button2.text = '+1 Drone' + str(cost_of_drone)
+		#update_points()
+		#var drone_base_load = preload("res://drone_base.tscn")
+		#var drone_base = drone_base_load.instantiate()
+		#add_child(drone_base)
+		##drone.position = current_chunk
+		#upgrade_in_hand = true
+		#upgrade = drone_base
+		#drone_base.clicked()
 	
 func check_clicked(pos,val):
 	
@@ -696,48 +713,44 @@ func check_clicked(pos,val):
 				tile_dict[pos][5] = "SAFE_SCAN"
 
 
-			
+#func _on_button_3_pressed() -> void:
+	#if round_points >= cost_of_drill:
+		#round_points -= cost_of_drill
+		#cost_of_drill += 10
+		#$CanvasLayer/normal_rez/Button3.text = '+1 Drill' + str(cost_of_drill)
+		#update_points()
+		#var driller_load = preload("res://driller.tscn")
+		#var driller = driller_load.instantiate()
+		#add_child(driller)
+		##drone.position = current_chunk
+		#upgrade_in_hand = true
+		#upgrade = driller
+		#driller.clicked()
 
-
-func _on_button_3_pressed() -> void:
-	if round_points >= cost_of_drill:
-		round_points -= cost_of_drill
-		cost_of_drill += 10
-		$CanvasLayer/normal_rez/Button3.text = '+1 Drill' + str(cost_of_drill)
-		update_points()
-		var driller_load = preload("res://driller.tscn")
-		var driller = driller_load.instantiate()
-		add_child(driller)
-		#drone.position = current_chunk
-		upgrade_in_hand = true
-		upgrade = driller
-		driller.clicked()
-
-func create_explosion(pos,x,y,dir):
+func create_explosion(pos):
 	
-	var pre_neighbors
-	var n = pos + Vector2(0,-1) * Vector2(x,y)
-	var ne = pos + Vector2(1,-1) * Vector2(x,y)
-	var nw = pos + Vector2(-1,-1) * Vector2(x,y)
-	var s = pos + Vector2(0,1) * Vector2(x,y)
-	var se = pos + Vector2(1,1) * Vector2(x,y)
-	var sw = pos + Vector2(-1,1) * Vector2(x,y)
-	var w = pos + Vector2(-1,0) * Vector2(x,y)
-	var e = pos + Vector2(1,0) * Vector2(x,y)
+	var n = pos + Vector2(0,-1) * Vector2(x_length,y_length)
+	#var ne = pos + Vector2(1,-1) * Vector2(x_length,y_length)
+	#var nw = pos + Vector2(-1,-1) * Vector2(x_length,y_length)
+	var s = pos + Vector2(0,1) * Vector2(x_length,y_length)
+	#var se = pos + Vector2(1,1) * Vector2(x_length,y_length)
+	#var sw = pos + Vector2(-1,1) * Vector2(x_length,y_length)
+	var w = pos + Vector2(-1,0) * Vector2(x_length,y_length)
+	var e = pos + Vector2(1,0) * Vector2(x_length,y_length)
 	
-	match dir:
+	var pre_neighbors = [n,e,s,w]#,ne,nw,se,sw]
 	
-		'TOP':
-			pre_neighbors = [n,ne,nw]
-		'BOTTOM':
-			pre_neighbors = [sw,s,se]
-		'RIGHT':
-			pre_neighbors = [ne,e,se]
-		'LEFT':
-			pre_neighbors = [nw,w,sw]
-		'ALL':
-			pre_neighbors = [n,ne,e,se,s,sw,w,nw]
-			
+	for i in range(mine_radius + 1):
+		
+		n = [pos + Vector2(0,-i) * Vector2(x_length,y_length)]
+		pre_neighbors += n
+		s = [pos + Vector2(0,i) * Vector2(x_length,y_length)]
+		pre_neighbors += s
+		w = [pos + Vector2(-i,0) * Vector2(x_length,y_length)]
+		pre_neighbors += w
+		e = [pos + Vector2(i,0) * Vector2(x_length,y_length)]
+		pre_neighbors += e
+	
 	var neighbors = []
 
 	for i in pre_neighbors:
@@ -748,5 +761,26 @@ func create_explosion(pos,x,y,dir):
 				
 	return neighbors
 
-
+func update_lives(change):
+	
+	var heart_holder = $CanvasLayer/normal_rez/heart_container
+	
+	if change == 1 or change == 0:
 		
+		var heart_load = preload("res://heart.tscn")
+		var heart = heart_load.instantiate()
+		heart_holder.add_child(heart)
+		heart.position.x = (heart_holder.get_child_count()-1) * 20
+		
+	if change == -1:
+		
+		if heart_holder.get_child_count() > 0:
+			heart_holder.get_child(heart_holder.get_child_count()-1).queue_free()
+	
+	lives += change
+	
+func _on_texture_button_pressed() -> void:
+	pass
+
+func handle_upgrades():
+	pass
