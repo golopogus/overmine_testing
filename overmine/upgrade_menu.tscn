@@ -259,7 +259,7 @@ theme_override_fonts/font = ExtResource("2_rc40j")
 theme_override_font_sizes/font_size = 11
 text = "Scan Radius (X/X)"
 
-[node name="click_mult" type="TextureButton" parent="."]
+[node name="click_multi" type="TextureButton" parent="."]
 layout_mode = 0
 offset_left = 9.0
 offset_top = 65.0
@@ -267,7 +267,7 @@ offset_right = 33.0
 offset_bottom = 89.0
 texture_normal = ExtResource("14_tjw0k")
 
-[node name="text" type="Label" parent="click_mult"]
+[node name="text" type="Label" parent="click_multi"]
 layout_mode = 0
 offset_left = 32.0
 offset_top = 5.0
@@ -310,5 +310,5 @@ text = "Drill Durability (X/X)"
 [connection signal="pressed" from="drill_speed" to="." method="_on_drill_speed_pressed"]
 [connection signal="pressed" from="drill_size" to="." method="_on_drill_size_pressed"]
 [connection signal="pressed" from="scan_size" to="." method="_on_scan_size_pressed"]
-[connection signal="pressed" from="click_mult" to="." method="_on_click_mult_pressed"]
+[connection signal="pressed" from="click_multi" to="." method="_on_click_multi_pressed"]
 [connection signal="pressed" from="drill_dur" to="." method="_on_drill_dur_pressed"]

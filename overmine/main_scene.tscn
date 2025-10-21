@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=36 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
 [ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
@@ -22,7 +22,9 @@
 [ext_resource type="Texture2D" uid="uid://bbgltsjg4nhqu" path="res://pics/game_normal.png" id="10_kv3aw"]
 [ext_resource type="Texture2D" uid="uid://dnf68j8byt4q7" path="res://pics/game_hover.png" id="10_y5ved"]
 [ext_resource type="Texture2D" uid="uid://dgymjr8wxw4nl" path="res://pics/warningThree.png" id="11_fv2he"]
+[ext_resource type="Texture2D" uid="uid://cch27j4srnavi" path="res://pics/driller.png" id="11_yh4yk"]
 [ext_resource type="Texture2D" uid="uid://dke3j5b4uljme" path="res://pics/warningFour.png" id="12_5smuj"]
+[ext_resource type="Texture2D" uid="uid://d1d7gscvuw5o2" path="res://pics/drone_base.png" id="13_p8s74"]
 [ext_resource type="Texture2D" uid="uid://dtucikbn2aty5" path="res://pics/warningFive.png" id="13_y5ved"]
 [ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="14_kv3aw"]
 [ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="15_o7u2a"]
@@ -62,6 +64,7 @@ libraries = {
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
+visible = false
 z_index = 1
 position = Vector2(80.5, 68.5)
 metadata/_edit_group_ = true
@@ -134,30 +137,7 @@ offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer/normal_rez"]
-layout_mode = 0
-offset_top = 2.0
-offset_right = 639.0
-offset_bottom = 360.0
-
-[node name="close" type="Button" parent="CanvasLayer/normal_rez/ColorRect"]
-layout_mode = 0
-offset_left = 286.0
-offset_top = 3.0
-offset_right = 316.0
-offset_bottom = 34.0
-text = "X"
-
-[node name="Button" type="Button" parent="CanvasLayer/normal_rez/ColorRect"]
-layout_mode = 0
-offset_left = 12.0
-offset_top = 9.0
-offset_right = 142.0
-offset_bottom = 40.0
-text = "Score Multiplier"
-
 [node name="game" type="TextureRect" parent="CanvasLayer/normal_rez"]
-visible = false
 show_behind_parent = true
 layout_mode = 0
 offset_right = 640.0
@@ -166,6 +146,7 @@ mouse_filter = 2
 texture = ExtResource("8_5smuj")
 
 [node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game"]
+visible = false
 layout_mode = 0
 offset_left = 8.0
 offset_top = 23.0
@@ -174,29 +155,81 @@ offset_bottom = 38.0
 texture_normal = ExtResource("10_kv3aw")
 texture_hover = ExtResource("10_y5ved")
 
-[node name="Button" type="Button" parent="CanvasLayer/normal_rez"]
+[node name="drill_buttons" type="Control" parent="CanvasLayer/normal_rez/game"]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="drill_button" type="TextureButton" parent="CanvasLayer/normal_rez/game/drill_buttons"]
+layout_mode = 0
+offset_left = 531.0
+offset_top = 54.0
+offset_right = 558.0
+offset_bottom = 80.0
+texture_normal = ExtResource("11_yh4yk")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drill_buttons/drill_button"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 24.0
+offset_right = 67.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_font_sizes/font_size = 11
+text = "1"
+
+[node name="buy_drill" type="Button" parent="CanvasLayer/normal_rez/game/drill_buttons"]
+layout_mode = 0
+offset_left = 485.0
+offset_top = 50.0
+offset_right = 525.0
+offset_bottom = 81.0
+text = "$"
+
+[node name="drone_buttons" type="Control" parent="CanvasLayer/normal_rez/game"]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="buy_drone" type="Button" parent="CanvasLayer/normal_rez/game/drone_buttons"]
+layout_mode = 0
+offset_left = 306.0
+offset_top = 51.0
+offset_right = 346.0
+offset_bottom = 82.0
+text = "$"
+
+[node name="drone_button" type="TextureButton" parent="CanvasLayer/normal_rez/game/drone_buttons"]
+layout_mode = 0
+offset_left = 349.0
+offset_top = 49.0
+offset_right = 381.0
+offset_bottom = 81.0
+texture_normal = ExtResource("13_p8s74")
+stretch_mode = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drone_buttons/drone_button"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 24.0
+offset_right = 67.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_font_sizes/font_size = 11
+text = "1"
+
+[node name="upgrade_button" type="Button" parent="CanvasLayer/normal_rez"]
 layout_mode = 0
 offset_left = 113.0
 offset_top = 51.0
 offset_right = 229.0
 offset_bottom = 82.0
-text = "+1 Score Multiplier X"
-
-[node name="Button3" type="Button" parent="CanvasLayer/normal_rez"]
-layout_mode = 0
-offset_left = 285.0
-offset_top = 51.0
-offset_right = 439.0
-offset_bottom = 82.0
-text = "driller"
-
-[node name="Button2" type="Button" parent="CanvasLayer/normal_rez"]
-layout_mode = 0
-offset_left = 440.0
-offset_top = 53.0
-offset_right = 577.0
-offset_bottom = 84.0
-text = "+1 Drone X"
+text = "Upgrades"
 
 [node name="heart_container" type="HBoxContainer" parent="CanvasLayer/normal_rez"]
 layout_mode = 0
@@ -297,6 +330,8 @@ texture = ExtResource("33_gfmxp")
 [node name="drones" type="Node2D" parent="."]
 
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/normal_rez/Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/normal_rez/Button3" to="." method="_on_button_3_pressed"]
-[connection signal="pressed" from="CanvasLayer/normal_rez/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/drill_button" to="." method="_on_drill_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/buy_drill" to="." method="_on_buy_drill_pressed"]
+[connection signal="pressed" from="CanvasLayer/normal_rez/game/drone_buttons/buy_drone" to="." method="_on_buy_drone_pressed"]
+[connection signal="pressed" from="CanvasLayer/normal_rez/game/drone_buttons/drone_button" to="." method="_on_drone_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/normal_rez/upgrade_button" to="." method="_on_upgrade_button_pressed"]

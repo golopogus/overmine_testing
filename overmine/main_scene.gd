@@ -1,9 +1,19 @@
 extends Node2D
 
-var mine_radius = 0 # max 3
+#signal upgrade_menu_update(all_upgrade_data)
+
+
+#var mine_radius = [0,3]
 var flag_correct = true
 var lives = 1
 var round_points = 0
+
+var all_upgrade_data = {}
+var all_store_data = {}
+
+#var num_of_drones = 0
+var num_of_drones = 0
+var num_of_drills = 0
 var upgrade_in_hand = false
 var upgrade
 const grid_size_options = [[8,8],[50,50],[40,40]]
@@ -17,15 +27,12 @@ var y_length
 var start = false
 var chunk_dict = {}
 var gamestart = false
-var score_multilier = 1
-var num_of_drones = 0
+
 var initial_chunk_pos = Vector2(0,0)
 var number_of_mines_per_chunk = 320
 var moveable = false
 var local_mous_pos
-var cost_of_mult = 10
-var cost_of_drone = 20
-var cost_of_drill = 10
+
 var current_neighbors = []
 var stored_pos = Vector2()
 var current_chunk
@@ -53,21 +60,21 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_MOUSE_EXIT:
 		mouse_in = false
 		
-
 func _ready() -> void:
-	
 	
 	x_length = $sprites/hidden.texture.get_width()
 	y_length = $sprites/hidden.texture.get_height()
-	$CanvasLayer/sprite_holder/normal.visible = true
+	#$CanvasLayer/sprite_holder/normal.visible = true
 	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
 	chunk_split = -floor(num_of_chunks/2)
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
+	initialize_upgrade_data()
+	initialize_store_data()
 	update_points()
 	update_lives(0)
-	$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier $' + str(cost_of_mult)
-	$CanvasLayer/normal_rez/Button2.text = '+1 Drone $' + str(cost_of_drone)
+	#$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier $' + str(cost_of_mult)
+	#$CanvasLayer/normal_rez/Button2.text = '+1 Drone $' + str(cost_of_drone)
 	place_chunk_loc()
 	place_tile_loc()
 
@@ -120,14 +127,14 @@ func _unhandled_input(_event: InputEvent) -> void:
 	
 	if Input.is_action_just_pressed("left_click"):
 		#if upgrade_in_hand == false:
-		if upgrade_in_hand == false:
-			if in_game_menu == false:
-				$CanvasLayer/normal_rez/game_menu.visible = false
+		#if upgrade_in_hand == false:
+			#if in_game_menu == false:
+				#$CanvasLayer/normal_rez/game_menu.visible = false
 				
-			stored_pos = nearest_tile_pos
-			$CanvasLayer/sprite_holder/bomb.visible = false
-			$CanvasLayer/sprite_holder/normal.visible = false
-			$CanvasLayer/sprite_holder/clicked.visible = true
+		stored_pos = nearest_tile_pos
+		#$CanvasLayer/sprite_holder/bomb.visible = false
+		#$CanvasLayer/sprite_holder/normal.visible = false
+		#$CanvasLayer/sprite_holder/clicked.visible = true
 		
 		if upgrade_in_hand == true:
 			if tile_dict[nearest_tile_pos][3] == true:
@@ -146,10 +153,10 @@ func _unhandled_input(_event: InputEvent) -> void:
 					else:
 						clicked(nearest_tile_pos)
 		
-			else:
-				$CanvasLayer/sprite_holder/bomb.visible = false
-				$CanvasLayer/sprite_holder/normal.visible = true
-				$CanvasLayer/sprite_holder/clicked.visible = false
+			#else:
+				#$CanvasLayer/sprite_holder/bomb.visible = false
+				#$CanvasLayer/sprite_holder/normal.visible = true
+				#$CanvasLayer/sprite_holder/clicked.visible = false
 			
 		
 	if Input.is_action_just_pressed("right_click"):
@@ -440,6 +447,11 @@ func clicked(pos):
 			var new_texture = get_node(sprite_path).texture
 			
 			get_node(node_path).texture = new_texture
+			
+			if tile_dict[pos][1] != 'mine':
+				var score_mulitplier = all_upgrade_data['click_multi']['current']
+				round_points += 1 * score_mulitplier
+				update_points()
 			#if tile_type == 'mine':
 				#if mine_radius > 0:
 					#update_safe_neighbors(pos,'mine')
@@ -452,10 +464,10 @@ func clicked(pos):
 				#$CanvasLayer/sprite_holder/clicked.visible = false
 				#round_points += 1 * score_multilier
 				#update_points()
-		else:
-			$CanvasLayer/sprite_holder/bomb.visible = false
-			$CanvasLayer/sprite_holder/normal.visible = true
-			$CanvasLayer/sprite_holder/clicked.visible = false
+		#else:
+			#$CanvasLayer/sprite_holder/bomb.visible = false
+			#$CanvasLayer/sprite_holder/normal.visible = true
+			#$CanvasLayer/sprite_holder/clicked.visible = false
 			
 	elif chunk_dict[nearest_chunk_pos][1] == false:
 		tile_dict[pos][3] = true
@@ -473,13 +485,15 @@ func clicked(pos):
 		#if tile_dict[pos][1] != 'mine':
 			#round_points += 1 * score_multilier
 			#update_points()
+		if tile_dict[pos][1] != 'mine':
+			var score_multiplier = all_upgrade_data['click_multi']['current'] + 1
+			round_points += 1 * score_multiplier
+			update_points()
 	if tile_dict[pos][1] == 'safe':
 		update_safe_neighbors(pos,'safe')
 		
-	if tile_dict[pos][1] != 'mine':
-		round_points += 1 * score_multilier
-		update_points()
 	if tile_dict[pos][1] == 'mine':
+		var mine_radius = all_upgrade_data['mine_radius']['current']
 		if mine_radius > 0:
 			update_safe_neighbors(pos,'mine')
 			
@@ -643,16 +657,12 @@ func update_points():
 	
 	$CanvasLayer/Label.text = str(round_points)
 
-func _on_button_pressed() -> void:
+func _on_upgrade_button_pressed() -> void:
 	
 	var upgrade_menu = upgrade_load.instantiate()
 	$CanvasLayer/normal_rez.add_child(upgrade_menu)
-	#if round_points >= cost_of_mult:
-		#round_points -= cost_of_mult
-		#score_multilier += 1
-		#cost_of_mult += 10
-		#$CanvasLayer/normal_rez/Button.text = '+1 Score Multiplier' + str(cost_of_mult)
-		#update_points()
+	upgrade_menu.get_upgrade_list(all_upgrade_data)
+	upgrade_menu.update_upgrades.connect(handle_upgrades)
 
 func send_dicts():
 	
@@ -662,20 +672,6 @@ func send_dicts():
 	return positions
 
 
-
-#func _on_button_2_pressed() -> void:
-	#if round_points >= cost_of_drone:
-		#round_points -= cost_of_drone
-		#cost_of_drone += 10
-		#$CanvasLayer/normal_rez/Button2.text = '+1 Drone' + str(cost_of_drone)
-		#update_points()
-		#var drone_base_load = preload("res://drone_base.tscn")
-		#var drone_base = drone_base_load.instantiate()
-		#add_child(drone_base)
-		##drone.position = current_chunk
-		#upgrade_in_hand = true
-		#upgrade = drone_base
-		#drone_base.clicked()
 	
 func check_clicked(pos,val):
 	
@@ -713,20 +709,6 @@ func check_clicked(pos,val):
 				tile_dict[pos][5] = "SAFE_SCAN"
 
 
-#func _on_button_3_pressed() -> void:
-	#if round_points >= cost_of_drill:
-		#round_points -= cost_of_drill
-		#cost_of_drill += 10
-		#$CanvasLayer/normal_rez/Button3.text = '+1 Drill' + str(cost_of_drill)
-		#update_points()
-		#var driller_load = preload("res://driller.tscn")
-		#var driller = driller_load.instantiate()
-		#add_child(driller)
-		##drone.position = current_chunk
-		#upgrade_in_hand = true
-		#upgrade = driller
-		#driller.clicked()
-
 func create_explosion(pos):
 	
 	var n = pos + Vector2(0,-1) * Vector2(x_length,y_length)
@@ -740,6 +722,7 @@ func create_explosion(pos):
 	
 	var pre_neighbors = [n,e,s,w]#,ne,nw,se,sw]
 	
+	var mine_radius = all_upgrade_data['mine_radius']['current']
 	for i in range(mine_radius + 1):
 		
 		n = [pos + Vector2(0,-i) * Vector2(x_length,y_length)]
@@ -782,5 +765,201 @@ func update_lives(change):
 func _on_texture_button_pressed() -> void:
 	pass
 
-func handle_upgrades():
-	pass
+func initialize_upgrade_data():
+	
+	#MINE_DATA
+	all_upgrade_data = {
+		'mine_radius': {
+			'name': 'Mine Radius',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+	
+	#DRONE_DATA
+		'drone_speed': {
+			'name': 'Drone Speed',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+		'scan_size': {
+			'name': 'Scanner Size',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+		'drone_add': {
+			'name': 'Add Drone',
+			'description': '',
+			'current': 0,
+			'max': 1,
+			'cost': 10
+		},
+		'battery_speed': {
+			'name': 'Battery Recharge Speed',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+		'battery_plus': {
+			'name': 'Battery Size',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+	
+	#DRILL_DATA
+		'drill_size': {
+			'name': 'Drill Size',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+		'drill_speed': {
+			'name': 'Drill Speed',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+		'drill_dur': {
+			'name': 'Drill Durability',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+		'drill_add': {
+			'name': 'Add Drill',
+			'description': '',
+			'current': 0,
+			'max': 1,
+			'cost': 10
+		},
+	
+	#CLICK_DATA
+
+		'click_multi': {
+			'name': 'Click Multiplier',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+		
+	# MARK DATA
+		'mark': {
+			'name': 'Mark',
+			'description': '',
+			'current': 0,
+			'max': 1,
+			'cost': 10
+		},
+		'call_it_in': {
+			'name': 'Call It In',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10
+		},
+	#HEART DATA
+		'steel_heart': {
+			'name': 'Steel Heart',
+			'description': '',
+			'current': 0,
+			'max': 1,
+			'cost': 10
+		}
+	} 
+
+func initialize_store_data():
+	
+	all_store_data = {
+		'drone': {
+			'inventory': -1,
+			'cost': 10
+		},
+		'drill': {
+			'inventory': -1,
+			'cost': 10
+		}
+	} 
+	
+func handle_upgrades(upgrade_data):
+	
+	all_upgrade_data[upgrade_data]['current'] += 1
+	
+	if upgrade_data == 'drone_add':
+		update_inventory('drone','add')
+	
+	if upgrade_data == 'drill_add':
+		update_inventory('drill','add')
+	
+
+
+func _on_drone_button_pressed() -> void:
+	if all_store_data['drone']['inventory'] > 0:
+		update_inventory('drone','remove')
+		#round_points -= cost_of_drone
+		#cost_of_drone += 10
+		#$CanvasLayer/normal_rez/Button2.text = '+1 Drone' + str(cost_of_drone)
+		#update_points()
+		var drone_base_load = preload("res://drone_base.tscn")
+		var drone_base = drone_base_load.instantiate()
+		add_child(drone_base)
+		upgrade_in_hand = true
+		upgrade = drone_base
+		drone_base.clicked()
+
+
+func _on_drill_button_pressed() -> void:
+	
+	if all_store_data['drill']['inventory'] > 0:
+		update_inventory('drill','remove')
+		#round_points -= cost_of_drill
+		#cost_of_drill += 10
+		#$CanvasLayer/normal_rez/Button3.text = '+1 Drill' + str(cost_of_drill)
+		#update_points()
+		var driller_load = preload("res://driller.tscn")
+		var driller = driller_load.instantiate()
+		add_child(driller)
+		upgrade_in_hand = true
+		upgrade = driller
+		driller.clicked()
+
+func update_inventory(item,action):
+	
+	var node_path = 'CanvasLayer/normal_rez/game/' + item + '_buttons'
+	if all_store_data[item]['inventory'] == -1:
+		get_node(node_path).visible = true
+	
+	if action == 'add':
+		all_store_data[item]['inventory'] += 1
+	if action == 'remove':
+		all_store_data[item]['inventory'] -= 1
+	
+	get_node(node_path + '/' + item + '_button/Label').text = str(all_store_data[item]['inventory'])
+
+
+			
+
+
+func _on_buy_drill_pressed() -> void:
+	if all_upgrade_data['drill_add']['cost'] < round_points:
+		round_points -= all_upgrade_data['drill_add']['cost']
+		update_points()
+		update_inventory('drill','add')
+
+
+func _on_buy_drone_pressed() -> void:
+	if all_upgrade_data['drone_add']['cost'] < round_points:
+		round_points -= all_upgrade_data['drone_add']['cost']
+		update_points()
+		update_inventory('drone','add')
