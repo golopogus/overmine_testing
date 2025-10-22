@@ -9,7 +9,7 @@ var chunk_size
 const grid_size_options = [[20,20],[50,50],[4,4]]
 var chosen_grid_size = grid_size_options[0]
 var scanning_tile = Vector2()
-var poss_tiles = []
+var possible_tiles = []
 var checked_tiles = []
 var scan_pos
 var speed
@@ -22,7 +22,7 @@ var is_tiles = true
 
 func _ready() -> void:
 	
-	Globals.send_drone_signal(self.get_path())
+	#Globals.send_drone_signal(self.get_path())
 	$body_animation.play("always")
 	x_length = 16
 	y_length = 16
@@ -34,7 +34,7 @@ func _process(_delta: float) -> void:
 	if battery > 0:
 		if scanning == false:
 			#get_scan_loc()
-			Globals.send_drone_signal(self.get_path())
+			Globals.get_possible_tiles(self.get_path())
 		if moving == true:
 			var dir = get_dir_to()
 			velocity = speed * dir
@@ -44,7 +44,7 @@ func _process(_delta: float) -> void:
 				dir = Vector2()
 				global_position = scan_pos
 				#print(position, scan_pos)
-				start_scanning()
+				start_scanning(1)
 	
 	else:
 		return_to_charge()
@@ -59,52 +59,54 @@ func _process(_delta: float) -> void:
 	
 	move_and_collide(velocity)
 		
+func set_unclicked_tiles(unclicked_tiles):
 	
-
-func get_scan_loc(tiles):
-	
-	##FIX DROONES TO UPDATE WHEN LEAVING CHUNK
-	
-	#var tiles = get_parent().get_parent().get_parent().send_dicts()
-	#print(tiles)
-	
-	#var camera_pos = get_parent().send_camera_loc()
-	#search_area = [Vector2(camera_pos.x - 304,camera_pos.y - 85),Vector2(camera_pos.x + 305,camera_pos.y + 85)]
-	
-	
-	for i in tiles:
-		if get_parent().get_parent().get_parent().check_clicked(i,'CLICKED') == false:
-			poss_tiles.append(i)
-	
-	if len(poss_tiles) > 0:
+	possible_tiles = unclicked_tiles
+	if len(possible_tiles) > 0:
 		
-		var rand_int = randi() % len(poss_tiles)
-		scan_pos = poss_tiles[rand_int] + Vector2(8,8)
+		var rand_int = randi() % len(possible_tiles)
+		scan_pos = possible_tiles[rand_int] + Vector2(8,8)
 		moving = true
 		scanning = true
-	
-	else:
-		pass
+
+#func get_scan_loc(tiles):
+	#
+	###FIX DROONES TO UPDATE WHEN LEAVING CHUNK
+	#
+	#
+	#for i in tiles:
+		#if get_parent().get_parent().get_parent().check_clicked(i,'CLICKED') == false:
+			#poss_tiles.append(i)
+	#
+	#if len(poss_tiles) > 0:
+		#
+		#var rand_int = randi() % len(poss_tiles)
+		#scan_pos = poss_tiles[rand_int] + Vector2(8,8)
+		#moving = true
+		#scanning = true
+	#
+	#else:
+		#pass
 		
-	#est_scan_pos.x = randi_range(scannable_chunk.x,scannable_chunk.x + chunk_size - x_length)
-	#est_scan_pos.y = randi_range(scannable_chunk.y,scannable_chunk.y + chunk_size - y_length)
-	
 func get_dir_to():
 		
 	var dir = (scan_pos - global_position).normalized()
 	
 	return dir
 
-func start_scanning():
-	if get_parent().get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'CLICKED') == false:
+func start_scanning(instance):
+	Globals.check_tile(scan_pos-Vector2(8,8),self.get_path(),instance)
+
+
+func set_tile(can_scan):
+	if can_scan == true:
 		moving = false
 		$AnimationPlayer.play("scanning")
 		$Timer.start()
 	else:
 		scanning = false
 
-
-func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
 	$AnimationPlayer.stop()
 	scanning = false
 	battery -= 1
@@ -126,7 +128,9 @@ func update_upgrade(upgrade,val):
 
 
 func _on_timer_timeout() -> void:
-	get_parent().get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'TYPE')
+	#get_parent().get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'TYPE')
+	start_scanning(2)
+
 	$Timer.stop()	
 	
 func return_to_charge():

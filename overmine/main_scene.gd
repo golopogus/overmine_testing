@@ -137,7 +137,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		#$CanvasLayer/sprite_holder/clicked.visible = true
 		
 		if upgrade_in_hand == true:
-			if tile_dict[nearest_tile_pos][3] == true:
+			if tile_dict[nearest_tile_pos]['clicked'] == true:
 				upgrade.place(nearest_tile_pos)
 				upgrade_in_hand = false
 				upgrade = 'NONE'
@@ -214,7 +214,11 @@ func place_chunk_loc():
 	for x in num_of_chunks.x:
 		for y in num_of_chunks.y:
 			chunk_position = start_pos + Vector2(x,y)*chunk_size
-			chunk_dict[chunk_position] = ['not_named',false,false]
+			chunk_dict[chunk_position] = {
+				'name':'not_named',
+				'drawn': false,
+				'mines': false
+				}
 	
 #############################################################################	
 #############################################################################	
@@ -232,7 +236,15 @@ func place_tile_loc():
 			tile_pos = start_pos + Vector2(x_length,y_length) * Vector2(x,y)
 			#tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
 			if tile_dict.has(tile_pos) == false:
-				tile_dict[tile_pos] = ['none', 'unknown', 0, false,false,'NONE']
+				
+				tile_dict[tile_pos] = {
+					'name': 'none',
+					'type': 'unknown',
+					'value': 0,
+					'clicked': false,
+					'marked': false,
+					'scan_type': 'NONE'	
+				}
 					
 	draw_chunk(initial_chunk_pos)
 
@@ -247,23 +259,23 @@ func randomize_mine_placement(pos):
 
 	for i in safe_tiles:
 		unused_tile_pos.erase(i)
-	if chunk_dict[pos][2] == false:
+	if chunk_dict[pos]['mines'] == false:
 		for mine in number_of_mines_per_chunk:
 			
 			var rand_tile_pos = Vector2()
 			
 			rand_tile_pos = unused_tile_pos[randi_range(0, len(unused_tile_pos)-1)]					
 			unused_tile_pos.erase(rand_tile_pos)		
-			tile_dict[rand_tile_pos][1] = 'mine'
+			tile_dict[rand_tile_pos]['type'] = 'mine'
 			
 			var neighbors = create_neighbors(rand_tile_pos,x_length,y_length, 'ALL')
 			
 			for i in neighbors:
-				if tile_dict[i][1] != 'mine':
-					tile_dict[i][1] = 'warning'
-					tile_dict[i][2] += 1
+				if tile_dict[i]['type'] != 'mine':
+					tile_dict[i]['type'] = 'warning'
+					tile_dict[i]['value'] += 1
 						
-		chunk_dict[pos][2] = true
+		chunk_dict[pos]['mines'] = true
 						
 #############################################################################	
 #█▀▀ █░█ █░█ █▄░█ █▄▀ █ █▄░█ █▀▀
@@ -282,7 +294,7 @@ func draw_chunk(pos):
 	delete_chunk(current_neighbors)
 	for i in current_neighbors:
 		if chunk_dict.has(i):
-			if chunk_dict[i][1] == false:
+			if chunk_dict[i]['drawn'] == false:
 				to_draw.append(i)
 	
 	for i in to_draw:
@@ -290,11 +302,11 @@ func draw_chunk(pos):
 		var chunk = chunk_load.instantiate()
 
 		$chunks.add_child(chunk)
-		chunk_dict[i][0] = chunk.name
-		chunk_dict[i][1] = true
+		chunk_dict[i]['name'] = chunk.name
+		chunk_dict[i]['drawn'] = true
 		chunk.position = i
 		
-		if chunk_dict[i][2] == false and gamestart == true:
+		if chunk_dict[i]['mines'] == false and gamestart == true:
 			safe_tiles = []
 			check_chunk_boundary(i)
 			randomize_mine_placement(i)	
@@ -302,24 +314,24 @@ func draw_chunk(pos):
 			for y in chosen_grid_size[1]:
 				
 				var tile = tile_load.instantiate()
-				var path_2_node = 'chunks/' + chunk_dict[i][0]
+				var path_2_node = 'chunks/' + chunk_dict[i]['name']
 				var tile_type
 				var global_pos = Vector2(x,y) * Vector2(x_length, y_length) + initial_pos + i
 				
 				get_node(path_2_node).add_child(tile)
 				tile.global_position = global_pos
-				tile_dict[global_pos][0] = tile.name
+				tile_dict[global_pos]['name'] = tile.name
 
-				if tile_dict[global_pos][3] == true:	
-					if tile_dict[global_pos][1] == 'warning':
-						tile_type = str(tile_dict[global_pos][2])
+				if tile_dict[global_pos]['clicked'] == true:	
+					if tile_dict[global_pos]['type'] == 'warning':
+						tile_type = str(tile_dict[global_pos]['value'])
 					else:
-						tile_type = tile_dict[global_pos][1]	
+						tile_type = tile_dict[global_pos]['type']	
 				else:
-					if tile_dict[global_pos][4] == true:
+					if tile_dict[global_pos]['marked'] == true:
 						tile_type = 'mark'
-					elif tile_dict[global_pos][5] != 'NONE':
-						if tile_dict[global_pos][5] == 'MINE_SCAN':
+					elif tile_dict[global_pos]['scan_type'] != 'NONE':
+						if tile_dict[global_pos]['scan_type'] == 'MINE_SCAN':
 							tile_type = 'mine_scan'
 						else:
 							tile_type = 'not_mine_scan'
@@ -410,7 +422,7 @@ func start_game(click_pos):
 	safe_neighbors.append(click_pos)
 	
 	for i in safe_neighbors:
-		tile_dict[i][1] = 'safe'
+		tile_dict[i]['type'] = 'safe'
 		safe_tiles.append(i)
 	 
 	var chunk_pos = get_nearest(click_pos,'chunk')
@@ -430,25 +442,26 @@ func start_game(click_pos):
 func clicked(pos):
 		
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
-	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos][0] + '/' + tile_dict[pos][0]
-	if chunk_dict[nearest_chunk_pos][1] == true:
-		if tile_dict[pos][3] == false:
-			tile_dict[pos][3] = true
-			if tile_dict[pos][1] == 'unknown':
-				tile_dict[pos][1] = 'safe'
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	if chunk_dict[nearest_chunk_pos]['drawn'] == true:
+		if tile_dict[pos]['clicked'] == false:
+			tile_dict[pos]['clicked'] = true
+			if tile_dict[pos]['type'] == 'unknown':
+				tile_dict[pos]['type'] = 'safe'
 			#if tile_dict[pos][1] == 'safe':
 				#update_safe_neighbors(pos,'safe')
-			var tile_type = tile_dict[pos][1]
+			var tile_type = tile_dict[pos]['type']
 			
-			if tile_dict[pos][1] == 'warning':
-				tile_type = str(tile_dict[pos][2])
+			if tile_dict[pos]['type'] == 'warning':
+				tile_type = str(tile_dict[pos]['value'])
 				
 			var sprite_path = 'sprites/' + tile_type
+		
 			var new_texture = get_node(sprite_path).texture
 			
 			get_node(node_path).texture = new_texture
 			
-			if tile_dict[pos][1] != 'mine':
+			if tile_dict[pos]['type'] != 'mine':
 				var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
 				round_points += 1 * score_mulitplier
 				update_points()
@@ -469,30 +482,30 @@ func clicked(pos):
 			#$CanvasLayer/sprite_holder/normal.visible = true
 			#$CanvasLayer/sprite_holder/clicked.visible = false
 			
-	elif chunk_dict[nearest_chunk_pos][1] == false:
-		tile_dict[pos][3] = true
+	elif chunk_dict[nearest_chunk_pos]['drawn'] == false:
+		tile_dict[pos]['clicked'] = true
 
-		if chunk_dict[nearest_chunk_pos][2] == false:
+		if chunk_dict[nearest_chunk_pos]['mines'] == false:
 			safe_tiles = []
 			safe_tiles.append(pos)
 			check_chunk_boundary(nearest_chunk_pos)
 			randomize_mine_placement(nearest_chunk_pos)
-		if tile_dict[pos][1] == 'unknown':
-				tile_dict[pos][1] = 'safe'
+		if tile_dict[pos]['type'] == 'unknown':
+				tile_dict[pos]['type'] = 'safe'
 		#if tile_dict[pos][1] == 'safe':
 			#update_safe_neighbors(pos,'safe')
 			#
 		#if tile_dict[pos][1] != 'mine':
 			#round_points += 1 * score_multilier
 			#update_points()
-		if tile_dict[pos][1] != 'mine':
+		if tile_dict[pos]['type'] != 'mine':
 			var score_multiplier = all_upgrade_data['click_multi']['current'] + 1
 			round_points += 1 * score_multiplier
 			update_points()
-	if tile_dict[pos][1] == 'safe':
+	if tile_dict[pos]['type'] == 'safe':
 		update_safe_neighbors(pos,'safe')
 		
-	if tile_dict[pos][1] == 'mine':
+	if tile_dict[pos]['type'] == 'mine':
 		var mine_radius = all_upgrade_data['mine_radius']['current']
 		if mine_radius > 0:
 			update_safe_neighbors(pos,'mine')
@@ -504,7 +517,7 @@ func clicked(pos):
 func update_safe_neighbors(pos,type):	
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
 	
-	if chunk_dict[nearest_chunk_pos][2] == false:
+	if chunk_dict[nearest_chunk_pos]['mines'] == false:
 		await randomize_mine_placement(nearest_chunk_pos)
 	
 	var neighbors
@@ -515,14 +528,14 @@ func update_safe_neighbors(pos,type):
 	if type == 'safe':
 		neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
 		for i in neighbors:
-			if tile_dict[i][3] == false:
-				if tile_dict[i][1] != 'mine':
+			if tile_dict[i]['clicked'] == false:
+				if tile_dict[i]['type'] != 'mine':
 					clicked(i) 
 	elif type == 'mine':
 		mine_neighbors = create_explosion(pos)
 		await get_tree().create_timer(.1).timeout
 		for i in mine_neighbors:
-			if tile_dict[i][3] == false:
+			if tile_dict[i]['clicked'] == false:
 				clicked(i)
 	
 	
@@ -539,7 +552,7 @@ func delete_chunk(dont_erase):
 			if chunk.position == pos:
 				delete = false
 		if delete == true:
-			chunk_dict[chunk.position][1] = false
+			chunk_dict[chunk.position]['drawn'] = false
 			chunk.queue_free()
 		delete = true
 
@@ -603,22 +616,22 @@ func get_chunk_grid():
 			
 func mark(pos,chunk_pos):	
 	
-	if tile_dict[pos][3] == false:
+	if tile_dict[pos]['clicked'] == false:
 		
-		var node_path = 'chunks/' +  chunk_dict[chunk_pos][0] + '/' + tile_dict[pos][0]
+		var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
 		var sprite_path = 'sprites/'
 
-		if tile_dict[pos][4] == false:
+		if tile_dict[pos]['marked'] == false:
 			sprite_path += 'mark'
-			tile_dict[pos][4] = true
-		elif tile_dict[pos][4] == true:
+			tile_dict[pos]['marked'] = true
+		elif tile_dict[pos]['marked'] == true:
 			sprite_path += 'hidden'
-			tile_dict[pos][4] = false
+			tile_dict[pos]['marked'] = false
 			
 		var new_texture = get_node(sprite_path).texture		
 		get_node(node_path).texture = new_texture
 	
-	if tile_dict[pos][1] != 'mine':
+	if tile_dict[pos]['type'] != 'mine':
 		flag_correct = false
 		
 		
@@ -668,51 +681,62 @@ func send_dicts(path):
 	
 	var grid = get_chunk_grid()
 	var all_tile_positions = convert_grid_to_pos(grid,current_chunk)
-	return get_unclicked_tiles(all_tile_positions)
-	
+	var unclicked_tile_pos = get_unclicked_tiles(all_tile_positions)
+	get_node(path).set_unclicked_tiles(unclicked_tile_pos)
 	#var node_path = 'chunks/' +  chunk_dict[current_chunk][0]
 	#return positions
 	
 func get_unclicked_tiles(all_tile_positions):
-	
+	var unclicked_tiles = []
 	for tile_pos in all_tile_positions:
-		pass
+		if tile_dict[tile_pos]['clicked'] == false and tile_dict[tile_pos]['marked'] == false and tile_dict[tile_pos]['scan_type'] == 'NONE':
+			unclicked_tiles.append(tile_pos)
+	
+	return unclicked_tiles
+
+func check_tile_for_drone(pos,path,instance):
+	
+	var can_scan
+	if tile_dict[pos]['clicked'] == true or tile_dict[pos]['marked'] == true or tile_dict[pos]['scan_type'] != 'NONE':
+		can_scan = false
+	else: 
+		can_scan = true
+	
+	if instance == 1:
+		get_node(path).set_tile(can_scan)
+		
+	if instance == 2 and can_scan:
+		change_tile_sprite(pos)
+		
+		
+func change_tile_sprite(pos):
+	
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	if nearest_chunk_pos in current_neighbors:
+		if tile_dict[pos]['type'] == 'mine':
+			var sprite_path = $sprites/mine_scan.texture
+			get_node(node_path).texture = sprite_path
+		else:
+			var sprite_path = $sprites/not_mine_scan.texture
+			get_node(node_path).texture = sprite_path
+	
+	if tile_dict[pos]['type'] == 'mine':
+		tile_dict[pos]['scan_type'] = 'MINE_SCAN'
+	else:
+		tile_dict[pos]['scan_type'] = "SAFE_SCAN"
 	
 func check_clicked(pos,val):
 	
-	if val == 'CLICKED':
-		if tile_dict[pos][3] == true or tile_dict[pos][4] == true or tile_dict[pos][5] != 'NONE':
-			return true
-		else: 
-			return false
 	
-	elif val == 'DRILL':
+	if val == 'DRILL':
 		var new_pos = pos - Vector2(8,8)
 		if tile_dict.has(new_pos):
-			return tile_dict[new_pos][3]
+			return tile_dict[new_pos]['clicked']
 	
 	elif val == 'WHAT':
 		var new_pos = pos - Vector2(8,8)
-		return tile_dict[new_pos][1]
-
-	else:
-		var nearest_chunk_pos = get_nearest(pos, 'chunk')
-		var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos][0] + '/' + tile_dict[pos][0]
-		if nearest_chunk_pos in current_neighbors:
-			if tile_dict[pos][1] == 'mine':
-				var sprite_path = $sprites/mine_scan.texture
-				tile_dict[pos][5] = 'MINE_SCAN'
-				get_node(node_path).texture = sprite_path
-			else:
-				var sprite_path = $sprites/not_mine_scan.texture
-				tile_dict[pos][5] = "SAFE_SCAN"
-				get_node(node_path).texture = sprite_path
-		else:
-			if tile_dict[pos][1] == 'mine':
-				tile_dict[pos][5] = 'MINE_SCAN'
-			else:
-				tile_dict[pos][5] = "SAFE_SCAN"
-
+		return tile_dict[new_pos]['type']
 
 func create_explosion(pos):
 	
@@ -917,7 +941,8 @@ func handle_upgrades(upgrade_data):
 	all_upgrade_data[upgrade_data]['current'] += 1
 	
 	if upgrade_data == 'drone_add':
-		Globals.connect("drone_ready", send_dicts)
+		Globals.connect("drone_ready_for_tiles", send_dicts)
+		Globals.connect("drone_ready_for_check",check_tile_for_drone)
 		update_inventory('drone','add')
 	
 	if upgrade_data == 'drill_add':
