@@ -1,11 +1,9 @@
 extends Node2D
 
-#var tile_dict = {}
-#var tiles_in_current_chunk
-#
-#func get_dicts(dict,tiles):
-	#
-	#tile_dict = dict
+signal drone_ready
+
+func send_drone_signal(data):
+	emit_signal("drone_ready",data)
 	
 
 	

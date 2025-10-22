@@ -664,14 +664,19 @@ func _on_upgrade_button_pressed() -> void:
 	upgrade_menu.get_upgrade_list(all_upgrade_data)
 	upgrade_menu.update_upgrades.connect(handle_upgrades)
 
-func send_dicts():
+func send_dicts(path):
 	
 	var grid = get_chunk_grid()
-	var positions = convert_grid_to_pos(grid,current_chunk)
+	var all_tile_positions = convert_grid_to_pos(grid,current_chunk)
+	return get_unclicked_tiles(all_tile_positions)
+	
 	#var node_path = 'chunks/' +  chunk_dict[current_chunk][0]
-	return positions
-
-
+	#return positions
+	
+func get_unclicked_tiles(all_tile_positions):
+	
+	for tile_pos in all_tile_positions:
+		pass
 	
 func check_clicked(pos,val):
 	
@@ -912,6 +917,7 @@ func handle_upgrades(upgrade_data):
 	all_upgrade_data[upgrade_data]['current'] += 1
 	
 	if upgrade_data == 'drone_add':
+		Globals.connect("drone_ready", send_dicts)
 		update_inventory('drone','add')
 	
 	if upgrade_data == 'drill_add':
