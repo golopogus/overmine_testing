@@ -12,10 +12,10 @@ var scanning_tile = Vector2()
 var poss_tiles = []
 var checked_tiles = []
 var scan_pos
-var speed = 1
+var speed
 var tile_info
 var search_area = []
-var battery = 3
+var battery
 var g_pos = Vector2()
 
 func _ready() -> void:
@@ -61,7 +61,7 @@ func get_scan_loc():
 	
 	##FIX DROONES TO UPDATE WHEN LEAVING CHUNK
 	
-	var tiles = get_parent().get_parent().send_dicts()
+	var tiles = get_parent().get_parent().get_parent().send_dicts()
 	#print(tiles)
 	
 	#var camera_pos = get_parent().send_camera_loc()
@@ -69,7 +69,7 @@ func get_scan_loc():
 	
 	
 	for i in tiles:
-		if get_parent().get_parent().check_clicked(i,'CLICKED') == false:
+		if get_parent().get_parent().get_parent().check_clicked(i,'CLICKED') == false:
 			poss_tiles.append(i)
 	
 	if len(poss_tiles) > 0:
@@ -88,7 +88,7 @@ func get_dir_to():
 	return dir
 
 func start_scanning():
-	if get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'CLICKED') == false:
+	if get_parent().get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'CLICKED') == false:
 		moving = false
 		$AnimationPlayer.play("scanning")
 		$Timer.start()
@@ -102,14 +102,23 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	battery -= 1
 	
 	
+func initialize_values(drone_speed,scan_size,battery_size):
+	speed = 1 + drone_speed * .333
+	battery = 1 + battery_size
 	
+func update_upgrade(upgrade,val):
 	
-	#scanning = false
+	if upgrade == 'battery_size':
+		battery += val
+	if upgrade == 'scan_size':
+		pass
+	if upgrade == 'drone_speed':
+		speed += val * .333
 	
 
 
 func _on_timer_timeout() -> void:
-	get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'TYPE')
+	get_parent().get_parent().get_parent().check_clicked(scan_pos - Vector2(8,8),'TYPE')
 	$Timer.stop()	
 		
 	

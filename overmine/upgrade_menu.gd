@@ -59,7 +59,7 @@ func _on_mine_radius_pressed() -> void:
 ## DRONE 
 
 func _on_drone_speed_pressed() -> void:
-	pass
+	send_signal('drone_speed')
 
 func _on_drone_add_pressed() -> void:
 	send_signal('drone_add')
@@ -90,7 +90,7 @@ func _on_battery_speed_pressed() -> void:
 	pass
 	
 func _on_battery_plus_pressed() -> void:
-	pass
+	send_signal('battery_plus')
 
 ## MARK
 func _on_call_it_in_pressed() -> void:

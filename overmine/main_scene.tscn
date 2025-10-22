@@ -329,6 +329,8 @@ texture = ExtResource("33_gfmxp")
 
 [node name="drones" type="Node2D" parent="."]
 
+[node name="drills" type="Node2D" parent="."]
+
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/drill_button" to="." method="_on_drill_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/buy_drill" to="." method="_on_buy_drill_pressed"]

@@ -449,7 +449,7 @@ func clicked(pos):
 			get_node(node_path).texture = new_texture
 			
 			if tile_dict[pos][1] != 'mine':
-				var score_mulitplier = all_upgrade_data['click_multi']['current']
+				var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
 				round_points += 1 * score_mulitplier
 				update_points()
 			#if tile_type == 'mine':
@@ -774,7 +774,8 @@ func initialize_upgrade_data():
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'mine'
 		},
 	
 	#DRONE_DATA
@@ -783,35 +784,40 @@ func initialize_upgrade_data():
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'drone'
 		},
 		'scan_size': {
 			'name': 'Scanner Size',
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'drone'
 		},
 		'drone_add': {
 			'name': 'Add Drone',
 			'description': '',
 			'current': 0,
 			'max': 1,
-			'cost': 10
+			'cost': 10,
+			'owner': 'none'
 		},
 		'battery_speed': {
 			'name': 'Battery Recharge Speed',
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'drone'
 		},
 		'battery_plus': {
 			'name': 'Battery Size',
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'drone'
 		},
 	
 	#DRILL_DATA
@@ -820,28 +826,32 @@ func initialize_upgrade_data():
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'drill'
 		},
 		'drill_speed': {
 			'name': 'Drill Speed',
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'drill'
 		},
 		'drill_dur': {
 			'name': 'Drill Durability',
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'drill'
 		},
 		'drill_add': {
 			'name': 'Add Drill',
 			'description': '',
 			'current': 0,
 			'max': 1,
-			'cost': 10
+			'cost': 10,
+			'owner': 'none'
 		},
 	
 	#CLICK_DATA
@@ -851,7 +861,8 @@ func initialize_upgrade_data():
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'none'
 		},
 		
 	# MARK DATA
@@ -860,14 +871,17 @@ func initialize_upgrade_data():
 			'description': '',
 			'current': 0,
 			'max': 1,
-			'cost': 10
+			'cost': 10,
+			'owner': 'none'
 		},
 		'call_it_in': {
 			'name': 'Call It In',
 			'description': '',
 			'current': 0,
 			'max': 3,
-			'cost': 10
+			'cost': 10,
+			'owner': 'none'
+			
 		},
 	#HEART DATA
 		'steel_heart': {
@@ -875,7 +889,8 @@ func initialize_upgrade_data():
 			'description': '',
 			'current': 0,
 			'max': 1,
-			'cost': 10
+			'cost': 10,
+			'owner': 'none'
 		}
 	} 
 
@@ -902,18 +917,19 @@ func handle_upgrades(upgrade_data):
 	if upgrade_data == 'drill_add':
 		update_inventory('drill','add')
 	
-
+	if all_upgrade_data[upgrade_data]['owner'] == 'drone':
+		for drone_base in $drones.get_children():
+			drone_base.update_upgrade(upgrade_data, all_upgrade_data[upgrade_data]['current'])
+		
+		
 
 func _on_drone_button_pressed() -> void:
 	if all_store_data['drone']['inventory'] > 0:
 		update_inventory('drone','remove')
-		#round_points -= cost_of_drone
-		#cost_of_drone += 10
-		#$CanvasLayer/normal_rez/Button2.text = '+1 Drone' + str(cost_of_drone)
-		#update_points()
 		var drone_base_load = preload("res://drone_base.tscn")
 		var drone_base = drone_base_load.instantiate()
-		add_child(drone_base)
+		$drones.add_child(drone_base)
+		drone_base.get_initial_upgrades(all_upgrade_data)
 		upgrade_in_hand = true
 		upgrade = drone_base
 		drone_base.clicked()
