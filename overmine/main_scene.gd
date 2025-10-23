@@ -976,6 +976,7 @@ func _on_drill_button_pressed() -> void:
 		#update_points()
 		var driller_load = preload("res://driller.tscn")
 		var driller = driller_load.instantiate()
+		#add to folder?
 		add_child(driller)
 		upgrade_in_hand = true
 		upgrade = driller

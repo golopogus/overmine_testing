@@ -27,7 +27,6 @@ func _ready() -> void:
 	x_length = 16
 	y_length = 16
 	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
-	check_possible_tiles()
 
 func _process(_delta: float) -> void:
 	
@@ -68,6 +67,9 @@ func set_unclicked_tiles(unclicked_tiles):
 		scan_pos = possible_tiles[rand_int] + Vector2(8,8)
 		moving = true
 		scanning = true
+	
+	else:
+		return_to_charge()
 
 #func get_scan_loc(tiles):
 	#
@@ -140,7 +142,5 @@ func return_to_charge():
 		if (global_position - get_parent().position).length() <= 1:
 			get_parent().charging()
 
-func check_possible_tiles():
-	pass
 	
 	
