@@ -167,14 +167,14 @@ func _unhandled_input(_event: InputEvent) -> void:
 		get_tree().reload_current_scene()
 	
 
-	if Input.is_action_pressed("restart"):
+	if Input.is_action_pressed("pan"):
 		
 		if moveable == false:
 			local_mous_pos = get_global_mouse_position()
 			
 		moveable = true
 		
-	if Input.is_action_just_released("restart"):
+	if Input.is_action_just_released("pan"):
 		moveable = false
 	
 	if Input.is_action_just_pressed("add"):
