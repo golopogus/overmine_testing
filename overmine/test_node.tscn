@@ -1,12 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1q3w7y0l7umj"]
+[gd_scene load_steps=2 format=3 uid="uid://d1q3w7y0l7umj"]
 
 [ext_resource type="Script" uid="uid://mwvbbbo42gvr" path="res://test_node.gd" id="1_6uery"]
-[ext_resource type="Texture2D" uid="uid://dy3f53qvlgyy8" path="res://icon.svg" id="2_rf3gj"]
 
 [node name="test_node" type="Node2D"]
 script = ExtResource("1_6uery")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(285.5, 134)
-scale = Vector2(0.4453125, 0.359375)
-texture = ExtResource("2_rf3gj")
