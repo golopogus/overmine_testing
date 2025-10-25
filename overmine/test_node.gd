@@ -3,10 +3,7 @@ extends Node2D
 var drawing : bool
 var list_of_pts = []
 var current_pos = Vector2()
-var est_list = []
 var shape_dict = {}
-var test =[]
-var a = []
 var radius = 1
 var circle_pos = Vector2()
 var square_pts = []
@@ -17,24 +14,47 @@ var radius2 = 1
 var radius3 = 1
 var can_print = false
 var diamond_pts = []
+var list_of_points2 = []
+var timer_running = false
+var drawing2 = false
+var x_pts = []
 
 func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_pressed("left_click"):
-		if drawing == false:
-			list_of_pts = []
-			a = []
-	
-			drawing = true
+		if timer_running == false:
+			if drawing == false:
+				list_of_pts = []
+				drawing = true
+		
+		else:
+			if drawing2 == false:
+				$Timer.stop()
+				list_of_points2 = []
+				drawing2 = true
+			
 		
 	if Input.is_action_just_released("left_click"):
+		if drawing == true:
+			print('first')
+			timer_running = true
+			$Timer.start()
+			drawing = false
+			
+		elif drawing2 == true:
+			print('second')
+
+
+			var updated_list = initialize_pts(list_of_pts)
+			var updated_list2 = initialize_pts(list_of_points2)
+			check_double(updated_list,updated_list2)
+			timer_running = false
+			drawing2 = false
+		#var updated_list = initialize_pts(list_of_pts)
+		#check(updated_list)
+		#est_list = []
 		
-		var updated_list = initialize_pts(list_of_pts)
-		check(updated_list)
-		test =[]
 		
-		est_list = []
-		
-		drawing = false
+
 		
 		
 		
@@ -48,22 +68,31 @@ func _process(_delta: float) -> void:
 			current_pos = mouse_pos
 			list_of_pts.append(current_pos)
 			queue_redraw() 
+	elif drawing2 == true:
+
+		var mouse_pos = get_global_mouse_position()		
+		#if (current_pos - mouse_pos).length() > 10:
+		if current_pos != mouse_pos:
+			current_pos = mouse_pos
+			list_of_points2.append(current_pos)
+			queue_redraw() 
 	
 	
 	
 func _draw() -> void:
-	
+
 	draw_polyline(list_of_pts,Color(.2,.3,10),10)
-	
-	draw_polyline(square_pts,Color(.9,.3,.3),4)
-	draw_polyline(triangle_pts,Color(.6,.6,.6),4)
-	draw_polyline(diamond_pts,Color(.9,.8,.3),4)
-	draw_polyline(upside_down_triangle_pts,Color(.4,.7,.1),4)
-	#draw_set_transform(Vector2(1,1),0,Vector2(0,0))
+
+	draw_polyline(list_of_points2,Color(.2,.3,10),10)
+	draw_polyline(x_pts,Color(.9,.7,.5),4)
+	#draw_polyline(square_pts,Color(.9,.3,.3),4)
+	#draw_polyline(triangle_pts,Color(.6,.6,.6),4)
+	#draw_polyline(diamond_pts,Color(.9,.8,.3),4)
+	#draw_polyline(upside_down_triangle_pts,Color(.4,.7,.1),4)
+	#
 	
 	#draw_circle(circle_pos,radius,Color(.4,.7,.1),false,4)
 
-	#draw_polyline(new_pts,Color(.9,.8,.3),4)
 	
 
 			
@@ -132,14 +161,16 @@ func check(pts):
 	var x_len = x_max - x_min
 	var y_len = y_max - y_min
 	circle_pos = Vector2(x_min + x_len/2.0,y_min + y_len/2.0)
+	
 	var avg_len = (x_len + y_len)/2.0
+	radius = avg_len/2.0
 	
 	get_square_pts(Vector2(x_len,y_len))
 	get_triangle_pts(Vector2(x_len,y_len))
 	get_diamond_pts(Vector2(x_len,y_len))
 	get_upside_down_triangle_pts(Vector2(x_len,y_len))
 	
-	radius = avg_len/2.0
+	
 
 	var circle_guess = check_circle_accuracy(pts)
 	var square_guess = check_square_accuracy(pts,avg_len)
@@ -200,12 +231,11 @@ func check_circle_accuracy(pts):
 	var area_percentage = (1 - abs((actual_area - area) / area)) * 100.0
 	var ans = (1 - total_percentage/count) * 100.0
 	var answer = (area_percentage + ans)/2.0
-	#print('It is ' + str(ans) + '% a circle based on distance')
-	#print('It is ' + str(area_percentage) + '% a circle based on area')
+
 	#return ans
 	return tt
 
-	#print(ans)
+
 		
 		
 	
@@ -245,6 +275,14 @@ func get_diamond_pts(avg):
 	var pt4 = center + Vector2.DOWN * avg/2.0
 	
 	diamond_pts = [pt1,pt2,pt3,pt4,pt1]
+func get_x_pts(avg):
+	var center = circle_pos
+	var pt1 = center + Vector2(-1,-1) * avg/2.0
+	var pt2 = center + Vector2(1,-1) * avg/2.0
+	var pt3 = center + Vector2(-1,1) * avg/2.0
+	var pt4 = center + Vector2(1,1) * avg/2.0
+	
+	x_pts = [pt1,center,pt2,center,pt3,center,pt4]
 	
 func check_triangle_accuracy(pts):
 	var rise = triangle_pts[1].y - triangle_pts[0].y
@@ -278,14 +316,13 @@ func check_triangle_accuracy(pts):
 		count += 1.0
 	
 	var average_dist = total_dist/count
-	#print(average_dist)
+
 	return average_dist
 	
 func check_upside_down_triangle_accuracy(pts):
 	var rise = upside_down_triangle_pts[0].y - upside_down_triangle_pts[2].y
 	var run = upside_down_triangle_pts[0].x - upside_down_triangle_pts[2].x
-	print(rise)
-	print(run)
+
 	var slope = rise/run
 	
 	var line_dict = {}
@@ -315,7 +352,7 @@ func check_upside_down_triangle_accuracy(pts):
 		count += 1.0
 	
 	var average_dist = total_dist/count
-	#print(average_dist)
+
 	return average_dist
 	
 func check_diamond_accuracy(pts):
@@ -356,7 +393,7 @@ func check_diamond_accuracy(pts):
 		count += 1.0
 	
 	var average_dist = total_dist/count
-	#print(average_dist)
+
 	return average_dist
 				
 func determine_if_perp(pos,p1,p2,slope,shape):
@@ -476,8 +513,7 @@ func check_square_accuracy(pts,avg_len):
 	var area = pow(avg_len,2.0)
 	var percentage_area = (1 - abs((actual_area - area) / area)) * 100.0
 	var average_percentage = (1 - total_percentage/count) * 100.0
-	#print('It is ' + str(average_percentage) + '% a square based on distance')
-	#print('It is ' + str(percentage_area) + '% a square based on area')
+
 	var answer = (percentage_area + average_percentage)/2.0
 	#return average_percentage
 	return tt
@@ -494,3 +530,101 @@ func calculate_dir(v1,v2):
 	var dir = (v2 - v1).normalized()
 	return dir
 					
+func _on_timer_timeout() -> void:
+	$Timer.stop()
+	print('time')
+	var updated_list = initialize_pts(list_of_pts)
+	check(updated_list)
+	timer_running = false
+	drawing = false
+func check_double(pts,pts2):
+	var x_min
+	var y_min
+	var x_max
+	var y_max
+	var x_min1
+	var y_min1
+	var x_max1
+	var y_max1
+	var x_min2
+	var y_min2
+	var x_max2
+	var y_max2
+	var initialize1 = true
+	var initialize2 = true
+	
+	for i in pts:
+		if initialize1 == true:
+			x_min1 = i.x
+			y_min1 = i.y
+			x_max1 = i.x
+			y_max1 = i.y
+			initialize1 = false
+		else:
+			if i.x < x_min1:
+				x_min1 = i.x
+			if i.y < y_min1:
+				y_min1 = i.y
+			if i.x > x_max1:
+				x_max1 = i.x
+			if i.y > y_max1:
+				y_max1 = i.y
+				
+
+	for i in pts2:
+		if initialize2 == true:
+			x_min2 = i.x
+			y_min2 = i.y
+			x_max2 = i.x
+			y_max2 = i.y
+			initialize2 = false
+		else:
+			if i.x < x_min2:
+				x_min2 = i.x
+			if i.y < y_min2:
+				y_min2 = i.y
+			if i.x > x_max2:
+				x_max2 = i.x
+			if i.y > y_max2:
+				y_max2 = i.y
+	
+
+	if x_min1 < x_min2:
+		x_min = x_min1
+	else:
+		x_min = x_min2
+	if y_min1 < y_min2:
+		y_min = y_min1
+	else:
+		y_min = y_min2
+		
+	if x_max1 > x_max2:
+		x_max = x_max1
+	else:
+		x_max = x_max2
+	if y_max1 > y_max2:
+		y_max = y_max1
+	else:
+		y_max = y_max2
+	
+	var x_len = x_max - x_min
+	var y_len = y_max - y_min
+	circle_pos = Vector2(x_min + x_len/2.0,y_min + y_len/2.0)
+	var avg_len = (x_len + y_len)/2.0
+	radius = avg_len/2.0
+	
+	get_x_pts(Vector2(x_len,y_len))
+	
+	#var circle_guess = check_circle_accuracy(pts)
+#
+	#var shape_name
+	#var answer
+	#var total_guess = []
+	#
+	#if circle_guess == total_guess.min():
+		#shape_name = 'circle'
+		#answer = circle_guess
+#
+	#print(total_guess)
+	#print('My guess is ... a ' + shape_name + ' with an average ' + str(floor(answer)) + ' pixels off from perfect' )
+	queue_redraw()
