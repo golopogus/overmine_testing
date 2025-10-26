@@ -26,6 +26,7 @@ func get_upgrade_list(list):
 func initialize_upgrade_tree():
 	for i in list_of_upgrades:
 		update_text(i)
+		
 func update_text(upgrade):
 	var current_value = list_of_upgrades[upgrade]['current']
 	var max_value = list_of_upgrades[upgrade]['max']
@@ -63,14 +64,9 @@ func _on_drone_speed_pressed() -> void:
 
 func _on_drone_add_pressed() -> void:
 	send_signal('drone_add')
-	#if current_drone_add < max_drone_add:
-		#current_drone_add += 1
-		#upgrade_data = 'drone_add'
-		#emit_signal("update_upgrades",upgrade_data)
-		#$add_drone/text.text = 'Drone Add (' + str(current_drone_add) + '/' + str(max_drone_add) + ')'
-	#
+
 func _on_scan_size_pressed() -> void:
-	pass
+	send_signal('scan_size')
 
 ## DRILL 
 func _on_drill_add_pressed() -> void:
@@ -87,7 +83,7 @@ func _on_drill_size_pressed() -> void:
 
 ## DRONE BATTERY 
 func _on_battery_speed_pressed() -> void:
-	pass
+	send_signal('battery_speed')
 	
 func _on_battery_plus_pressed() -> void:
 	send_signal('battery_plus')

@@ -7,6 +7,7 @@ extends Node2D
 var flag_correct = true
 var lives = 1
 var round_points = 0
+var total_clicked = 0
 
 var all_upgrade_data = {}
 var all_store_data = {}
@@ -126,21 +127,16 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
 	
 	if Input.is_action_just_pressed("left_click"):
-		#if upgrade_in_hand == false:
-		#if upgrade_in_hand == false:
-			#if in_game_menu == false:
-				#$CanvasLayer/normal_rez/game_menu.visible = false
-				
+	
 		stored_pos = nearest_tile_pos
-		#$CanvasLayer/sprite_holder/bomb.visible = false
-		#$CanvasLayer/sprite_holder/normal.visible = false
-		#$CanvasLayer/sprite_holder/clicked.visible = true
-		
+
 		if upgrade_in_hand == true:
 			if tile_dict[nearest_tile_pos]['clicked'] == true:
 				upgrade.place(nearest_tile_pos)
 				upgrade_in_hand = false
 				upgrade = 'NONE'
+		elif $drones.get_child_count() > 0:
+			check_if_drone_base(nearest_tile_pos)
 		
 	if Input.is_action_just_released("left_click"):
 		
@@ -151,13 +147,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 						current_chunk = get_nearest(nearest_tile_pos,'chunk')
 						start_game(nearest_tile_pos)
 					else:
-						clicked(nearest_tile_pos)
-		
-			#else:
-				#$CanvasLayer/sprite_holder/bomb.visible = false
-				#$CanvasLayer/sprite_holder/normal.visible = true
-				#$CanvasLayer/sprite_holder/clicked.visible = false
-			
+						clicked(nearest_tile_pos)	
 		
 	if Input.is_action_just_pressed("right_click"):
 		
@@ -183,7 +173,6 @@ func _unhandled_input(_event: InputEvent) -> void:
 		update_lives(-1)
 
 
-	#if Input.is_action_just_pressed("zoom_in"):
 	if _event is InputEventMouseButton:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
 			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
@@ -201,7 +190,6 @@ func _unhandled_input(_event: InputEvent) -> void:
 #############################################################################	
 
 func place_chunk_loc():
-	
 	
 	var start_pos = Vector2()
 	var chunk_position = Vector2()
@@ -234,7 +222,6 @@ func place_tile_loc():
 	for x in x_tiles:
 		for y in y_tiles:
 			tile_pos = start_pos + Vector2(x_length,y_length) * Vector2(x,y)
-			#tile_pos = Vector2(start_pos.x + x_length * x, start_pos.y + y_length * y )
 			if tile_dict.has(tile_pos) == false:
 				
 				tile_dict[tile_pos] = {
@@ -445,11 +432,11 @@ func clicked(pos):
 	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
 	if chunk_dict[nearest_chunk_pos]['drawn'] == true:
 		if tile_dict[pos]['clicked'] == false:
+			total_clicked += 1
 			tile_dict[pos]['clicked'] = true
 			if tile_dict[pos]['type'] == 'unknown':
 				tile_dict[pos]['type'] = 'safe'
-			#if tile_dict[pos][1] == 'safe':
-				#update_safe_neighbors(pos,'safe')
+
 			var tile_type = tile_dict[pos]['type']
 			
 			if tile_dict[pos]['type'] == 'warning':
@@ -465,26 +452,10 @@ func clicked(pos):
 				var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
 				round_points += 1 * score_mulitplier
 				update_points()
-			#if tile_type == 'mine':
-				#if mine_radius > 0:
-					#update_safe_neighbors(pos,'mine')
-				#$CanvasLayer/sprite_holder/bomb.visible = true
-				#$CanvasLayer/sprite_holder/normal.visible = false
-				#$CanvasLayer/sprite_holder/clicked.visible = false
-			#else:
-				#$CanvasLayer/sprite_holder/bomb.visible = false
-				#$CanvasLayer/sprite_holder/normal.visible = true
-				#$CanvasLayer/sprite_holder/clicked.visible = false
-				#round_points += 1 * score_multilier
-				#update_points()
-		#else:
-			#$CanvasLayer/sprite_holder/bomb.visible = false
-			#$CanvasLayer/sprite_holder/normal.visible = true
-			#$CanvasLayer/sprite_holder/clicked.visible = false
 			
 	elif chunk_dict[nearest_chunk_pos]['drawn'] == false:
 		tile_dict[pos]['clicked'] = true
-
+		total_clicked += 1
 		if chunk_dict[nearest_chunk_pos]['mines'] == false:
 			safe_tiles = []
 			safe_tiles.append(pos)
@@ -492,12 +463,7 @@ func clicked(pos):
 			randomize_mine_placement(nearest_chunk_pos)
 		if tile_dict[pos]['type'] == 'unknown':
 				tile_dict[pos]['type'] = 'safe'
-		#if tile_dict[pos][1] == 'safe':
-			#update_safe_neighbors(pos,'safe')
-			#
-		#if tile_dict[pos][1] != 'mine':
-			#round_points += 1 * score_multilier
-			#update_points()
+
 		if tile_dict[pos]['type'] != 'mine':
 			var score_multiplier = all_upgrade_data['click_multi']['current'] + 1
 			round_points += 1 * score_multiplier
@@ -522,8 +488,6 @@ func update_safe_neighbors(pos,type):
 	
 	var neighbors
 	var mine_neighbors
-	
-	
 	
 	if type == 'safe':
 		neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
@@ -667,7 +631,7 @@ func convert_grid_to_pos(grid,pos):
 #############################################################################
 
 func update_points():
-	
+	$CanvasLayer/Label2.text = str(total_clicked/1000000.0 * 100) + '% Completed! So CLOSE!'
 	$CanvasLayer/Label.text = str(round_points)
 
 func _on_upgrade_button_pressed() -> void:
@@ -677,36 +641,33 @@ func _on_upgrade_button_pressed() -> void:
 	upgrade_menu.get_upgrade_list(all_upgrade_data)
 	upgrade_menu.update_upgrades.connect(handle_upgrades)
 
-func send_dicts(path):
+func send_dicts(path,scan_area):
 	
-	var grid = get_chunk_grid()
-	var all_tile_positions = convert_grid_to_pos(grid,current_chunk)
-	var unclicked_tile_pos = get_unclicked_tiles(all_tile_positions)
+	#var grid = get_chunk_grid()
+	#var all_tile_positions = convert_grid_to_pos(grid,current_chunk)
+	var unclicked_tile_pos = get_unclicked_tiles(scan_area)
 	get_node(path).set_unclicked_tiles(unclicked_tile_pos)
-	#var node_path = 'chunks/' +  chunk_dict[current_chunk][0]
-	#return positions
 	
 func get_unclicked_tiles(all_tile_positions):
 	var unclicked_tiles = []
 	for tile_pos in all_tile_positions:
-		if tile_dict[tile_pos]['clicked'] == false and tile_dict[tile_pos]['marked'] == false and tile_dict[tile_pos]['scan_type'] == 'NONE':
-			unclicked_tiles.append(tile_pos)
+		if tile_dict.has(tile_pos):
+			if tile_dict[tile_pos]['clicked'] == false and tile_dict[tile_pos]['marked'] == false and tile_dict[tile_pos]['scan_type'] == 'NONE':
+				unclicked_tiles.append(tile_pos)
 	
 	return unclicked_tiles
 
 func check_tile_for_drone(pos,path,instance):
 	
-	var can_scan
-	if tile_dict[pos]['clicked'] == true or tile_dict[pos]['marked'] == true or tile_dict[pos]['scan_type'] != 'NONE':
-		can_scan = false
-	else: 
-		can_scan = true
-	
 	if instance == 1:
-		get_node(path).set_tile(can_scan)
-		
-	if instance == 2 and can_scan:
-		change_tile_sprite(pos)
+		if tile_dict[pos]['clicked'] == false and tile_dict[pos]['marked'] == false and tile_dict[pos]['scan_type'] == 'NONE':
+			tile_dict[pos]['scan_type'] = 'TAKEN'
+			get_node(path).set_tile(true)
+		else:
+			get_node(path).set_tile(false)
+	elif instance == 2:
+		if tile_dict[pos]['clicked'] == false and tile_dict[pos]['marked'] == false:
+			change_tile_sprite(pos)
 		
 		
 func change_tile_sprite(pos):
@@ -741,15 +702,11 @@ func check_clicked(pos,val):
 func create_explosion(pos):
 	
 	var n = pos + Vector2(0,-1) * Vector2(x_length,y_length)
-	#var ne = pos + Vector2(1,-1) * Vector2(x_length,y_length)
-	#var nw = pos + Vector2(-1,-1) * Vector2(x_length,y_length)
 	var s = pos + Vector2(0,1) * Vector2(x_length,y_length)
-	#var se = pos + Vector2(1,1) * Vector2(x_length,y_length)
-	#var sw = pos + Vector2(-1,1) * Vector2(x_length,y_length)
 	var w = pos + Vector2(-1,0) * Vector2(x_length,y_length)
 	var e = pos + Vector2(1,0) * Vector2(x_length,y_length)
 	
-	var pre_neighbors = [n,e,s,w]#,ne,nw,se,sw]
+	var pre_neighbors = [n,e,s,w]
 	
 	var mine_radius = all_upgrade_data['mine_radius']['current']
 	for i in range(mine_radius + 1):
@@ -820,7 +777,7 @@ func initialize_upgrade_data():
 			'name': 'Scanner Size',
 			'description': '',
 			'current': 0,
-			'max': 3,
+			'max': 10,
 			'cost': 10,
 			'owner': 'drone'
 		},
@@ -957,13 +914,16 @@ func handle_upgrades(upgrade_data):
 func _on_drone_button_pressed() -> void:
 	if all_store_data['drone']['inventory'] > 0:
 		update_inventory('drone','remove')
-		var drone_base_load = preload("res://drone_base.tscn")
-		var drone_base = drone_base_load.instantiate()
-		$drones.add_child(drone_base)
-		drone_base.get_initial_upgrades(all_upgrade_data)
-		upgrade_in_hand = true
-		upgrade = drone_base
-		drone_base.clicked()
+		if $drones.get_child_count() == 0:
+			var drone_base_load = preload("res://drone_base.tscn")
+			var drone_base = drone_base_load.instantiate()
+			$drones.add_child(drone_base)
+			drone_base.get_initial_upgrades(all_upgrade_data)
+			upgrade_in_hand = true
+			upgrade = drone_base
+			drone_base.clicked()
+		else:
+			$drones.get_child(0).new_spawn()
 
 
 func _on_drill_button_pressed() -> void:
@@ -995,10 +955,6 @@ func update_inventory(item,action):
 	
 	get_node(node_path + '/' + item + '_button/Label').text = str(all_store_data[item]['inventory'])
 
-
-			
-
-
 func _on_buy_drill_pressed() -> void:
 	if all_upgrade_data['drill_add']['cost'] < round_points:
 		round_points -= all_upgrade_data['drill_add']['cost']
@@ -1011,3 +967,10 @@ func _on_buy_drone_pressed() -> void:
 		round_points -= all_upgrade_data['drone_add']['cost']
 		update_points()
 		update_inventory('drone','add')
+
+func check_if_drone_base(pos):
+	if $drones.get_child(0).position == pos:
+		upgrade_in_hand = true
+		upgrade = $drones.get_child(0)
+		$drones.get_child(0).clicked()
+	
