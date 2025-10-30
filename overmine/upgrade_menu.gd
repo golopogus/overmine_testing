@@ -51,12 +51,7 @@ func send_signal(upgrade_data):
 
 func _on_mine_radius_pressed() -> void:
 	send_signal('mine_radius')
-	#if current_mine_radius < max_mine_radius:
-		#current_mine_radius += 1
-		#upgrade_data = 'mine_radius'
-		#emit_signal("update_upgrades",upgrade_data)
-		#$mine_radius/text.text = 'Mine Radius (' + str(current_mine_radius) + '/' + str(max_mine_radius) + ')'
-		
+
 ## DRONE 
 
 func _on_drone_speed_pressed() -> void:

@@ -6,6 +6,7 @@
 [node name="driller" type="Sprite2D"]
 z_index = 3
 texture = ExtResource("1_6k60k")
+offset = Vector2(8, 8)
 script = ExtResource("2_uoven")
 
 [node name="Timer" type="Timer" parent="."]

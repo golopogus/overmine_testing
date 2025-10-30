@@ -36,7 +36,7 @@ func _process(_delta: float) -> void:
 	
 	if battery > 0 and going_home == false:
 		if scanning == false and initialized == true:
-			Globals.get_possible_tiles(self.get_path(),scan)
+			Globals.get_tiles(self.get_path(),scan,'drone')
 		if moving == true:
 			var dir = get_dir_to()
 			velocity = speed * dir
@@ -55,8 +55,8 @@ func _process(_delta: float) -> void:
 
 	move_and_collide(velocity)
 		
-func set_unclicked_tiles(unclicked_tiles):
-	
+func set_tiles(unclicked_tiles):
+
 	possible_tiles = unclicked_tiles
 	if len(possible_tiles) > 0:
 		
@@ -89,7 +89,7 @@ func set_tile(can_scan):
 		$Timer.start()
 	else:
 		scanning = false
-		Globals.get_possible_tiles(self.get_path(),scan)
+		Globals.get_tiles(self.get_path(),scan,'drone')
 
 func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
 	$AnimationPlayer.stop()
@@ -117,14 +117,15 @@ func get_grid(scan_area):
 			tile_pos = start + Vector2(16,16) * Vector2(x,y)
 			scan.append(tile_pos)
 	
-	Globals.get_possible_tiles(self.get_path(),scan)
+	Globals.get_tiles(self.get_path(),scan,'drone')
 	
 func update_upgrade(upgrade,val):
 	
 	if upgrade == 'battery_size':
 		battery += val
 	if upgrade == 'scan_size':
-		pass
+		var convert_scan_size = 6 * val + 7
+		area_2_scan = get_grid(convert_scan_size)
 	if upgrade == 'drone_speed':
 		speed *= (1.0/0.8)
 		scan_speed *= (1.0/0.8)
@@ -142,7 +143,6 @@ func return_to_base(reason):
 		var dir = (get_parent().position - global_position).normalized()
 		
 		velocity = speed * dir 
-		#print(velocity)
 		
 		if (global_position - get_parent().position).length() <= 1:
 			
