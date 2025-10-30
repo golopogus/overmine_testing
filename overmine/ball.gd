@@ -1,6 +1,7 @@
 extends Sprite2D
 
 var tile_size
+var next_pts = []
 var initial_pos
 var current_pt
 var next_leading_pt
@@ -21,26 +22,14 @@ var flipped = false
 var current_tiles = []
 #		'tile':nearest = floor(pos / Vector2(x_length,y_length)) * Vector2(x_length,y_length) + initial_pos
 	
-var speed = 1
+var speed = 5
 var dir = Vector2()
 
 func _ready() -> void:
 	position = get_global_mouse_position()
 	Globals.get_init(self.get_path())
 	get_rand_dir()
-	leading_pt = position + radius * dir 
-	left_pt = position + Vector2(dir.y,-dir.x) * radius
-	right_pt = position + Vector2(-dir.y,dir.x) * radius
-	current_pts.append(leading_pt)
-	current_pts.append(left_pt)
-	current_pts.append(right_pt)
-	leading_tile = get_nearest_tile(leading_pt)
-	left_tile = get_nearest_tile(left_pt)
-	right_tile = get_nearest_tile(right_pt)
-	current_tile = get_nearest_tile(position)
-	current_tiles.append(leading_tile)
-	current_tiles.append(left_tile)
-	current_tiles.append(right_tile)
+	
 	
 
 func set_init(size,pos):
@@ -51,26 +40,16 @@ func set_init(size,pos):
 func _process(_delta: float) -> void:
 	
 	velocity = speed * dir
-	leading_pt = position + radius * dir 
-	left_pt = position + Vector2(dir.y,-dir.x) * radius
-	right_pt = position + Vector2(-dir.y,dir.x) * radius
-	current_pts.append(leading_pt)
-	current_pts.append(left_pt)
-	current_pts.append(right_pt)
+	calculate_pts()
 	
-	leading_tile = get_nearest_tile(leading_pt)
-	left_tile = get_nearest_tile(left_pt)
-	right_tile = get_nearest_tile(right_pt)
-	current_tiles.append(leading_tile)
-	current_tiles.append(left_tile)
-	current_tiles.append(right_tile)
+	#calculate_next_pts()
 	
-	next_leading_pt = leading_pt + velocity
-	next_left_pt = left_pt + velocity
-	next_right_pt = right_pt + velocity
+	next_leading_pt = current_pts[0] + velocity
+	next_left_pt = current_pts[1] + velocity
+	next_right_pt = current_pts[2] + velocity
 
 	
-	var next_pts = [next_leading_pt,next_left_pt,next_right_pt]
+	next_pts = [next_leading_pt,next_left_pt,next_right_pt]
 	var next_tiles = []
 	for pt in next_pts:
 		next_tiles.append(get_nearest_tile(pt))
@@ -82,7 +61,8 @@ func _process(_delta: float) -> void:
 				current_pt = current_pts[i]
 				current_tile = current_tiles[i]
 				next_tile = next_tiles[i]
-				Globals.get_tiles(self.get_path(),[nearest_tiles[i]],'ball')
+
+				Globals.get_tiles(self.get_path(),[next_tiles[i]],'ball')
 		
 		
 	#for pt in next_pts:
@@ -101,7 +81,7 @@ func _process(_delta: float) -> void:
 	velocity = speed * dir
 	position += velocity
 	if flipped == false:
-		current_tiles = nearest_tiles
+		current_tiles = next_tiles
 	elif flipped == true:
 		current_tiles = []
 		leading_pt = position + radius * dir 
@@ -124,45 +104,38 @@ func set_tiles(tile):
 	if tile['clicked'] == true:
 		pass
 	else:
-		print("before flip: ", dir)
+		Globals.click_tile(next_tile)
 		flip()
-		print("after flip: ", dir)
 		
 	
 
 func flip():
 	flipped = true
 	
-	if 
-		print('sure')
-	else:
-		print('wrong')
-	#elif get_nearest_tile(current_pt + Vector2(velocity.x,-velocity.y)) != next_tile:
-		#dir.y *= -1
+	if get_nearest_tile(current_pt + Vector2(-velocity.x,velocity.y)) != next_tile:
+		dir.x *= -1
+	elif get_nearest_tile(current_pt + Vector2(velocity.x,-velocity.y)) != next_tile:
+		dir.y *= -1
+	else: 
+		dir *= -1
+
 	
-	#var tile_dir = next_tile - current_tile
-	#
-	#if tile_dir.x == 0:
-	#
-		#dir.y *= -1
-	#elif tile_dir.y == 0: 
-		#dir.x *= -1
-	#
-	#else:
-		#tile_dir = next_tile + Vector2(8,8) - position
-		#if abs(tile_dir.x) < abs(tile_dir.y):
-			#dir.y *= -1
-			#
-		#else:
-			#dir.x *= -1
-			
-		
+func calculate_pts():
+	current_tiles = []
+	current_pts = []
+	var angle = dir.angle()
+	var pts_dict = {
+		'pt1': position + radius * dir,
+		'pt2': position + radius * Vector2(-dir.y,dir.x),
+		'pt3': position + radius * Vector2(dir.y,-dir.x),
+		'pt4': position + radius * Vector2.from_angle(angle + PI/4.0),
+		'pt5': position + radius * Vector2.from_angle(angle - PI/4.0)
+	}
 	
-	
-	#else:
-		#dir *= -1
-	
-	
+	for pt in pts_dict:
+		current_pts.append(pts_dict[pt])
+		current_tiles.append(get_nearest_tile(pts_dict[pt]))
+
 	
 	
 func get_rand_dir():
