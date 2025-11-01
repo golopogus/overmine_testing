@@ -13,9 +13,9 @@ var all_upgrade_data = {}
 var all_store_data = {}
 var upgrade_in_hand = false
 var upgrade
-const grid_size_options = [[4,4],[40,20],[25,25]]
+const grid_size_options = [[4,4],[20,20],[25,25]]
 var chosen_grid_size = grid_size_options[1]
-var num_of_chunks = Vector2(25,50)
+var num_of_chunks = Vector2(25,25)
 var chunk_split
 var initial_pos = Vector2(0,0)
 var chunk_size = Vector2()
@@ -26,7 +26,7 @@ var chunk_dict = {}
 var gamestart = false
 
 var initial_chunk_pos 
-var number_of_mines_per_chunk = 160
+var number_of_mines_per_chunk = 80
 var moveable = false
 var local_mous_pos
 var current_neighbors = []
@@ -251,7 +251,13 @@ func place_tile_loc():
 #############################################################################	
 #############################################################################	
 #############################################################################
-
+func convert_to_safe_tile(array):
+	pass
+	#for pos in array:
+#
+		#if tile_dict[pos]['type'] == 'safe':
+			#safe_tiles.append(pos)
+			
 func randomize_mine_placement(pos):
 
 	var unused_tile_grid = get_chunk_grid()
@@ -308,7 +314,7 @@ func update_chunk_pos(pos):
 			
 			if chunk_dict[chunks_to_move[i].position]['mines'] == false and gamestart == true:
 				safe_tiles = []
-				#check_chunk_boundary(chunks_to_move[i].position)
+				check_chunk_boundary(chunks_to_move[i].position)
 
 				call_deferred('randomize_mine_placement',chunks_to_move[i].position)
 		#else:
@@ -458,68 +464,69 @@ func draw_chunk(pos):
 #############################################################################
 
 func check_chunk_boundary(pos):
-	pass
-	#var x_bounds = [0,chosen_grid_size[0] - 1] 
-	#
-	#var y_bounds = [0,chosen_grid_size[1] -1]
-	#
-	#var global_bounds = [Vector2(x_bounds[0],y_bounds[0]) * Vector2(x_length, y_length) + initial_pos + pos - Vector2(x_length, y_length),
-						 #Vector2(x_bounds[1],y_bounds[1]) * Vector2(x_length, y_length) + initial_pos + pos + Vector2(x_length, y_length)]
-	#var jump = 3
-	#var sim_size = Vector2()
-	#var border = []
-	#
-	#if x_bounds[1] % 3 == 0 or x_bounds[1] % 3 == 1:
-		#sim_size.x = x_bounds[1]
-	#else:
-		#sim_size.x = x_bounds + 1
-		#
-	#if y_bounds[1] % 3 == 0 or y_bounds[1] % 3 == 1:
-		#sim_size.y = y_bounds[1]
-	#else:
-		#sim_size.y = y_bounds + 1
-		#
-	#for x in int(sim_size.x):
-		#
-		#if x % jump == 0:
-		#
-			#var top_row_pos = Vector2(x,y_bounds[0])
-			#var top_row_pos_global = (top_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
-			#var tiles_above_pos = create_neighbors(top_row_pos_global,x_length,y_length,'TOP')
-			#
-			#for i in tiles_above_pos:
-				#if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
-					#border.append(i)
-			#
-			#var bottom_row_pos = Vector2(x,y_bounds[1])
-			#var bottom_row_pos_global = (bottom_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
-			#var tiles_below_pos = create_neighbors(bottom_row_pos_global,x_length,y_length,'BOTTOM')
-			#
-			#for i in tiles_below_pos:
-				#if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
-					#border.append(i)
-		#
-	#for y in int(sim_size.y):
-		#
-		#if y % jump == 0:
-			#
-			#var left_col_pos = Vector2(x_bounds[0],y)
-			#var left_col_pos_global = (left_col_pos * Vector2(x_length, y_length)) + initial_pos + pos
-			#var tiles_left_of_pos = create_neighbors(left_col_pos_global,x_length,y_length,'LEFT')
-			#
-			#for i in tiles_left_of_pos:
-				#if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
-					#border.append(i)
-			#
-			#var right_row_pos = Vector2(x_bounds[1],y)
-			#var right_row_pos_global = (right_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
-			#var tiles_right_of_pos = create_neighbors(right_row_pos_global,x_length,y_length,'RIGHT')
-			#
-			#for i in tiles_right_of_pos:
-				#if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
-					#border.append(i)
-
 	
+	var x_bounds = [0,chosen_grid_size[0] - 1] 
+	
+	var y_bounds = [0,chosen_grid_size[1] -1]
+	
+	var global_bounds = [Vector2(x_bounds[0],y_bounds[0]) * Vector2(x_length, y_length) + initial_pos + pos - Vector2(x_length, y_length),
+						 Vector2(x_bounds[1],y_bounds[1]) * Vector2(x_length, y_length) + initial_pos + pos + Vector2(x_length, y_length)]
+	var jump = 3
+	var sim_size = Vector2()
+	var border = []
+	
+	if x_bounds[1] % 3 == 0 or x_bounds[1] % 3 == 1:
+		sim_size.x = x_bounds[1]
+	else:
+		sim_size.x = x_bounds + 1
+		
+	if y_bounds[1] % 3 == 0 or y_bounds[1] % 3 == 1:
+		sim_size.y = y_bounds[1]
+	else:
+		sim_size.y = y_bounds + 1
+		
+	for x in int(sim_size.x):
+		
+		if x % jump == 0:
+		
+			var top_row_pos = Vector2(x,y_bounds[0])
+			var top_row_pos_global = (top_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_above_pos = create_neighbors(top_row_pos_global,x_length,y_length,'TOP')
+			
+			for i in tiles_above_pos:
+				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
+					border.append(i)
+			
+			var bottom_row_pos = Vector2(x,y_bounds[1])
+			var bottom_row_pos_global = (bottom_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_below_pos = create_neighbors(bottom_row_pos_global,x_length,y_length,'BOTTOM')
+			
+			for i in tiles_below_pos:
+				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
+					border.append(i)
+		
+	for y in int(sim_size.y):
+		
+		if y % jump == 0:
+			
+			var left_col_pos = Vector2(x_bounds[0],y)
+			var left_col_pos_global = (left_col_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_left_of_pos = create_neighbors(left_col_pos_global,x_length,y_length,'LEFT')
+			
+			for i in tiles_left_of_pos:
+				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
+					border.append(i)
+			
+			var right_row_pos = Vector2(x_bounds[1],y)
+			var right_row_pos_global = (right_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_right_of_pos = create_neighbors(right_row_pos_global,x_length,y_length,'RIGHT')
+			
+			for i in tiles_right_of_pos:
+				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
+					border.append(i)
+	
+	print(border)
+	#convert_to_safe_tile(border)
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -552,8 +559,8 @@ func start_game(click_pos):
 #############################################################################						
 func clicked(pos):
 	
-	print(tile_dict[pos])
 	
+	print(tile_dict[pos])
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
 	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
 	
@@ -655,7 +662,7 @@ func clicked2(pos):
 				update_points()
 			
 	elif chunk_dict[nearest_chunk_pos]['drawn'] == false:
-		print('poo')
+		
 		tile_dict[pos]['clicked'] = true
 		total_clicked += 1
 		if chunk_dict[nearest_chunk_pos]['mines'] == false:
