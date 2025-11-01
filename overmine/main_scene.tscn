@@ -53,7 +53,6 @@
 script = ExtResource("1_2c62f")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
 visible = false

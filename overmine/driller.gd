@@ -35,6 +35,7 @@ func _process(_delta: float) -> void:
 				dir = Vector2.LEFT
 		
 func set_tiles(pos_dict):
+	print(pos_dict)
 	if pos_dict['clicked'] == false:
 		drilling = true
 		reade = false
@@ -47,7 +48,7 @@ func set_tiles(pos_dict):
 		$Timer.start()
 		
 func drill_block():
-	next_pos = position + dir * 16
+	next_pos = position + dir * 32
 	Globals.get_tiles(self.get_path(),[next_pos],'drill')
 
 func clicked():
