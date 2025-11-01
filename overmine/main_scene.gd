@@ -1,21 +1,21 @@
 extends Node2D
 
-#signal upgrade_menu_update(all_upgrade_data)
+#notes for changing textures
 
-
-#var mine_radius = [0,3]
+#need to update draw_chunk, clicked, and marked
 var flag_correct = true
 var lives = 1
+var test
 var round_points = 0
 var total_clicked = 0
-
+var hold_chunks =[]
 var all_upgrade_data = {}
 var all_store_data = {}
 var upgrade_in_hand = false
 var upgrade
-const grid_size_options = [[8,8],[50,50],[40,40]]
-var chosen_grid_size = grid_size_options[2]
-var num_of_chunks = Vector2(10,10)
+const grid_size_options = [[4,4],[50,50],[25,25]]
+var chosen_grid_size = grid_size_options[1]
+var num_of_chunks = Vector2(20,20)
 var chunk_split
 var initial_pos = Vector2(0,0)
 var chunk_size = Vector2()
@@ -25,13 +25,13 @@ var start = false
 var chunk_dict = {}
 var gamestart = false
 
-var initial_chunk_pos = Vector2(0,0)
-var number_of_mines_per_chunk = 320
+var initial_chunk_pos 
+var number_of_mines_per_chunk = 500
 var moveable = false
 var local_mous_pos
 var current_neighbors = []
 var stored_pos = Vector2()
-var current_chunk
+var current_chunk = Vector2()
 var visible_area
 var safe_tiles = []
 var tiles_in_current_chunk = []
@@ -43,8 +43,11 @@ var chunk_load = preload("res://chunk_loc.tscn")
 var tile_holder_load = preload("res://tile_holder.tscn")
 var upgrade_load = preload("res://upgrade_menu.tscn")
 var ball_load = preload("res://ball.tscn")
+var mark_load = preload('res://mark.tscn')
 var mouse_in = false
-
+var view_port_size
+var thread
+var texture_dict
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -58,22 +61,33 @@ func _notification(what: int) -> void:
 		mouse_in = false
 		
 func _ready() -> void:
+	thread = Thread.new()
 	Globals.connect("ready_to_click",clicked)
 	Globals.connect("ball_ready",send_init)
 	Globals.connect("ball_pls",send_tiles)
-	x_length = $sprites/hidden.texture.get_width()
-	y_length = $sprites/hidden.texture.get_height()
-	#$CanvasLayer/sprite_holder/normal.visible = true
+	x_length = $sprites/new_sprites/hidden/hidden1.texture.get_width()
+	y_length = $sprites/new_sprites/hidden/hidden1.texture.get_height()
+	#x_length = $sprites/hidden.texture.get_width()
+	#y_length = $sprites/hidden.texture.get_height()
+
 	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
 	chunk_split = -floor(num_of_chunks/2)
-	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2 + chunk_size.x/2
-	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2 + chunk_size.y/2
+	
+	initial_chunk_pos = get_nearest(Vector2(chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0,chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0),'chunk')
+	$Camera2D.position = initial_chunk_pos
+	current_chunk = initial_chunk_pos
+	
+	initialize_textures()
 	initialize_upgrade_data()
 	initialize_store_data()
 	update_points()
 	update_lives(0)
 	place_chunk_loc()
 	place_tile_loc()
+	
+	
+	#$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
+	#$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
 
 #############################################################################	
 #############################################################################	
@@ -84,32 +98,38 @@ func _process(_delta: float) -> void:
 	if moveable and mouse_in:
 	
 		var difference = local_mous_pos - get_global_mouse_position()
-
+		$Camera2D.position += difference
+		#$Camera2D.position.x = clamp($Camera2D.position.x,0 + view_port_size.x -16,num_of_chunks.x * chunk_size.x - view_port_size.x)
+		#$Camera2D.position.y = clamp($Camera2D.position.y,0 + view_port_size.y,num_of_chunks.y * chunk_size.y - view_port_size.y)
+		#
 		###NEEDS ADJSUTING
-		if $Camera2D.zoom == Vector2(1,1):
-			if difference.x > 0:
-				if $Camera2D.position.x + difference.x < initial_chunk_pos.x + chunk_size.x * num_of_chunks.x + 64:
-					$Camera2D.position.x += difference.x/$Camera2D.zoom.x
-			elif difference.x < 0:
-				if $Camera2D.position.x + difference.x > initial_chunk_pos.x + chunk_size.x - 64:
-					$Camera2D.position.x += difference.x/$Camera2D.zoom.x
-			if difference.y > 0:
-				if $Camera2D.position.y + difference.y < initial_chunk_pos.y + chunk_size.y * num_of_chunks.y + 64:
-					$Camera2D.position.y += difference.y/$Camera2D.zoom.y	
-			elif difference.y < 0:
-				if $Camera2D.position.y + difference.y > initial_chunk_pos.y + chunk_size.y - 64:
-					$Camera2D.position.y += difference.y/$Camera2D.zoom.y
+		
+		#if $Camera2D.zoom == Vector2(1,1):
+			#if difference.x > 0:
+				#if $Camera2D.position.x + difference.x < initial_chunk_pos.x + chunk_size.x * num_of_chunks.x + 64:
+					#$Camera2D.position.x += difference.x/$Camera2D.zoom.x
+			#elif difference.x < 0:
+				#if $Camera2D.position.x + difference.x > initial_chunk_pos.x + chunk_size.x - 64:
+					#$Camera2D.position.x += difference.x/$Camera2D.zoom.x
+			#if difference.y > 0:
+				#if $Camera2D.position.y + difference.y < initial_chunk_pos.y + chunk_size.y * num_of_chunks.y + 64:
+					#$Camera2D.position.y += difference.y/$Camera2D.zoom.y	
+			#elif difference.y < 0:
+				#if $Camera2D.position.y + difference.y > initial_chunk_pos.y + chunk_size.y - 64:
+					#$Camera2D.position.y += difference.y/$Camera2D.zoom.y
 
 	var nearest_chunk_pos = Vector2()
-	var chunk_follow_pos = $Camera2D.position
 	
+	var chunk_follow_pos = $Camera2D.position
+
 	nearest_chunk_pos = get_nearest(chunk_follow_pos,'chunk')
 	#nearest_chunk_pos.x = floor(chunk_follow_pos.x/chunk_size.x) * chunk_size.x + initial_chunk_pos.x
 	#nearest_chunk_pos.y = floor(chunk_follow_pos.y/chunk_size.y) * chunk_size.y + initial_chunk_pos.y
 
 	if nearest_chunk_pos != current_chunk:
+
 		current_chunk = nearest_chunk_pos
-		draw_chunk(current_chunk)
+		update_chunk_pos(current_chunk)
 
 ############################################################################	
 #############################################################################	
@@ -190,11 +210,6 @@ func place_chunk_loc():
 	var start_pos = Vector2()
 	var chunk_position = Vector2()
 	
-	$Camera2D.limit_left = start_pos.x
-	$Camera2D.limit_right = num_of_chunks.x * chunk_size.x
-	$Camera2D.limit_top = start_pos.y
-	$Camera2D.limit_bottom = num_of_chunks.y * chunk_size.y
-	
 	for x in num_of_chunks.x:
 		for y in num_of_chunks.y:
 			chunk_position = start_pos + Vector2(x,y)*chunk_size
@@ -229,7 +244,8 @@ func place_tile_loc():
 					'scan_type': 'NONE'	
 				}
 					
-	draw_chunk(initial_chunk_pos)
+	#draw_chunk(initial_chunk_pos)
+	draw_initial_chunks(initial_chunk_pos)
 
 #############################################################################	
 #############################################################################	
@@ -265,12 +281,103 @@ func randomize_mine_placement(pos):
 #█▄▄ █▀█ █▄█ █░▀█ █░█ █ █░▀█ █▄█	
 #############################################################################
 
-func draw_chunk(pos):
+func update_chunk_pos(pos):
 	
+	var pos_to_move = []
+	
+	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
+	current_neighbors.append(pos)
+	
+	var chunks_to_move = move_chunks(current_neighbors)
+
+	
+	for i in current_neighbors:
+		if chunk_dict.has(i):
+			if chunk_dict[i]['drawn'] == false:
+				pos_to_move.append(i)
+	
+
+	for i in len(pos_to_move):
+
+		if len(pos_to_move) == len(chunks_to_move):
+			
+			chunks_to_move[i].position = pos_to_move[i]
+			chunk_dict[chunks_to_move[i].position]['drawn'] = true
+		
+			if chunk_dict[chunks_to_move[i].position]['mines'] == false:
+				safe_tiles = []
+				check_chunk_boundary(chunks_to_move[i].position)
+				randomize_mine_placement(chunks_to_move[i].position)
+		#else:
+			#hold_chunks = chunks_to_move	
+		
+			
+	
+	for chunk in chunks_to_move:
+		var chunk_children = chunk.get_children()
+		for child in chunk_children:
+			change_texture(child)
+			
+func change_texture(tile):
+	
+	var pos = tile.global_position
+	var sprite
+	if tile_dict[pos]['clicked'] == false:
+		var rand_num = randi_range(1,3)
+		tile.texture = texture_dict['hidden']['hidden' + str(rand_num)]
+		if tile_dict[pos]['marked'] == true:
+			var mark_num = randi_range(0,2)
+			var marky = mark_load.instantiate()
+			tile.add_child(marky)
+			marky.texture = texture_dict['mark']['mark' + str(mark_num)]
+			marky.offset = Vector2(x_length,y_length) / 2.0
+	else:		
+		if tile_dict[pos]['type'] == 'warning':
+			sprite = str(tile_dict[pos]['value'])
+			tile.texture = texture_dict[sprite]
+		else:
+			sprite = tile_dict[pos]['type']
+			tile.texture = texture_dict[sprite]
+		
+		
+	
+func draw_initial_chunks(pos):
+	
+	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
+	current_neighbors.append(pos)
+	
+	for i in current_neighbors:
+		
+		var chunk = chunk_load.instantiate()
+
+		$chunks.add_child(chunk)
+		chunk_dict[i]['name'] = chunk.name
+		chunk_dict[i]['drawn'] = true
+		chunk.position = i
+		
+		#safe_tiles = []
+		#check_chunk_boundary(i)
+		#randomize_mine_placement(i)	
+		
+		for x in chosen_grid_size[0]:
+			for y in chosen_grid_size[1]:
+			
+				var tile = tile_load.instantiate()
+				var global_pos = Vector2(x,y) * Vector2(x_length, y_length) + initial_pos + i
+				
+				chunk.add_child(tile)
+				tile.global_position = global_pos
+				tile_dict[tile.global_position]['name'] = tile.name	
+				
+				
+				tile.texture = texture_dict['hidden']['hidden1']
+
+func draw_chunk(pos):
 	
 	var to_draw = []
 	tiles_in_current_chunk = []
 	
+	#current_neighbors = create_double_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
 	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
 	current_neighbors.append(pos)
 	#send_dicts()
@@ -292,7 +399,8 @@ func draw_chunk(pos):
 		if chunk_dict[i]['mines'] == false and gamestart == true:
 			safe_tiles = []
 			check_chunk_boundary(i)
-			randomize_mine_placement(i)	
+			thread.start(self,"thread_mine_placement",i)
+			#randomize_mine_placement(i)	
 		for x in chosen_grid_size[0]:
 			for y in chosen_grid_size[1]:
 				
@@ -307,24 +415,37 @@ func draw_chunk(pos):
 
 				if tile_dict[global_pos]['clicked'] == true:	
 					if tile_dict[global_pos]['type'] == 'warning':
-						tile_type = str(tile_dict[global_pos]['value'])
+						#tile_type = str(tile_dict[global_pos]['value'])
+						tile_type = 'new_sprites/' + str(tile_dict[global_pos]['value'])
+						
 					else:
-						tile_type = tile_dict[global_pos]['type']	
+						tile_type ='new_sprites/' + tile_dict[global_pos]['type']	
 				else:
 					if tile_dict[global_pos]['marked'] == true:
-						tile_type = 'mark'
+					#	var mark_num = randi_range(0,2)
+#						var test = 'new_sprites/mark/' + str($sprites/new_sprites/mark.get_child(mark_num))
+						tile.get_child(0).texture = get_node(test).texture
+						tile.get_child(0).offset = Vector2(x_length,y_length) / 2.0
+						#tile_type = 'mark'
+						
+						tile_type = tile_dict[global_pos]['type']
+						
+						
 					elif tile_dict[global_pos]['scan_type'] != 'NONE':
 						if tile_dict[global_pos]['scan_type'] == 'MINE_SCAN':
 							tile_type = 'mine_scan'
 						else:
 							tile_type = 'not_mine_scan'
 					else:
-						tile_type = 'hidden'
+						var hidden_num = randi_range(0,2)
+						tile_type = 'new_sprites/hidden/' + str($sprites/new_sprites/hidden.get_child(hidden_num))
 						
 				var sprite_path = 'sprites/' + tile_type
+				
 				var new_texture = get_node(sprite_path).texture		
 				
 				tile.texture = new_texture
+
 					
 #############################################################################	
 #############################################################################	
@@ -335,6 +456,7 @@ func check_chunk_boundary(pos):
 	var x_bounds = [0,chosen_grid_size[0] - 1] 
 	
 	var y_bounds = [0,chosen_grid_size[1] -1]
+	
 	var global_bounds = [Vector2(x_bounds[0],y_bounds[0]) * Vector2(x_length, y_length) + initial_pos + pos - Vector2(x_length, y_length),
 						 Vector2(x_bounds[1],y_bounds[1]) * Vector2(x_length, y_length) + initial_pos + pos + Vector2(x_length, y_length)]
 	var jump = 3
@@ -414,6 +536,7 @@ func start_game(click_pos):
 	chunk_neighbors.append(chunk_pos)
 	
 	for i in chunk_neighbors:
+		check_chunk_boundary(i)
 		randomize_mine_placement(i)	
 	
 	clicked(click_pos)
@@ -421,11 +544,17 @@ func start_game(click_pos):
 #############################################################################	
 #############################################################################	
 #############################################################################						
-					
 func clicked(pos):
+	
 		
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
 	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	#var chunk = get_node('chunks/' +  chunk_dict[nearest_chunk_pos]['name'])
+	#var tile
+	#for i in chunk.get_children():
+		#if i.global_position == pos:
+			#tile = i
+
 	if chunk_dict[nearest_chunk_pos]['drawn'] == true:
 		if tile_dict[pos]['clicked'] == false:
 			total_clicked += 1
@@ -435,16 +564,85 @@ func clicked(pos):
 
 			var tile_type = tile_dict[pos]['type']
 			
+			
 			if tile_dict[pos]['type'] == 'warning':
 				tile_type = str(tile_dict[pos]['value'])
-				
-			var sprite_path = 'sprites/' + tile_type
+ 	
+			#var sprite_path = 'sprites/' + tile_type
+			var sprite_path = 'sprites/new_sprites/' + tile_type
 		
 			var new_texture = get_node(sprite_path).texture
 			
 			get_node(node_path).texture = new_texture
 			
 			if tile_dict[pos]['type'] == 'mine':
+				
+				var mine_radius = all_upgrade_data['mine_radius']['current']
+				if mine_radius > 0:
+					update_safe_neighbors(pos,'mine')
+					
+			if tile_dict[pos]['type'] != 'mine':
+				var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
+				round_points += 1 * score_mulitplier
+				update_points()
+			
+	elif chunk_dict[nearest_chunk_pos]['drawn'] == false:
+		tile_dict[pos]['clicked'] = true
+		total_clicked += 1
+		if chunk_dict[nearest_chunk_pos]['mines'] == false:
+			safe_tiles = []
+			safe_tiles.append(pos)
+			check_chunk_boundary(nearest_chunk_pos)
+			randomize_mine_placement(nearest_chunk_pos)
+		if tile_dict[pos]['type'] == 'unknown':
+				tile_dict[pos]['type'] = 'safe'
+
+		if tile_dict[pos]['type'] != 'mine':
+			var score_multiplier = all_upgrade_data['click_multi']['current'] + 1
+			round_points += 1 * score_multiplier
+			update_points()
+		if tile_dict[pos]['type'] == 'mine':
+			var mine_radius = all_upgrade_data['mine_radius']['current']
+			if mine_radius > 0:
+				update_safe_neighbors(pos,'mine')
+				
+	if tile_dict[pos]['type'] == 'safe':
+		update_safe_neighbors(pos,'safe')					
+func clicked2(pos):
+	
+	
+	#for i in $chunks.get_children():
+		#print(i,i.position)
+		
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	#var chunk = get_node('chunks/' +  chunk_dict[nearest_chunk_pos]['name'])
+	#for i in chunk.get_children():
+		#if i.global_position == pos:
+			#tile = i
+
+	if chunk_dict[nearest_chunk_pos]['drawn'] == true:
+		if tile_dict[pos]['clicked'] == false:
+			total_clicked += 1
+			tile_dict[pos]['clicked'] = true
+			if tile_dict[pos]['type'] == 'unknown':
+				tile_dict[pos]['type'] = 'safe'
+
+			var tile_type = tile_dict[pos]['type']
+			
+			
+			if tile_dict[pos]['type'] == 'warning':
+				tile_type = str(tile_dict[pos]['value'])
+ 	
+			#var sprite_path = 'sprites/' + tile_type
+			var sprite_path = 'sprites/new_sprites/' + tile_type
+		
+			var new_texture = get_node(sprite_path).texture
+			
+			get_node(node_path).texture = new_texture
+			
+			if tile_dict[pos]['type'] == 'mine':
+				
 				var mine_radius = all_upgrade_data['mine_radius']['current']
 				if mine_radius > 0:
 					update_safe_neighbors(pos,'mine')
@@ -523,6 +721,25 @@ func delete_chunk(dont_erase):
 			chunk.queue_free()
 		delete = true
 
+func move_chunks(dont_erase):
+	
+	var delete = true
+	var chunks_to_move = []
+			
+	for chunk in $chunks.get_children():		
+		for pos in dont_erase:
+			if chunk.position == pos:
+				chunk_dict[chunk.position]['drawn'] = true
+				delete = false
+		if delete == true:
+			chunk_dict[chunk.position]['drawn'] = false
+			chunks_to_move.append(chunk)
+		delete = true
+
+	return chunks_to_move
+
+	
+
 #############################################################################	
 #█▀▄▀█ █ █▀ █▀▀
 #█░▀░█ █ ▄█ █▄▄	
@@ -552,14 +769,15 @@ func create_neighbors(pos,x,y,dir):
 			pre_neighbors = [nw,w,sw]
 		'ALL':
 			pre_neighbors = [n,ne,e,se,s,sw,w,nw]
-			
+	
 	var neighbors = []
-
+	
 	for i in pre_neighbors:
 		var nearest_chunk_pos = get_nearest(i,'chunk')
-		
+
 		if chunk_dict.has(nearest_chunk_pos):
 			neighbors.append(i)
+
 				
 	return neighbors
 
@@ -582,21 +800,30 @@ func get_chunk_grid():
 #############################################################################
 			
 func mark(pos,chunk_pos):	
-	
+	var rand_num = randi_range(1,3)
 	if tile_dict[pos]['clicked'] == false:
 		
-		var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
-		var sprite_path = 'sprites/'
+		#var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+		var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name'] + '/mark'
+		var sprite_path = 'sprites/new_sprites/mark/'
 
 		if tile_dict[pos]['marked'] == false:
-			sprite_path += 'mark'
+			#sprite_path += 'mark'
+			sprite_path += 'mark' + str(rand_num)
 			tile_dict[pos]['marked'] = true
-		elif tile_dict[pos]['marked'] == true:
-			sprite_path += 'hidden'
-			tile_dict[pos]['marked'] = false
 			
-		var new_texture = get_node(sprite_path).texture		
-		get_node(node_path).texture = new_texture
+		elif tile_dict[pos]['marked'] == true:
+			#sprite_path += 'hidden'
+			tile_dict[pos]['marked'] = false
+		
+		#var new_texture = get_node(sprite_path).texture	
+			
+		if tile_dict[pos]['marked'] == true:
+			var new_texture = get_node(sprite_path).texture	
+			get_node(node_path).texture = new_texture
+			get_node(node_path).offset = Vector2(x_length,y_length) / 2.0
+		else:
+			get_node(node_path).texture = null
 	
 	if tile_dict[pos]['type'] != 'mine':
 		flag_correct = false
@@ -1033,6 +1260,73 @@ func initialize_upgrade_data():
 		}
 	} 
 
+func create_double_neighbors(pos,x,y):
+	
+	var pre_neighbors
+	var n = pos + Vector2(0,-1) * Vector2(x,y)
+	var ne = pos + Vector2(1,-1) * Vector2(x,y)
+	var nw = pos + Vector2(-1,-1) * Vector2(x,y)
+	var s = pos + Vector2(0,1) * Vector2(x,y)
+	var se = pos + Vector2(1,1) * Vector2(x,y)
+	var sw = pos + Vector2(-1,1) * Vector2(x,y)
+	var w = pos + Vector2(-1,0) * Vector2(x,y)
+	var e = pos + Vector2(1,0) * Vector2(x,y)
+	
+	var n2 = pos + Vector2(0,-2) * Vector2(x,y)
+	var ne2 = pos + Vector2(2,-2) * Vector2(x,y)
+	var nw2 = pos + Vector2(-2,-2) * Vector2(x,y)
+	var s2 = pos + Vector2(0,2) * Vector2(x,y)
+	var se2 = pos + Vector2(2,2) * Vector2(x,y)
+	var sw2 = pos + Vector2(-2,2) * Vector2(x,y)
+	var w2 = pos + Vector2(-2,0) * Vector2(x,y)
+	var e2 = pos + Vector2(2,0) * Vector2(x,y)
+	
+	var n3 = pos + Vector2(1,-2) * Vector2(x,y)
+	var ne3 = pos + Vector2(-1,-2) * Vector2(x,y)
+	var nw3 = pos + Vector2(-2,1) * Vector2(x,y)
+	var s3 = pos + Vector2(-2,-1) * Vector2(x,y)
+	var se3 = pos + Vector2(2,1) * Vector2(x,y)
+	var sw3 = pos + Vector2(2,-1) * Vector2(x,y)
+	var w3 = pos + Vector2(-1,2) * Vector2(x,y)
+	var e3 = pos + Vector2(1,2) * Vector2(x,y)
+
+	pre_neighbors = [n,ne,e,se,s,sw,w,nw,n2,ne2,e2,se2,s2,sw2,w2,nw2,n3,ne3,e3,se3,s3,sw3,w3,nw3]
+	
+			
+	var neighbors = []
+
+	for i in pre_neighbors:
+		var nearest_chunk_pos = get_nearest(i,'chunk')
+		
+		if chunk_dict.has(nearest_chunk_pos):
+			neighbors.append(i)
+				
+	return neighbors
+	
 func send_init(path):
 	
 	get_node(path).set_init(Vector2(x_length,y_length),initial_pos)
+
+func initialize_textures():
+		texture_dict = {
+		'mark' = {
+			'mark1' = $sprites/new_sprites/mark/mark1.texture,
+			'mark2' = $sprites/new_sprites/mark/mark2.texture,
+			'mark3' = $sprites/new_sprites/mark/mark3.texture
+		},
+		'hidden' = {
+			'hidden1' = $sprites/new_sprites/hidden/hidden1.texture,
+			'hidden2' = $sprites/new_sprites/hidden/hidden2.texture,
+			'hidden3' = $sprites/new_sprites/hidden/hidden3.texture
+		},
+		'1' = $"sprites/new_sprites/1".texture,
+		'2' = $"sprites/new_sprites/2".texture,
+		'3' = $"sprites/new_sprites/3".texture,
+		'4' = $"sprites/new_sprites/4".texture,
+		'5' = $"sprites/new_sprites/5".texture,
+		'6' = $"sprites/new_sprites/6".texture,
+		'7' = $"sprites/new_sprites/7".texture,
+		'8' = $"sprites/new_sprites/8".texture,
+		'safe' = $sprites/new_sprites/safe.texture,
+		'mine' = $sprites/new_sprites/mine.texture
+	}

@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3 uid="uid://d1lvqeybxbh4l"]
+
+[ext_resource type="Texture2D" uid="uid://b06lj4nbbrj1g" path="res://pics/new_pics/mine.png" id="1_iuis7"]
+
+[sub_resource type="Animation" id="Animation_iuis7"]
+resource_name = "idle"
+length = 0.8
+loop_mode = 1
+step = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_i6hay"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_i213m"]
+_data = {
+&"RESET": SubResource("Animation_i6hay"),
+&"idle": SubResource("Animation_iuis7")
+}
+
+[node name="mine" type="Sprite2D"]
+texture = ExtResource("1_iuis7")
+hframes = 4
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_i213m")
+}
