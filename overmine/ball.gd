@@ -12,7 +12,7 @@ var velocity
 var flipped = false
 var current_tiles
 var next_tiles
-var speed = 1
+var speed = 4
 var dir = Vector2()
 
 func _ready() -> void:
