@@ -1,9 +1,10 @@
-[gd_scene load_steps=50 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=52 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
 [ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
 [ext_resource type="Texture2D" uid="uid://cd82ver13at5d" path="res://pics/hidden.png" id="2_gyfs4"]
 [ext_resource type="Texture2D" uid="uid://brf8whh3klgi4" path="res://pics/mine.png" id="3_m35m6"]
+[ext_resource type="Shader" uid="uid://c7cphda0f6bal" path="res://vignette.gdshader" id="4_c5xsv"]
 [ext_resource type="Texture2D" uid="uid://d2otfn7c6mhwi" path="res://pics/mineClicked.png" id="4_u0ygc"]
 [ext_resource type="Texture2D" uid="uid://tr6a0hueci6v" path="res://pics/big_middle.png" id="4_vimvf"]
 [ext_resource type="Texture2D" uid="uid://drnmfun5hayvq" path="res://pics/mineWrong.png" id="5_7th4q"]
@@ -49,6 +50,9 @@
 [ext_resource type="Texture2D" uid="uid://ds513sohl13kd" path="res://pics/new_pics/click_mine.png" id="29_q1yuq"]
 [ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="32_o4fqm"]
 [ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="33_gfmxp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_84x1k"]
+shader = ExtResource("4_c5xsv")
 
 [node name="main_scene" type="Node2D"]
 script = ExtResource("1_2c62f")
@@ -414,6 +418,17 @@ texture = ExtResource("33_gfmxp")
 [node name="drones" type="Node2D" parent="."]
 
 [node name="drills" type="Node2D" parent="."]
+
+[node name="screen" type="CanvasLayer" parent="."]
+
+[node name="vignette" type="ColorRect" parent="screen"]
+top_level = true
+z_as_relative = false
+material = SubResource("ShaderMaterial_84x1k")
+offset_right = 1920.0
+offset_bottom = 1080.0
+focus_behavior_recursive = 1
+mouse_filter = 2
 
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/drill_button" to="." method="_on_drill_button_pressed"]

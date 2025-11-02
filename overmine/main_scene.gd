@@ -45,7 +45,7 @@ var tile_holder_load = preload("res://tile_holder.tscn")
 var upgrade_load = preload("res://upgrade_menu.tscn")
 var ball_load = preload("res://ball.tscn")
 var mark_load = preload('res://mark.tscn')
-var mouse_in = false
+var mouse_in = true
 var view_port_size
 var mine_thread
 var texture_dict
@@ -62,6 +62,7 @@ func _notification(what: int) -> void:
 		mouse_in = false
 		
 func _ready() -> void:
+	
 	mine_thread = Thread.new()
 	Globals.connect("ready_to_click",clicked)
 	Globals.connect("ball_ready",send_init)
@@ -100,7 +101,7 @@ func _process(_delta: float) -> void:
 	
 		var difference = local_mous_pos - get_global_mouse_position()
 		$Camera2D.position += difference
-
+	
 	var nearest_chunk_pos = Vector2()
 	
 	var chunk_follow_pos = $Camera2D.position
@@ -149,18 +150,19 @@ func _unhandled_input(_event: InputEvent) -> void:
 		
 		mark(nearest_tile_pos, nearest_chunk_pos)
 				
-	if Input.is_action_just_pressed("ui_up"):
+	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 	
 
-	if Input.is_action_pressed("pan"):
+	if Input.is_action_pressed("space"):
+		
 		
 		if moveable == false:
 			local_mous_pos = get_global_mouse_position()
 			
 		moveable = true
 		
-	if Input.is_action_just_released("pan"):
+	if Input.is_action_just_released("space"):
 		moveable = false
 	
 	if Input.is_action_just_pressed("add"):
@@ -170,15 +172,22 @@ func _unhandled_input(_event: InputEvent) -> void:
 		add_child(ball)
 
 
-	if _event is InputEventMouseButton:
-		if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
+	if Input.is_action_just_pressed('zoom_up'):
 			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
 				$Camera2D.zoom *= 2
-		
-	if _event is InputEventMouseButton:
-		if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
+	
+	if Input.is_action_just_pressed('zoom_down'):
 			if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
 				$Camera2D.zoom /= 2
+	#if _event is InputEventMouseButton:
+		#if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
+			#if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
+				#$Camera2D.zoom *= 2
+		#
+	#if _event is InputEventMouseButton:
+		#if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
+			#if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
+				#$Camera2D.zoom /= 2
 		
 					
 #############################################################################
