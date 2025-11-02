@@ -15,7 +15,7 @@ var upgrade_in_hand = false
 var upgrade
 # final game grid = [40,25] x (25x50)
 const grid_size_options = [[40,20],[4,4],[8,8]]
-var chosen_grid_size = grid_size_options[2]
+var chosen_grid_size = grid_size_options[0]
 var num_of_chunks = Vector2(25,50)
 var chunk_split
 var initial_pos = Vector2(0,0)
@@ -27,7 +27,7 @@ var chunk_dict = {}
 var gamestart = false
 
 var initial_chunk_pos 
-var number_of_mines_per_chunk = 10
+var number_of_mines_per_chunk = 160
 var moveable = false
 var local_mous_pos
 var current_neighbors = []
@@ -307,14 +307,11 @@ func change_texture(tile):
 
 	tile_dict[pos]['name'] = tile.name
 	if tile_pos['clicked'] == false:
-		var rand_num = randi_range(1,3)
-		tile.texture = texture_dict['hidden']['hidden' + str(rand_num)]
 		if tile_pos['marked'] == true:
-			var mark_num = randi_range(0,2)
-			var marky = mark_load.instantiate()
-			tile.add_child(marky)
-			marky.texture = texture_dict['mark']['mark' + str(mark_num)]
-			marky.offset = Vector2(x_length,y_length) / 2.0
+			tile.texture = texture_dict['mark']['mark0']
+		else:
+			#var rand_num = randi_range(1,3)
+			tile.texture = texture_dict['hidden']['hidden1']# + str(rand_num)]
 	else:		
 		if tile_pos['type'] == 'warning':
 			sprite = str(tile_pos['value'])
@@ -500,7 +497,6 @@ func start_game(click_pos):
 func clicked(pos):
 	
 	
-	print(pos)
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
 	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
 	
@@ -535,6 +531,28 @@ func clicked(pos):
 				round_points += 1 * score_mulitplier
 				update_points()
 			
+			if tile_dict[pos]['marked'] == true:
+				get_node(node_path).get_child(0).queue_free()
+		
+		
+		# reveal if tile complete
+		elif tile_dict[pos]['clicked'] == true:
+			if tile_dict[pos]['type'] == 'warning':
+				var neighbors = create_neighbors(pos,x_length,y_length,'ALL')
+				var count = 0
+				for i in neighbors:
+					if tile_dict[i]['type'] == 'mine':
+						if tile_dict[i]['clicked'] == true or tile_dict[i]['marked'] == true:
+							count += 1
+				if count == tile_dict[pos]['value']:
+					for i in neighbors:
+						if tile_dict[i]['type'] != 'mine' and tile_dict[i]['clicked'] == false:
+							clicked(i)
+							
+			
+						
+			
+				
 	elif chunk_dict[nearest_chunk_pos]['drawn'] == false:
 		tile_dict[pos]['clicked'] = true
 		total_clicked += 1
@@ -672,36 +690,20 @@ func get_chunk_grid():
 #############################################################################
 			
 func mark(pos,chunk_pos):	
-	var rand_num = randi_range(1,3)
+	#var rand_num = randi_range(1,3)
 	if tile_dict[pos]['clicked'] == false:
-		
-		#var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
-		var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
-		var sprite_path = 'sprites/new_sprites/mark/'
 
 		if tile_dict[pos]['marked'] == false:
-			#sprite_path += 'mark'
-			sprite_path += 'mark' + str(rand_num)
 			tile_dict[pos]['marked'] = true
 			
 		elif tile_dict[pos]['marked'] == true:
-			#sprite_path += 'hidden'
-			tile_dict[pos]['marked'] = false
-		
-		#var new_texture = get_node(sprite_path).texture	
-			
-		if tile_dict[pos]['marked'] == true:
-			var marky = mark_load.instantiate()
-			get_node(node_path).add_child(marky)
-			var new_texture = get_node(sprite_path).texture	
-			marky.texture = new_texture
-			marky.offset = Vector2(x_length,y_length) / 2.0
-		else:
-			get_node(node_path).get_child(0).queue_free()
+			tile_dict[pos]['marked'] = false		
 	
 	if tile_dict[pos]['type'] != 'mine':
 		flag_correct = false
-		
+	
+	var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	change_texture(get_node(node_path))
 		
 #############################################################################	
 #############################################################################	
@@ -1184,6 +1186,7 @@ func send_init(path):
 func initialize_textures():
 		texture_dict = {
 		'mark' = {
+			'mark0' = $sprites/new_sprites/mark/mark0.texture,
 			'mark1' = $sprites/new_sprites/mark/mark1.texture,
 			'mark2' = $sprites/new_sprites/mark/mark2.texture,
 			'mark3' = $sprites/new_sprites/mark/mark3.texture

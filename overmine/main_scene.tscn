@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=50 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
 [ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
@@ -29,6 +29,7 @@
 [ext_resource type="Texture2D" uid="uid://cu3lxd0si2lb" path="res://pics/new_pics/mark1.png" id="14_euc68"]
 [ext_resource type="Texture2D" uid="uid://blsbo0do32j4h" path="res://pics/new_pics/tile_1.png" id="14_gfmxp"]
 [ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="14_kv3aw"]
+[ext_resource type="Texture2D" uid="uid://23o4t2xfiv30" path="res://pics/new_pics/mark.png" id="14_q1yuq"]
 [ext_resource type="Texture2D" uid="uid://hkxeu56rviej" path="res://pics/new_pics/1.png" id="14_yj5sn"]
 [ext_resource type="Texture2D" uid="uid://cc48xqo6dcqqm" path="res://pics/new_pics/tile_2.png" id="15_1n88h"]
 [ext_resource type="Texture2D" uid="uid://cbsl0phdd4n5l" path="res://pics/new_pics/mark2.png" id="15_38t8r"]
@@ -257,6 +258,10 @@ horizontal_alignment = 2
 [node name="new_sprites" type="Node2D" parent="sprites"]
 
 [node name="mark" type="Node2D" parent="sprites/new_sprites"]
+
+[node name="mark0" type="Sprite2D" parent="sprites/new_sprites/mark"]
+visible = false
+texture = ExtResource("14_q1yuq")
 
 [node name="mark1" type="Sprite2D" parent="sprites/new_sprites/mark"]
 visible = false

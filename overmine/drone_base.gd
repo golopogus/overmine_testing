@@ -10,6 +10,7 @@ var charging_timer = 3
 var first = true
 var scan_scale = 1
 var wait = false
+var ghoul_load = preload('res://ghoul.tscn')
 
 func _process(_delta: float) -> void:
 
@@ -80,9 +81,11 @@ func new_spawn():
 	
 func spawn_drone():
 	
-	var drone_load = preload("res://drone.tscn")
-	var drone = drone_load.instantiate()
+	#var drone_load = preload("res://drone.tscn")
+	#var drone = drone_load.instantiate()
+	var drone = ghoul_load.instantiate()
 	add_child(drone)
+	print(drone)
 	drone.initialize_values(drone_speed,scan_size,battery_size)
 	#child = drone
 
