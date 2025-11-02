@@ -30,22 +30,22 @@
 [ext_resource type="Texture2D" uid="uid://blsbo0do32j4h" path="res://pics/new_pics/tile_1.png" id="14_gfmxp"]
 [ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="14_kv3aw"]
 [ext_resource type="Texture2D" uid="uid://23o4t2xfiv30" path="res://pics/new_pics/mark.png" id="14_q1yuq"]
-[ext_resource type="Texture2D" uid="uid://hkxeu56rviej" path="res://pics/new_pics/1.png" id="14_yj5sn"]
 [ext_resource type="Texture2D" uid="uid://cc48xqo6dcqqm" path="res://pics/new_pics/tile_2.png" id="15_1n88h"]
 [ext_resource type="Texture2D" uid="uid://cbsl0phdd4n5l" path="res://pics/new_pics/mark2.png" id="15_38t8r"]
-[ext_resource type="Texture2D" uid="uid://c35u0rrlcuon6" path="res://pics/new_pics/2.png" id="15_jtbqm"]
 [ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="15_o7u2a"]
-[ext_resource type="Texture2D" uid="uid://duwrj4m4awbm6" path="res://pics/new_pics/3.png" id="16_ek5vw"]
 [ext_resource type="Texture2D" uid="uid://c5xvtrm81utmf" path="res://pics/warningEight.png" id="16_ijoax"]
 [ext_resource type="Texture2D" uid="uid://mmtsfsvrt6e0" path="res://pics/new_pics/mark3.png" id="16_jef5d"]
 [ext_resource type="Texture2D" uid="uid://mo1s5lbrxon3" path="res://pics/new_pics/tile_3.png" id="16_opjno"]
-[ext_resource type="Texture2D" uid="uid://4pb14n6b1o65" path="res://pics/new_pics/4.png" id="17_jip8q"]
-[ext_resource type="Texture2D" uid="uid://cfly8ka71a246" path="res://pics/new_pics/5.png" id="18_euc68"]
-[ext_resource type="Texture2D" uid="uid://b5nsaddkkbklg" path="res://pics/new_pics/6.png" id="19_38t8r"]
-[ext_resource type="Texture2D" uid="uid://bknc0bwpwdh0y" path="res://pics/new_pics/7.png" id="20_jef5d"]
-[ext_resource type="Texture2D" uid="uid://dyjlfd12a2hde" path="res://pics/new_pics/8.png" id="21_q1yuq"]
+[ext_resource type="Texture2D" uid="uid://cdgd7g28w3to" path="res://pics/new_pics/cracked_1.png" id="21_q1yuq"]
+[ext_resource type="Texture2D" uid="uid://gjgqk7llq6se" path="res://pics/new_pics/cracked_2.png" id="22_uacds"]
+[ext_resource type="Texture2D" uid="uid://dnmnoaxuq6bcf" path="res://pics/new_pics/cracked_3.png" id="23_y0lqw"]
+[ext_resource type="Texture2D" uid="uid://cdnl8j2c13fq5" path="res://pics/new_pics/cracked_4.png" id="24_c5xsv"]
+[ext_resource type="Texture2D" uid="uid://3r4msnq63tyn" path="res://pics/new_pics/cracked_5.png" id="25_84x1k"]
 [ext_resource type="Texture2D" uid="uid://m1o7ouij1kp6" path="res://pics/new_pics/safe.png" id="25_jtbqm"]
+[ext_resource type="Texture2D" uid="uid://60ohmw75gha6" path="res://pics/new_pics/cracked_6.png" id="26_0hwxg"]
+[ext_resource type="Texture2D" uid="uid://1f5fihtwhqm3" path="res://pics/new_pics/cracked_7.png" id="27_si2mt"]
 [ext_resource type="Texture2D" uid="uid://b06lj4nbbrj1g" path="res://pics/new_pics/mine.png" id="28_jef5d"]
+[ext_resource type="Texture2D" uid="uid://c8uqq7svcoxlm" path="res://pics/new_pics/cracked_8.png" id="28_sp30j"]
 [ext_resource type="Texture2D" uid="uid://ds513sohl13kd" path="res://pics/new_pics/click_mine.png" id="29_q1yuq"]
 [ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="32_o4fqm"]
 [ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="33_gfmxp"]
@@ -54,6 +54,7 @@
 script = ExtResource("1_2c62f")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
 visible = false
@@ -291,35 +292,35 @@ texture = ExtResource("16_opjno")
 
 [node name="1" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("14_yj5sn")
+texture = ExtResource("21_q1yuq")
 
 [node name="2" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("15_jtbqm")
+texture = ExtResource("22_uacds")
 
 [node name="3" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("16_ek5vw")
+texture = ExtResource("23_y0lqw")
 
 [node name="4" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("17_jip8q")
+texture = ExtResource("24_c5xsv")
 
 [node name="5" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("18_euc68")
+texture = ExtResource("25_84x1k")
 
 [node name="6" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("19_38t8r")
+texture = ExtResource("26_0hwxg")
 
 [node name="7" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("20_jef5d")
+texture = ExtResource("27_si2mt")
 
 [node name="8" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("21_q1yuq")
+texture = ExtResource("28_sp30j")
 
 [node name="click_mine" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false

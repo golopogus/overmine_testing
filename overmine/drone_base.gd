@@ -85,7 +85,6 @@ func spawn_drone():
 	#var drone = drone_load.instantiate()
 	var drone = ghoul_load.instantiate()
 	add_child(drone)
-	print(drone)
 	drone.initialize_values(drone_speed,scan_size,battery_size)
 	#child = drone
 

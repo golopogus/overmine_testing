@@ -531,8 +531,8 @@ func clicked(pos):
 				round_points += 1 * score_mulitplier
 				update_points()
 			
-			if tile_dict[pos]['marked'] == true:
-				get_node(node_path).get_child(0).queue_free()
+			#if tile_dict[pos]['marked'] == true:
+				#get_node(node_path).get_child(0).queue_free()
 		
 		
 		# reveal if tile complete

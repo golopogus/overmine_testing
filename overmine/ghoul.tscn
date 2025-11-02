@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://ddephkonack1u"]
+[gd_scene load_steps=8 format=3 uid="uid://ddephkonack1u"]
 
+[ext_resource type="Script" uid="uid://ci5ha2m8iva11" path="res://ghoul.gd" id="1_gbcyq"]
 [ext_resource type="Texture2D" uid="uid://dcudipe58ljx0" path="res://pics/new_pics/ghoul_flying.png" id="1_rsikc"]
 [ext_resource type="Texture2D" uid="uid://bcwth1bh8k0ms" path="res://pics/new_pics/ghoul_diving.png" id="2_gbcyq"]
 
@@ -19,6 +20,18 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("flying:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(2, 2), Vector2(2, 2)]
 }
 
 [sub_resource type="Animation" id="Animation_xmcmf"]
@@ -47,6 +60,18 @@ tracks/1/keys = {
 "update": 1,
 "values": [0]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("flying:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2, 2)]
+}
 
 [sub_resource type="Animation" id="Animation_ntdwj"]
 resource_name = "diving"
@@ -73,9 +98,9 @@ _data = {
 }
 
 [node name="ghoul" type="Node2D"]
+script = ExtResource("1_gbcyq")
 
 [node name="flying" type="Sprite2D" parent="."]
-visible = false
 scale = Vector2(2, 2)
 texture = ExtResource("1_rsikc")
 hframes = 6
