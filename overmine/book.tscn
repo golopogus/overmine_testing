@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dymctl1kpbhuf"]
+
+[ext_resource type="Texture2D" uid="uid://d1ejithwvhwcl" path="res://pics/new_pics/book.png" id="1_kh36y"]
+
+[node name="book" type="Sprite2D"]
+texture = ExtResource("1_kh36y")

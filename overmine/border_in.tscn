@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://dw4srph7to3a5"]
+
+[ext_resource type="Script" uid="uid://dmxgjxc6sdd2r" path="res://border_in.gd" id="1_c7d6a"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_e0muu"]
+
+[node name="border_in" type="Node2D"]
+script = ExtResource("1_c7d6a")
+
+[node name="border_timer" type="Timer" parent="."]
+wait_time = 5.0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+top_level = true
+material = SubResource("ShaderMaterial_e0muu")
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[connection signal="timeout" from="border_timer" to="." method="_on_border_timer_timeout"]

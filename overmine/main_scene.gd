@@ -6,6 +6,8 @@ extends Node2D
 var flag_correct = true
 var lives = 1
 var test
+var chance = 11
+var book_spawned = false
 var round_points = 0
 var total_clicked = 0
 var hold_chunks =[]
@@ -13,10 +15,12 @@ var all_upgrade_data = {}
 var all_store_data = {}
 var upgrade_in_hand = false
 var upgrade
+var timer = 5
 # final game grid = [40,25] x (25x50)
 const grid_size_options = [[40,20],[4,4],[8,8]]
 var chosen_grid_size = grid_size_options[0]
-var num_of_chunks = Vector2(25,50)
+#var num_of_chunks = Vector2(25,50)
+var num_of_chunks = Vector2(10,10)
 var chunk_split
 var initial_pos = Vector2(0,0)
 var chunk_size = Vector2()
@@ -25,7 +29,7 @@ var y_length
 var start = false
 var chunk_dict = {}
 var gamestart = false
-
+var revealed_tiles = []
 var initial_chunk_pos 
 var number_of_mines_per_chunk = 160
 var moveable = false
@@ -64,6 +68,7 @@ func _notification(what: int) -> void:
 func _ready() -> void:
 	
 	mine_thread = Thread.new()
+
 	Globals.connect("ready_to_click",clicked)
 	Globals.connect("ball_ready",send_init)
 	Globals.connect("ball_pls",send_tiles)
@@ -88,6 +93,7 @@ func _ready() -> void:
 	place_tile_loc()
 	
 	
+	
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
 
@@ -96,6 +102,8 @@ func _ready() -> void:
 #############################################################################
 
 func _process(_delta: float) -> void:
+	
+	$screen/Label.text = str(roundi($game_timer.time_left))
 	
 	if moveable and mouse_in:
 	
@@ -136,16 +144,20 @@ func _unhandled_input(_event: InputEvent) -> void:
 			check_if_drone_base(nearest_tile_pos)
 		
 	if Input.is_action_just_released("left_click"):
-		
+		revealed_tiles = []
 		if upgrade_in_hand == false:
 			if nearest_tile_pos == stored_pos:
 				if tile_dict.has(nearest_tile_pos):
 					if gamestart == false:
 						current_chunk = get_nearest(nearest_tile_pos,'chunk')
 						start_game(nearest_tile_pos)
+						print('number of safe tiles revealed = ' + str(revealed_tiles.size()))
 					else:
-						clicked(nearest_tile_pos)	
-		
+						clicked(nearest_tile_pos)
+						if book_spawned == false:
+							if revealed_tiles.size() >= 9:
+								book_chance()
+								
 	if Input.is_action_just_pressed("right_click"):
 		
 		mark(nearest_tile_pos, nearest_chunk_pos)
@@ -154,7 +166,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		get_tree().reload_current_scene()
 	
 
-	if Input.is_action_pressed("space"):
+	if Input.is_action_pressed("pan"):
 		
 		
 		if moveable == false:
@@ -162,7 +174,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 			
 		moveable = true
 		
-	if Input.is_action_just_released("space"):
+	if Input.is_action_just_released("pan"):
 		moveable = false
 	
 	if Input.is_action_just_pressed("add"):
@@ -171,23 +183,24 @@ func _unhandled_input(_event: InputEvent) -> void:
 		var ball = ball_load.instantiate()
 		add_child(ball)
 
-
-	if Input.is_action_just_pressed('zoom_up'):
-			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
-				$Camera2D.zoom *= 2
+	# LAPTOP
 	
-	if Input.is_action_just_pressed('zoom_down'):
-			if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
-				$Camera2D.zoom /= 2
-	#if _event is InputEventMouseButton:
-		#if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
+	#if Input.is_action_just_pressed('zoom_in'):
 			#if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
 				#$Camera2D.zoom *= 2
-		#
-	#if _event is InputEventMouseButton:
-		#if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
+	#
+	#if Input.is_action_just_pressed('zoom_out'):
 			#if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
 				#$Camera2D.zoom /= 2
+	if _event is InputEventMouseButton:
+		if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
+			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
+				$Camera2D.zoom *= 2
+		
+	if _event is InputEventMouseButton:
+		if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
+			if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
+				$Camera2D.zoom /= 2
 		
 					
 #############################################################################
@@ -478,7 +491,7 @@ func find_clicked_on_border(border):
 #############################################################################
 
 func start_game(click_pos):
-	
+	$game_timer.start()
 	gamestart = true
 	
 	var safe_neighbors = create_neighbors(click_pos,x_length,y_length, 'ALL')
@@ -505,55 +518,44 @@ func start_game(click_pos):
 #############################################################################						
 func clicked(pos):
 	
-	
+	revealed_tiles.append(pos)
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
-	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	var tile = tile_dict[pos]
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile['name']
 	
 	if chunk_dict[nearest_chunk_pos]['drawn'] == true:
-		if tile_dict[pos]['clicked'] == false:
+		if tile['clicked'] == false:
 			total_clicked += 1
-			tile_dict[pos]['clicked'] = true
-			if tile_dict[pos]['type'] == 'unknown':
-				tile_dict[pos]['type'] = 'safe'
+			tile['clicked'] = true
+			if tile['type'] == 'unknown':
+				tile['type'] = 'safe'
 
-			var tile_type = tile_dict[pos]['type']
-			
-			
-			if tile_dict[pos]['type'] == 'warning':
-				tile_type = str(tile_dict[pos]['value'])
- 	
-			#var sprite_path = 'sprites/' + tile_type
-			var sprite_path = 'sprites/new_sprites/' + tile_type
-		
-			var new_texture = get_node(sprite_path).texture
-			
-			get_node(node_path).texture = new_texture
-			
-			if tile_dict[pos]['type'] == 'mine':
+			change_texture(get_node(node_path))
+
+			if tile['type'] == 'mine':
 				
 				var mine_radius = all_upgrade_data['mine_radius']['current']
 				if mine_radius > 0:
-					update_safe_neighbors(pos,'mine')
+					update_neighbors(pos,'mine')
 					
-			if tile_dict[pos]['type'] != 'mine':
+			if tile['type'] != 'mine':
 				var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
 				round_points += 1 * score_mulitplier
 				update_points()
-			
-			#if tile_dict[pos]['marked'] == true:
-				#get_node(node_path).get_child(0).queue_free()
 		
 		
 		# reveal if tile complete
-		elif tile_dict[pos]['clicked'] == true:
-			if tile_dict[pos]['type'] == 'warning':
+		elif tile['clicked'] == true:
+			
+			if tile['type'] == 'warning':
+				
 				var neighbors = create_neighbors(pos,x_length,y_length,'ALL')
 				var count = 0
 				for i in neighbors:
 					if tile_dict[i]['type'] == 'mine':
 						if tile_dict[i]['clicked'] == true or tile_dict[i]['marked'] == true:
 							count += 1
-				if count == tile_dict[pos]['value']:
+				if count == tile['value']:
 					for i in neighbors:
 						if tile_dict[i]['type'] != 'mine' and tile_dict[i]['clicked'] == false:
 							clicked(i)
@@ -580,17 +582,18 @@ func clicked(pos):
 		if tile_dict[pos]['type'] == 'mine':
 			var mine_radius = all_upgrade_data['mine_radius']['current']
 			if mine_radius > 0:
-				update_safe_neighbors(pos,'mine')
+				update_neighbors(pos,'mine')
 				
 	if tile_dict[pos]['type'] == 'safe':
-		update_safe_neighbors(pos,'safe')					
-
+		
+		update_neighbors(pos,'safe')					
+	
 			
 #############################################################################	
 #############################################################################	
 #############################################################################
 
-func update_safe_neighbors(pos,type):	
+func update_neighbors(pos,type):	
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
 	
 	if chunk_dict[nearest_chunk_pos]['mines'] == false:
@@ -1015,6 +1018,17 @@ func check_if_drone_base(pos):
 #############################################################################	
 #############################################################################	
 #############################################################################
+func book_chance():
+	chance -= 1
+	var rand_num = randi_range(1,chance)
+	if rand_num == chance:
+		book_spawned = true
+		var rand_pos = randi_range(0,revealed_tiles.size() - 1)
+		var book_load = preload("res://book.tscn")
+		var book = book_load.instantiate()
+		add_child(book)
+		book.position = revealed_tiles[rand_pos]
+		book.offset = Vector2(x_length,y_length) / 2.0
 	
 func initialize_upgrade_data():
 	
@@ -1216,3 +1230,7 @@ func initialize_textures():
 		'safe' = $sprites/new_sprites/safe.texture,
 		'mine' = $sprites/new_sprites/mine.texture
 	}
+
+
+func _on_game_timer_timeout() -> void:
+	$screen/border_in.time_out()

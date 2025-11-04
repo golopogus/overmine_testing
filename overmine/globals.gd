@@ -6,6 +6,7 @@ signal ready_to_click
 signal drone_ready_for_check
 signal ball_ready
 signal ball_pls
+signal timer_for_border
 
 func get_tiles(data,grid,type):
 	if type == 'drone':
@@ -23,6 +24,10 @@ func get_init(path):
 
 func click_tile(pos):
 	emit_signal('ready_to_click',pos)
+
+func get_timer(path):
+	print('globals good')
+	emit_signal('timer_for_border',path)
 	
 
 	

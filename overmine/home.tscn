@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://kimhjv6h4o2l"]
+
+[ext_resource type="Texture2D" uid="uid://bcrj53eh44wl0" path="res://pics/new_pics/home.png" id="1_tt30a"]
+
+[node name="home" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(10, 10)
+texture = ExtResource("1_tt30a")
+centered = false
