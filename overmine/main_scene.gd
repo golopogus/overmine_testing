@@ -157,6 +157,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 			if upgrade_in_hand == false:
 				#if nearest_tile_pos == stored_pos:
 				if mouse_pos == stored_mous_pos:
+					
 				
 					if tile_dict.has(nearest_tile_pos):
 						if gamestart == false:
@@ -164,10 +165,13 @@ func _unhandled_input(_event: InputEvent) -> void:
 							start_game(nearest_tile_pos)
 							print('number of safe tiles revealed = ' + str(revealed_tiles.size()))
 						else:
-							clicked(nearest_tile_pos)
-							if book_spawned == false:
-								if revealed_tiles.size() >= 9:
-									book_chance()
+							if tile_dict[nearest_tile_pos]['marked'] == true:
+								highlight_mark(nearest_tile_pos)
+							else:
+								clicked(nearest_tile_pos)
+								if book_spawned == false:
+									if revealed_tiles.size() >= 9:
+										book_chance()
 		drawing = false
 								
 	if Input.is_action_just_pressed("right_click"):
@@ -333,7 +337,14 @@ func update_chunk_pos(pos):
 		for child in chunk_children:
 			#change_texture(child)
 			call_deferred('change_texture',child)
-
+			
+func highlight_mark(pos):
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	var tile = get_node(node_path)
+	tile.material = ShaderMaterial.new()
+	tile.material.set("shader", mat)
+	
 func change_texture(tile):
 	
 	var pos = tile.global_position
@@ -547,15 +558,15 @@ func clicked(pos):
 
 			change_texture(get_node(node_path))
 
-			#if tile['type'] == 'mine':
+			if tile['type'] == 'mine':
 				
-				#var mine_radius = all_upgrade_data['mine_radius']['current']
-				#if mine_radius > 0:
-					#update_neighbors(pos,'mine')
+				var mine_radius = Globals.get_upgrade_data('mine_radius')#all_upgrade_data['mine_radius']['current']
+				if mine_radius > 0:
+					update_neighbors(pos,'mine')
 					
 			if tile['type'] != 'mine':
-				#var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
-				#round_points += 1 * score_mulitplier
+				var score_mulitplier = Globals.get_upgrade_data('click_multi') + 1#all_upgrade_data['click_multi']['current'] + 1
+				round_points += 1 * score_mulitplier
 				update_points()
 		
 		
@@ -717,19 +728,22 @@ func get_chunk_grid():
 #############################################################################
 			
 func mark(pos,chunk_pos):	
-	#var rand_num = randi_range(1,3)
-	if tile_dict[pos]['clicked'] == false:
+	var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	var tile = tile_dict[pos]
+	if tile['clicked'] == false:
 
-		if tile_dict[pos]['marked'] == false:
-			tile_dict[pos]['marked'] = true
+		if tile['marked'] == false:
+			tile['marked'] = true
 			
-		elif tile_dict[pos]['marked'] == true:
-			tile_dict[pos]['marked'] = false		
+		elif tile['marked'] == true:
+			tile['marked'] = false	
+			var tile_node = get_node(node_path)
+			tile_node.material.set("shader", '')	
 	
-	if tile_dict[pos]['type'] != 'mine':
+	if tile['type'] != 'mine':
 		flag_correct = false
 	
-	var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	
 	change_texture(get_node(node_path))
 		
 #############################################################################	

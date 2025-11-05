@@ -49,6 +49,11 @@ func handle_upgrades(upgrade_data):
 		#for drone_base in $drones.get_children():
 			#drone_base.update_upgrade(upgrade_data, all_upgrade_data[upgrade_data]['current'])
 	#
+
+func get_upgrade_data(upgrade):
+	
+	return all_upgrade_data[upgrade]['current']
+	
 func initialize_upgrade_data():
 	
 	#MINE_DATA
