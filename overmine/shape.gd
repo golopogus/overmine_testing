@@ -7,6 +7,7 @@ var shape_dict = {}
 var radius
 var can_print = false
 var to_draw = ''
+var can_draw = false
 var center = Vector2()
 
 func _ready() -> void:
@@ -14,18 +15,23 @@ func _ready() -> void:
 	initialize_shapes()
 	
 func _unhandled_input(_event: InputEvent) -> void:
-	if Input.is_action_pressed("left_click"):
-		if drawing == false:
-			list_of_pts = []
-			drawing = true
-			to_draw = ''
-	
-	if Input.is_action_just_released("left_click"):
+	if can_draw:
+		$shape_timer.stop()
+		if Input.is_action_pressed("left_click"):
+			
+			if drawing == false:
+				list_of_pts = []
+				drawing = true
+				to_draw = ''
 		
-			var updated_list = initialize_pts(list_of_pts)
-			handler(updated_list)
-			drawing = false
-
+		if Input.is_action_just_released("left_click"):
+			
+				var updated_list = initialize_pts(list_of_pts)
+				handler(updated_list)
+				drawing = false
+				can_draw = false
+func draw_true():
+	can_draw = true
 func _process(_delta: float) -> void:
 	
 	if drawing == true:
@@ -43,8 +49,10 @@ func handler(pts):
 	determine_nearest_shape()
 	
 func _draw() -> void:
-	if list_of_pts.size() > 2:
-		draw_polyline(list_of_pts,Color(.2,.3,10),4)
+	
+	if to_draw == '':
+		if list_of_pts.size() > 2:
+			draw_polyline(list_of_pts,Color(.2,.3,10),4)
 	
 	if to_draw != '':
 		if to_draw == 'circle':
@@ -157,6 +165,7 @@ func determine_nearest_shape():
 
 	to_draw = guess
 	queue_redraw()
+	$shape_timer.start()
 	
 func check_circle_dist(pts):
 	
@@ -429,3 +438,10 @@ func get_diamond_pts(dist_from_center):
 	
 	for line in shape_dict['diamond']['lines']:
 			shape_dict['diamond']['lines'][line]['slope'] = get_slope(shape_dict['diamond']['lines'][line]['pts'][0],shape_dict['diamond']['lines'][line]['pts'][1])
+
+
+func _on_shape_timer_timeout() -> void:
+	$shape_timer.stop()
+	to_draw = ''
+	list_of_pts = []
+	queue_redraw()

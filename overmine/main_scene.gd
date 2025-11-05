@@ -6,7 +6,9 @@ extends Node2D
 var flag_correct = true
 var lives = 1
 var test
+var drawing = false
 var chance = 11
+var stored_mous_pos = Vector2()
 var book_spawned = false
 var round_points = 0
 var total_clicked = 0
@@ -49,6 +51,7 @@ var tile_holder_load = preload("res://tile_holder.tscn")
 var upgrade_load = preload("res://upgrade_menu.tscn")
 var ball_load = preload("res://ball.tscn")
 var mark_load = preload('res://mark.tscn')
+var mat = load('res://mark.gdshader')
 var mouse_in = true
 var view_port_size
 var mine_thread
@@ -85,8 +88,8 @@ func _ready() -> void:
 	current_chunk = initial_chunk_pos
 	
 	initialize_textures()
-	initialize_upgrade_data()
-	initialize_store_data()
+	#initialize_upgrade_data()
+	#initialize_store_data()
 	update_points()
 	update_lives(0)
 	place_chunk_loc()
@@ -132,7 +135,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
 	
 	if Input.is_action_just_pressed("left_click"):
-	
+		stored_mous_pos = get_global_mouse_position()
 		stored_pos = nearest_tile_pos
 
 		if upgrade_in_hand == true:
@@ -140,27 +143,37 @@ func _unhandled_input(_event: InputEvent) -> void:
 				upgrade.place(nearest_tile_pos)
 				upgrade_in_hand = false
 				upgrade = 'NONE'
-		elif $drones.get_child_count() > 0:
-			check_if_drone_base(nearest_tile_pos)
+		#elif $drones.get_child_count() > 0:
+			#check_if_drone_base(nearest_tile_pos)
+	
+	if Input.is_action_pressed("left_click"):
+		if mouse_pos != stored_mous_pos:
+			$shapes.draw_true()
+			drawing = true
 		
 	if Input.is_action_just_released("left_click"):
-		revealed_tiles = []
-		if upgrade_in_hand == false:
-			if nearest_tile_pos == stored_pos:
-				if tile_dict.has(nearest_tile_pos):
-					if gamestart == false:
-						current_chunk = get_nearest(nearest_tile_pos,'chunk')
-						start_game(nearest_tile_pos)
-						print('number of safe tiles revealed = ' + str(revealed_tiles.size()))
-					else:
-						clicked(nearest_tile_pos)
-						if book_spawned == false:
-							if revealed_tiles.size() >= 9:
-								book_chance()
+		if drawing == false:
+			revealed_tiles = []
+			if upgrade_in_hand == false:
+				#if nearest_tile_pos == stored_pos:
+				if mouse_pos == stored_mous_pos:
+				
+					if tile_dict.has(nearest_tile_pos):
+						if gamestart == false:
+							current_chunk = get_nearest(nearest_tile_pos,'chunk')
+							start_game(nearest_tile_pos)
+							print('number of safe tiles revealed = ' + str(revealed_tiles.size()))
+						else:
+							clicked(nearest_tile_pos)
+							if book_spawned == false:
+								if revealed_tiles.size() >= 9:
+									book_chance()
+		drawing = false
 								
 	if Input.is_action_just_pressed("right_click"):
 		
-		mark(nearest_tile_pos, nearest_chunk_pos)
+		if tile_dict.has(nearest_tile_pos):
+			mark(nearest_tile_pos, nearest_chunk_pos)
 				
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
@@ -331,6 +344,8 @@ func change_texture(tile):
 	if tile_pos['clicked'] == false:
 		if tile_pos['marked'] == true:
 			tile.texture = texture_dict['mark']['mark0']
+			#tile.material = ShaderMaterial.new()
+			#tile.material.set("shader", mat)
 		else:
 			#var rand_num = randi_range(1,3)
 			tile.texture = texture_dict['hidden']['hidden1']# + str(rand_num)]
@@ -532,15 +547,15 @@ func clicked(pos):
 
 			change_texture(get_node(node_path))
 
-			if tile['type'] == 'mine':
+			#if tile['type'] == 'mine':
 				
-				var mine_radius = all_upgrade_data['mine_radius']['current']
-				if mine_radius > 0:
-					update_neighbors(pos,'mine')
+				#var mine_radius = all_upgrade_data['mine_radius']['current']
+				#if mine_radius > 0:
+					#update_neighbors(pos,'mine')
 					
 			if tile['type'] != 'mine':
-				var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
-				round_points += 1 * score_mulitplier
+				#var score_mulitplier = all_upgrade_data['click_multi']['current'] + 1
+				#round_points += 1 * score_mulitplier
 				update_points()
 		
 		
@@ -756,12 +771,12 @@ func update_points():
 #############################################################################	
 #############################################################################
 
-func _on_upgrade_button_pressed() -> void:
-	
-	var upgrade_menu = upgrade_load.instantiate()
-	$CanvasLayer/normal_rez.add_child(upgrade_menu)
-	upgrade_menu.get_upgrade_list(all_upgrade_data)
-	upgrade_menu.update_upgrades.connect(handle_upgrades)
+#func _on_upgrade_button_pressed() -> void:
+	#
+	#var upgrade_menu = upgrade_load.instantiate()
+	#$CanvasLayer/normal_rez.add_child(upgrade_menu)
+	#upgrade_menu.get_upgrade_list(all_upgrade_data)
+	#upgrade_menu.update_upgrades.connect(handle_upgrades)
 
 #############################################################################	
 #############################################################################	
@@ -889,46 +904,45 @@ func update_lives(change):
 #############################################################################	
 #############################################################################
 
-func _on_texture_button_pressed() -> void:
-	pass
+
 
 #############################################################################	
 #############################################################################	
 #############################################################################
 
-func initialize_store_data():
-	
-	all_store_data = {
-		'drone': {
-			'inventory': -1,
-			'cost': 10
-		},
-		'drill': {
-			'inventory': -1,
-			'cost': 10
-		}
-	} 
+#func initialize_store_data():
+	#
+	#all_store_data = {
+		#'drone': {
+			#'inventory': -1,
+			#'cost': 10
+		#},
+		#'drill': {
+			#'inventory': -1,
+			#'cost': 10
+		#}
+	#} 
 
 #############################################################################	
 #############################################################################	
 #############################################################################
 
-func handle_upgrades(upgrade_data):
-	
-	all_upgrade_data[upgrade_data]['current'] += 1
-	
-	if upgrade_data == 'drone_add':
-		Globals.connect("drone_ready", send_tiles)
-		Globals.connect("drone_ready_for_check",check_tile_for_drone)
-		update_inventory('drone','add')
-	
-	if upgrade_data == 'drill_add':
-		Globals.connect("drill_ready", send_tiles)
-		update_inventory('drill','add')
-	
-	if all_upgrade_data[upgrade_data]['owner'] == 'drone':
-		for drone_base in $drones.get_children():
-			drone_base.update_upgrade(upgrade_data, all_upgrade_data[upgrade_data]['current'])
+#func handle_upgrades(upgrade_data):
+	#
+	#all_upgrade_data[upgrade_data]['current'] += 1
+	#
+	#if upgrade_data == 'drone_add':
+		#Globals.connect("drone_ready", send_tiles)
+		#Globals.connect("drone_ready_for_check",check_tile_for_drone)
+		##update_inventory('drone','add')
+	#
+	#if upgrade_data == 'drill_add':
+		#Globals.connect("drill_ready", send_tiles)
+		##update_inventory('drill','add')
+	#
+	#if all_upgrade_data[upgrade_data]['owner'] == 'drone':
+		#for drone_base in $drones.get_children():
+			#drone_base.update_upgrade(upgrade_data, all_upgrade_data[upgrade_data]['current'])
 		
 #############################################################################	
 #############################################################################	
@@ -936,7 +950,6 @@ func handle_upgrades(upgrade_data):
 
 func _on_drone_button_pressed() -> void:
 	if all_store_data['drone']['inventory'] > 0:
-		update_inventory('drone','remove')
 		if $drones.get_child_count() == 0:
 			var drone_base_load = preload("res://drone_base.tscn")
 			var drone_base = drone_base_load.instantiate()
@@ -955,11 +968,7 @@ func _on_drone_button_pressed() -> void:
 func _on_drill_button_pressed() -> void:
 	
 	if all_store_data['drill']['inventory'] > 0:
-		update_inventory('drill','remove')
-		#round_points -= cost_of_drill
-		#cost_of_drill += 10
-		#$CanvasLayer/normal_rez/Button3.text = '+1 Drill' + str(cost_of_drill)
-		#update_points()
+	
 		var driller_load = preload("res://driller.tscn")
 		var driller = driller_load.instantiate()
 		#add to folder?
@@ -972,48 +981,48 @@ func _on_drill_button_pressed() -> void:
 #############################################################################	
 #############################################################################
 
-func update_inventory(item,action):
-	
-	var node_path = 'CanvasLayer/normal_rez/game/' + item + '_buttons'
-	if all_store_data[item]['inventory'] == -1:
-		get_node(node_path).visible = true
-	
-	if action == 'add':
-		all_store_data[item]['inventory'] += 1
-	if action == 'remove':
-		all_store_data[item]['inventory'] -= 1
-	
-	get_node(node_path + '/' + item + '_button/Label').text = str(all_store_data[item]['inventory'])
+#func update_inventory(item,action):
+	#
+	#var node_path = 'CanvasLayer/normal_rez/game/' + item + '_buttons'
+	#if all_store_data[item]['inventory'] == -1:
+		#get_node(node_path).visible = true
+	#
+	#if action == 'add':
+		#all_store_data[item]['inventory'] += 1
+	#if action == 'remove':
+		#all_store_data[item]['inventory'] -= 1
+	#
+	#get_node(node_path + '/' + item + '_button/Label').text = str(all_store_data[item]['inventory'])
 
 #############################################################################	
 #############################################################################	
 #############################################################################
 
-func _on_buy_drill_pressed() -> void:
-	if all_upgrade_data['drill_add']['cost'] < round_points:
-		round_points -= all_upgrade_data['drill_add']['cost']
-		update_points()
-		update_inventory('drill','add')
+#func _on_buy_drill_pressed() -> void:
+	#if all_upgrade_data['drill_add']['cost'] < round_points:
+		#round_points -= all_upgrade_data['drill_add']['cost']
+		#update_points()
+		#update_inventory('drill','add')
 
 #############################################################################	
 #############################################################################	
 #############################################################################
 
-func _on_buy_drone_pressed() -> void:
-	if all_upgrade_data['drone_add']['cost'] < round_points:
-		round_points -= all_upgrade_data['drone_add']['cost']
-		update_points()
-		update_inventory('drone','add')
+#func _on_buy_drone_pressed() -> void:
+	#if all_upgrade_data['drone_add']['cost'] < round_points:
+		#round_points -= all_upgrade_data['drone_add']['cost']
+		#update_points()
+		#update_inventory('drone','add')
 
 #############################################################################	
 #############################################################################	
 #############################################################################
 
-func check_if_drone_base(pos):
-	if $drones.get_child(0).position == pos:
-		upgrade_in_hand = true
-		upgrade = $drones.get_child(0)
-		$drones.get_child(0).clicked()
+#func check_if_drone_base(pos):
+	#if $drones.get_child(0).position == pos:
+		#upgrade_in_hand = true
+		#upgrade = $drones.get_child(0)
+		#$drones.get_child(0).clicked()
 
 #############################################################################	
 #############################################################################	
@@ -1030,177 +1039,177 @@ func book_chance():
 		book.position = revealed_tiles[rand_pos]
 		book.offset = Vector2(x_length,y_length) / 2.0
 	
-func initialize_upgrade_data():
-	
-	#MINE_DATA
-	all_upgrade_data = {
-		'mine_radius': {
-			'name': 'Mine Radius',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'mine'
-		},
-	
-	#DRONE_DATA
-		'drone_speed': {
-			'name': 'Drone Speed',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'drone'
-		},
-		'scan_size': {
-			'name': 'Scanner Size',
-			'description': '',
-			'current': 0,
-			'max': 10,
-			'cost': 10,
-			'owner': 'drone'
-		},
-		'drone_add': {
-			'name': 'Add Drone',
-			'description': '',
-			'current': 0,
-			'max': 1,
-			'cost': 10,
-			'owner': 'none'
-		},
-		'battery_speed': {
-			'name': 'Battery Recharge Speed',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'drone'
-		},
-		'battery_plus': {
-			'name': 'Battery Size',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'drone'
-		},
-	
-	#DRILL_DATA
-		'drill_size': {
-			'name': 'Drill Size',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'drill'
-		},
-		'drill_speed': {
-			'name': 'Drill Speed',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'drill'
-		},
-		'drill_dur': {
-			'name': 'Drill Durability',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'drill'
-		},
-		'drill_add': {
-			'name': 'Add Drill',
-			'description': '',
-			'current': 0,
-			'max': 1,
-			'cost': 10,
-			'owner': 'none'
-		},
-	
-	#CLICK_DATA
+#func initialize_upgrade_data():
+	#
+	##MINE_DATA
+	#all_upgrade_data = {
+		#'mine_radius': {
+			#'name': 'Mine Radius',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'mine'
+		#},
+	#
+	##DRONE_DATA
+		#'drone_speed': {
+			#'name': 'Drone Speed',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'drone'
+		#},
+		#'scan_size': {
+			#'name': 'Scanner Size',
+			#'description': '',
+			#'current': 0,
+			#'max': 10,
+			#'cost': 10,
+			#'owner': 'drone'
+		#},
+		#'drone_add': {
+			#'name': 'Add Drone',
+			#'description': '',
+			#'current': 0,
+			#'max': 1,
+			#'cost': 10,
+			#'owner': 'none'
+		#},
+		#'battery_speed': {
+			#'name': 'Battery Recharge Speed',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'drone'
+		#},
+		#'battery_plus': {
+			#'name': 'Battery Size',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'drone'
+		#},
+	#
+	##DRILL_DATA
+		#'drill_size': {
+			#'name': 'Drill Size',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'drill'
+		#},
+		#'drill_speed': {
+			#'name': 'Drill Speed',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'drill'
+		#},
+		#'drill_dur': {
+			#'name': 'Drill Durability',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'drill'
+		#},
+		#'drill_add': {
+			#'name': 'Add Drill',
+			#'description': '',
+			#'current': 0,
+			#'max': 1,
+			#'cost': 10,
+			#'owner': 'none'
+		#},
+	#
+	##CLICK_DATA
+#
+		#'click_multi': {
+			#'name': 'Click Multiplier',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'none'
+		#},
+		#
+	## MARK DATA
+		#'mark': {
+			#'name': 'Mark',
+			#'description': '',
+			#'current': 0,
+			#'max': 1,
+			#'cost': 10,
+			#'owner': 'none'
+		#},
+		#'call_it_in': {
+			#'name': 'Call It In',
+			#'description': '',
+			#'current': 0,
+			#'max': 3,
+			#'cost': 10,
+			#'owner': 'none'
+			#
+		#},
+	##HEART DATA
+		#'steel_heart': {
+			#'name': 'Steel Heart',
+			#'description': '',
+			#'current': 0,
+			#'max': 1,
+			#'cost': 10,
+			#'owner': 'none'
+		#}
+	#} 
 
-		'click_multi': {
-			'name': 'Click Multiplier',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'none'
-		},
-		
-	# MARK DATA
-		'mark': {
-			'name': 'Mark',
-			'description': '',
-			'current': 0,
-			'max': 1,
-			'cost': 10,
-			'owner': 'none'
-		},
-		'call_it_in': {
-			'name': 'Call It In',
-			'description': '',
-			'current': 0,
-			'max': 3,
-			'cost': 10,
-			'owner': 'none'
-			
-		},
-	#HEART DATA
-		'steel_heart': {
-			'name': 'Steel Heart',
-			'description': '',
-			'current': 0,
-			'max': 1,
-			'cost': 10,
-			'owner': 'none'
-		}
-	} 
-
-func create_double_neighbors(pos,x,y):
-	
-	var pre_neighbors
-	var n = pos + Vector2(0,-1) * Vector2(x,y)
-	var ne = pos + Vector2(1,-1) * Vector2(x,y)
-	var nw = pos + Vector2(-1,-1) * Vector2(x,y)
-	var s = pos + Vector2(0,1) * Vector2(x,y)
-	var se = pos + Vector2(1,1) * Vector2(x,y)
-	var sw = pos + Vector2(-1,1) * Vector2(x,y)
-	var w = pos + Vector2(-1,0) * Vector2(x,y)
-	var e = pos + Vector2(1,0) * Vector2(x,y)
-	
-	var n2 = pos + Vector2(0,-2) * Vector2(x,y)
-	var ne2 = pos + Vector2(2,-2) * Vector2(x,y)
-	var nw2 = pos + Vector2(-2,-2) * Vector2(x,y)
-	var s2 = pos + Vector2(0,2) * Vector2(x,y)
-	var se2 = pos + Vector2(2,2) * Vector2(x,y)
-	var sw2 = pos + Vector2(-2,2) * Vector2(x,y)
-	var w2 = pos + Vector2(-2,0) * Vector2(x,y)
-	var e2 = pos + Vector2(2,0) * Vector2(x,y)
-	
-	var n3 = pos + Vector2(1,-2) * Vector2(x,y)
-	var ne3 = pos + Vector2(-1,-2) * Vector2(x,y)
-	var nw3 = pos + Vector2(-2,1) * Vector2(x,y)
-	var s3 = pos + Vector2(-2,-1) * Vector2(x,y)
-	var se3 = pos + Vector2(2,1) * Vector2(x,y)
-	var sw3 = pos + Vector2(2,-1) * Vector2(x,y)
-	var w3 = pos + Vector2(-1,2) * Vector2(x,y)
-	var e3 = pos + Vector2(1,2) * Vector2(x,y)
-
-	pre_neighbors = [n,ne,e,se,s,sw,w,nw,n2,ne2,e2,se2,s2,sw2,w2,nw2,n3,ne3,e3,se3,s3,sw3,w3,nw3]
-	
-			
-	var neighbors = []
-
-	for i in pre_neighbors:
-		var nearest_chunk_pos = get_nearest(i,'chunk')
-		
-		if chunk_dict.has(nearest_chunk_pos):
-			neighbors.append(i)
-				
-	return neighbors
+#func create_double_neighbors(pos,x,y):
+	#
+	#var pre_neighbors
+	#var n = pos + Vector2(0,-1) * Vector2(x,y)
+	#var ne = pos + Vector2(1,-1) * Vector2(x,y)
+	#var nw = pos + Vector2(-1,-1) * Vector2(x,y)
+	#var s = pos + Vector2(0,1) * Vector2(x,y)
+	#var se = pos + Vector2(1,1) * Vector2(x,y)
+	#var sw = pos + Vector2(-1,1) * Vector2(x,y)
+	#var w = pos + Vector2(-1,0) * Vector2(x,y)
+	#var e = pos + Vector2(1,0) * Vector2(x,y)
+	#
+	#var n2 = pos + Vector2(0,-2) * Vector2(x,y)
+	#var ne2 = pos + Vector2(2,-2) * Vector2(x,y)
+	#var nw2 = pos + Vector2(-2,-2) * Vector2(x,y)
+	#var s2 = pos + Vector2(0,2) * Vector2(x,y)
+	#var se2 = pos + Vector2(2,2) * Vector2(x,y)
+	#var sw2 = pos + Vector2(-2,2) * Vector2(x,y)
+	#var w2 = pos + Vector2(-2,0) * Vector2(x,y)
+	#var e2 = pos + Vector2(2,0) * Vector2(x,y)
+	#
+	#var n3 = pos + Vector2(1,-2) * Vector2(x,y)
+	#var ne3 = pos + Vector2(-1,-2) * Vector2(x,y)
+	#var nw3 = pos + Vector2(-2,1) * Vector2(x,y)
+	#var s3 = pos + Vector2(-2,-1) * Vector2(x,y)
+	#var se3 = pos + Vector2(2,1) * Vector2(x,y)
+	#var sw3 = pos + Vector2(2,-1) * Vector2(x,y)
+	#var w3 = pos + Vector2(-1,2) * Vector2(x,y)
+	#var e3 = pos + Vector2(1,2) * Vector2(x,y)
+#
+	#pre_neighbors = [n,ne,e,se,s,sw,w,nw,n2,ne2,e2,se2,s2,sw2,w2,nw2,n3,ne3,e3,se3,s3,sw3,w3,nw3]
+	#
+			#
+	#var neighbors = []
+#
+	#for i in pre_neighbors:
+		#var nearest_chunk_pos = get_nearest(i,'chunk')
+		#
+		#if chunk_dict.has(nearest_chunk_pos):
+			#neighbors.append(i)
+				#
+	#return neighbors
 	
 func send_init(path):
 	

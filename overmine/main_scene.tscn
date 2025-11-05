@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=54 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
 [ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
@@ -50,6 +50,9 @@
 [ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="32_o4fqm"]
 [ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="33_gfmxp"]
 [ext_resource type="PackedScene" uid="uid://dw4srph7to3a5" path="res://border_in.tscn" id="50_uacds"]
+[ext_resource type="Script" uid="uid://crxob250ov8bt" path="res://shape.gd" id="51_y0lqw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c5xsv"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_84x1k"]
 
@@ -264,7 +267,7 @@ horizontal_alignment = 2
 [node name="mark" type="Node2D" parent="sprites/new_sprites"]
 
 [node name="mark0" type="Sprite2D" parent="sprites/new_sprites/mark"]
-visible = false
+material = SubResource("ShaderMaterial_c5xsv")
 texture = ExtResource("14_q1yuq")
 
 [node name="mark1" type="Sprite2D" parent="sprites/new_sprites/mark"]
@@ -446,6 +449,12 @@ text = "ererere"
 wait_time = 300.0
 one_shot = true
 
+[node name="shapes" type="Node2D" parent="."]
+script = ExtResource("51_y0lqw")
+
+[node name="shape_timer" type="Timer" parent="shapes"]
+one_shot = true
+
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/drill_button" to="." method="_on_drill_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/buy_drill" to="." method="_on_buy_drill_pressed"]
@@ -453,3 +462,4 @@ one_shot = true
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drone_buttons/drone_button" to="." method="_on_drone_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/upgrade_button" to="." method="_on_upgrade_button_pressed"]
 [connection signal="timeout" from="game_timer" to="." method="_on_game_timer_timeout"]
+[connection signal="timeout" from="shapes/shape_timer" to="shapes" method="_on_shape_timer_timeout"]

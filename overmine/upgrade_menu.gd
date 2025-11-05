@@ -1,6 +1,6 @@
 extends ColorRect
 
-signal update_upgrades(upgrade_data)
+#signal update_upgrades(upgrade_data)
 
 #var upgrade_data
 var list_of_upgrades
@@ -43,7 +43,8 @@ func send_signal(upgrade_data):
 
 	if current_upgrade < max_upgrade:
 		current_upgrade += 1
-		emit_signal("update_upgrades",upgrade_data)
+		Globals.handle_upgrades(upgrade_data)
+		#emit_signal("update_upgrades",upgrade_data)
 		update_text(upgrade_data)
 ## MINE 
 
@@ -55,17 +56,21 @@ func _on_mine_radius_pressed() -> void:
 ## DRONE 
 
 func _on_drone_speed_pressed() -> void:
-	send_signal('drone_speed')
+	#send_signal('drone_speed')
+	pass
 
 func _on_drone_add_pressed() -> void:
-	send_signal('drone_add')
+	#send_signal('drone_add')
+	pass
 
 func _on_scan_size_pressed() -> void:
-	send_signal('scan_size')
+	#send_signal('scan_size')
+	pass
 
 ## DRILL 
 func _on_drill_add_pressed() -> void:
-	send_signal('drill_add')
+	#send_signal('drill_add')
+	pass
 
 func _on_drill_dur_pressed() -> void:
 	pass
@@ -78,10 +83,12 @@ func _on_drill_size_pressed() -> void:
 
 ## DRONE BATTERY 
 func _on_battery_speed_pressed() -> void:
-	send_signal('battery_speed')
+	#send_signal('battery_speed')
+	pass
 	
 func _on_battery_plus_pressed() -> void:
-	send_signal('battery_plus')
+	#send_signal('battery_plus')
+	pass
 
 ## MARK
 func _on_call_it_in_pressed() -> void:
@@ -95,4 +102,5 @@ func _on_steel_heart_pressed() -> void:
 	pass
 
 func _on_click_multi_pressed() -> void:
-	send_signal('click_multi')
+	#send_signal('click_multi')
+	pass

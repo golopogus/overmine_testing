@@ -1,10 +1,52 @@
-[gd_scene load_steps=2 format=3 uid="uid://kimhjv6h4o2l"]
+[gd_scene load_steps=12 format=3 uid="uid://kimhjv6h4o2l"]
 
 [ext_resource type="Texture2D" uid="uid://bcrj53eh44wl0" path="res://pics/new_pics/home.png" id="1_tt30a"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tt30a"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1ey7h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_o1ld7"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2ayvv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w1mvj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lxycn"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vqw7c"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_86xni"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qq0qw"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q6q8i"]
+
 [node name="home" type="Node2D"]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="background" type="Sprite2D" parent="."]
 scale = Vector2(10, 10)
 texture = ExtResource("1_tt30a")
 centered = false
+
+[node name="shop_button" type="Button" parent="."]
+offset_left = 106.0
+offset_top = 2.0
+offset_right = 859.0
+offset_bottom = 658.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_tt30a")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_1ey7h")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_o1ld7")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_2ayvv")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_w1mvj")
+
+[node name="Button" type="Button" parent="."]
+offset_left = 1197.0
+offset_top = 285.0
+offset_right = 1885.0
+offset_bottom = 996.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_lxycn")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_vqw7c")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_86xni")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_qq0qw")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_q6q8i")
