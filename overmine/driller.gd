@@ -35,7 +35,7 @@ func _process(_delta: float) -> void:
 				dir = Vector2.LEFT
 		
 func set_tiles(pos_dict):
-	print(pos_dict)
+	
 	if pos_dict['clicked'] == false:
 		drilling = true
 		reade = false

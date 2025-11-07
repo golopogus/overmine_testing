@@ -31,7 +31,6 @@ func click_tile(pos):
 	emit_signal('ready_to_click',pos)
 
 func get_timer(path):
-	print('globals good')
 	emit_signal('timer_for_border',path)
 
 func send_shape(shape):

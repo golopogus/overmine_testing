@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=58 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://level.gd" id="1_dlbli"]
 [ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="2_2hox4"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://cu3lxd0si2lb" path="res://pics/new_pics/mark1.png" id="15_njfgp"]
 [ext_resource type="Texture2D" uid="uid://cbsl0phdd4n5l" path="res://pics/new_pics/mark2.png" id="16_rw15y"]
 [ext_resource type="Texture2D" uid="uid://mmtsfsvrt6e0" path="res://pics/new_pics/mark3.png" id="17_t8qre"]
+[ext_resource type="Texture2D" uid="uid://vb3mtuq1ib2f" path="res://pics/new_pics/used_mark.png" id="18_53riq"]
 [ext_resource type="Texture2D" uid="uid://blsbo0do32j4h" path="res://pics/new_pics/tile_1.png" id="18_562xt"]
 [ext_resource type="Texture2D" uid="uid://cc48xqo6dcqqm" path="res://pics/new_pics/tile_2.png" id="19_0sd67"]
 [ext_resource type="Texture2D" uid="uid://mo1s5lbrxon3" path="res://pics/new_pics/tile_3.png" id="20_qh1jm"]
@@ -31,7 +32,9 @@
 [ext_resource type="Texture2D" uid="uid://ds513sohl13kd" path="res://pics/new_pics/click_mine.png" id="29_b68vv"]
 [ext_resource type="Texture2D" uid="uid://m1o7ouij1kp6" path="res://pics/new_pics/safe.png" id="30_dv2ly"]
 [ext_resource type="Texture2D" uid="uid://b06lj4nbbrj1g" path="res://pics/new_pics/mine.png" id="31_cumd2"]
+[ext_resource type="Shader" uid="uid://dlma1pbpxdhva" path="res://load.gdshader" id="32_84hvi"]
 [ext_resource type="Texture2D" uid="uid://cd82ver13at5d" path="res://pics/hidden.png" id="32_la0c1"]
+[ext_resource type="Texture2D" uid="uid://nubc0fyh6iya" path="res://pics/new_pics/summon_bar.png" id="33_53riq"]
 [ext_resource type="Texture2D" uid="uid://d2otfn7c6mhwi" path="res://pics/mineClicked.png" id="33_ofs7l"]
 [ext_resource type="Texture2D" uid="uid://di0m0dfxhx64u" path="res://pics/safe.png" id="34_0qfi3"]
 [ext_resource type="Texture2D" uid="uid://fg2buvvgeklp" path="res://pics/testTileHovered.png" id="35_03k3n"]
@@ -55,6 +58,10 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c5xsv"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_84x1k"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_84hvi"]
+shader = ExtResource("32_84hvi")
+shader_parameter/time = 0.0
 
 [node name="level" type="Node2D"]
 script = ExtResource("1_dlbli")
@@ -283,6 +290,10 @@ texture = ExtResource("16_rw15y")
 visible = false
 texture = ExtResource("17_t8qre")
 
+[node name="mark4" type="Sprite2D" parent="sprites/new_sprites/mark"]
+visible = false
+texture = ExtResource("18_53riq")
+
 [node name="hidden" type="Node2D" parent="sprites/new_sprites"]
 
 [node name="hidden1" type="Sprite2D" parent="sprites/new_sprites/hidden"]
@@ -425,7 +436,6 @@ texture = ExtResource("49_rsq42")
 [node name="screen" type="CanvasLayer" parent="."]
 
 [node name="border_in" parent="screen" instance=ExtResource("50_oiuvo")]
-visible = false
 
 [node name="vignette" type="ColorRect" parent="screen"]
 visible = false
@@ -446,6 +456,13 @@ theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 66
 text = "ererere"
 
+[node name="draw_load" type="Sprite2D" parent="screen"]
+visible = false
+top_level = true
+material = SubResource("ShaderMaterial_84hvi")
+texture = ExtResource("33_53riq")
+offset = Vector2(32, 32)
+
 [node name="game_timer" type="Timer" parent="."]
 wait_time = 300.0
 one_shot = true
@@ -456,7 +473,15 @@ script = ExtResource("51_lupeo")
 [node name="shape_timer" type="Timer" parent="shapes"]
 one_shot = true
 
-[node name="right_click_timer" type="Timer" parent="."]
+[node name="draw_load_timers" type="Node2D" parent="."]
+
+[node name="click_timer" type="Timer" parent="draw_load_timers"]
+wait_time = 1.3499999999999999
+
+[node name="shader_buffer" type="Timer" parent="draw_load_timers"]
+wait_time = 0.15
+
+[node name="book" type="Node2D" parent="."]
 
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/drill_button" to="." method="_on_drill_button_pressed"]
@@ -466,4 +491,5 @@ one_shot = true
 [connection signal="pressed" from="CanvasLayer/normal_rez/upgrade_button" to="." method="_on_upgrade_button_pressed"]
 [connection signal="timeout" from="game_timer" to="." method="_on_game_timer_timeout"]
 [connection signal="timeout" from="shapes/shape_timer" to="shapes" method="_on_shape_timer_timeout"]
-[connection signal="timeout" from="right_click_timer" to="." method="_on_right_click_timer_timeout"]
+[connection signal="timeout" from="draw_load_timers/click_timer" to="." method="_on_click_timer_timeout"]
+[connection signal="timeout" from="draw_load_timers/shader_buffer" to="." method="_on_shader_buffer_timeout"]

@@ -8,7 +8,7 @@ var lives = 1
 var test
 var panning = false
 var drawing = false
-var chance = 11
+var chance = 5
 var stored_mous_pos = Vector2()
 var book_spawned = false
 var round_points = 0
@@ -19,6 +19,7 @@ var all_store_data = {}
 var upgrade_in_hand = false
 var upgrade
 var timer = 5
+var used_mark = []
 # final game grid = [40,25] x (25x50)
 const grid_size_options = [[40,20],[4,4],[8,8]]
 var chosen_grid_size = grid_size_options[0]
@@ -53,13 +54,16 @@ var upgrade_load = preload("res://upgrade_menu.tscn")
 var ball_load = preload("res://ball.tscn")
 var mark_load = preload('res://mark.tscn')
 var mat = load('res://mark.gdshader')
+var mat2 = load("res://load.gdshader")
 var drill_load = preload('res://driller.tscn')
 var drone_base_load = preload('res://drone_base.tscn')
 var mouse_in = true
 var view_port_size
+var custom_time = 0.0
 var mine_thread
 var texture_dict
 var selected_mark = []
+var banned_from_summons = true
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -112,12 +116,14 @@ func _ready() -> void:
 #############################################################################	
 #############################################################################
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	
+	$screen/draw_load.position = get_viewport().get_mouse_position()
+	custom_time += delta
 	$screen/Label.text = str(roundi($game_timer.time_left))
 	
-	#if moveable and mouse_in:
-	if panning and mouse_in:
+	if moveable and mouse_in:
+	#if panning and mouse_in:
 	
 		var difference = local_mous_pos - get_global_mouse_position()
 		$Camera2D.position += difference
@@ -147,28 +153,41 @@ func _unhandled_input(_event: InputEvent) -> void:
 		stored_mous_pos = get_global_mouse_position()
 		stored_pos = nearest_tile_pos
 		
-		
-		
 		if upgrade_in_hand == true:
 			if tile_dict[nearest_tile_pos]['clicked'] == true:
 				upgrade.place(nearest_tile_pos)
 				upgrade_in_hand = false
 				upgrade = 'NONE'
-		elif $drones.get_child_count() > 0:
-			check_if_drone_base(nearest_tile_pos)
+		
+		elif check_if_drone_base(nearest_tile_pos):
+			pass
+		
+		elif check_if_book(nearest_tile_pos):
+			pass
+			
+		elif gamestart == true and selected_mark.size() > 0:
+				$draw_load_timers/shader_buffer.start()
+				$draw_load_timers/click_timer.start()
 	
 	if Input.is_action_pressed("left_click"):
-		if nearest_tile_pos != stored_pos:
-			if panning == false:
-				local_mous_pos = get_global_mouse_position()
-			panning = true
+			if drawing == true:
+				$shapes.draw_true()
+		#if nearest_tile_pos != stored_pos:
+			#if panning == false:
+				#local_mous_pos = get_global_mouse_position()
+			#panning = true
 		#if spell == true:
 			#$shapes.draw_true()
 			
 		
 	if Input.is_action_just_released("left_click"):
+			
+			$draw_load_timers/shader_buffer.stop()
+			$draw_load_timers/click_timer.stop()
+			handle_draw_load(false)
+				
 			revealed_tiles = []
-			if panning == false:
+			if drawing == false:
 				if upgrade_in_hand == false:
 					if nearest_tile_pos == stored_pos:
 							if tile_dict.has(nearest_tile_pos):
@@ -183,38 +202,27 @@ func _unhandled_input(_event: InputEvent) -> void:
 										if book_spawned == false:
 											if revealed_tiles.size() >= 9:
 												book_chance()
-									else:
+									elif nearest_tile_pos not in used_mark and banned_from_summons == false:
 										highlight_mark(nearest_tile_pos,nearest_chunk_pos)
 			else:
-				panning = false
+				#for i in selected_mark:
+					#used_mark.append(i)
+					#change_texture(get_node_from_pos(i))
+					
+					
+				drawing = false
+				#selected_mark = []
 					#elif spell == true:
 						#if tile_dict[nearest_tile_pos]['marked'] == true:
 							#highlight_mark(nearest_tile_pos,nearest_chunk_pos)
 											
 	if Input.is_action_just_pressed("right_click"):
-		stored_mous_pos = get_global_mouse_position()
-		stored_pos = nearest_tile_pos
-		if gamestart == true:
-			$right_click_timer.start()
-	
-	if Input.is_action_pressed("right_click"):
-		#if nearest_tile_pos != stored_pos:
-		#if drawing == false:
-			#local_mous_pos = get_global_mouse_position()
-		if drawing == true:
-			$shapes.draw_true()
-		
-	if Input.is_action_just_released("right_click"):
-		$right_click_timer.stop()
-		print(drawing)
-		if drawing == false:
-			if nearest_tile_pos == stored_pos:
-				if tile_dict.has(nearest_tile_pos):
-					mark(nearest_tile_pos, nearest_chunk_pos)
-		else:
-			print('stoped')
-			
-			drawing = false
+
+		if tile_dict.has(nearest_tile_pos):
+			if nearest_tile_pos not in used_mark:
+				mark(nearest_tile_pos, nearest_chunk_pos)
+
+
 				
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
@@ -251,12 +259,12 @@ func _unhandled_input(_event: InputEvent) -> void:
 	if _event is InputEventMouseButton:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
 			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
-				$Camera2D.zoom *= 2
+				$Camera2D.zoom += Vector2(.1,.1)
 		
 	if _event is InputEventMouseButton:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
-			if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
-				$Camera2D.zoom /= 2
+			if $Camera2D.zoom.x >= .8 and $Camera2D.zoom.y >= .8:
+				$Camera2D.zoom -= Vector2(.1,.1)
 		
 					
 #############################################################################
@@ -264,6 +272,12 @@ func _unhandled_input(_event: InputEvent) -> void:
 #█ █░▀█ █ ░█░ █ █▀█ ░█░ █ █░▀█ █▄█   █▄█ █▀▄ █ █▄▀
 #############################################################################	
 
+func get_node_from_pos(pos):
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	return get_node(node_path)
+	
+	
 func place_chunk_loc():
 	
 	var start_pos = Vector2()
@@ -398,7 +412,10 @@ func change_texture(tile):
 	tile_dict[pos]['name'] = tile.name
 	if tile_pos['clicked'] == false:
 		if tile_pos['marked'] == true:
-			tile.texture = texture_dict['mark']['mark0']
+			if pos in used_mark:
+				tile.texture = texture_dict['mark']['mark4']
+			else:
+				tile.texture = texture_dict['mark']['mark0']
 			#tile.material = ShaderMaterial.new()
 			#tile.material.set("shader", mat)
 		else:
@@ -469,12 +486,12 @@ func check_chunk_boundary(pos):
 	if x_bounds[1] % 3 == 0 or x_bounds[1] % 3 == 1:
 		sim_size.x = x_bounds[1]
 	else:
-		sim_size.x = x_bounds + 1
+		sim_size.x = x_bounds[1] + 1
 		
 	if y_bounds[1] % 3 == 0 or y_bounds[1] % 3 == 1:
 		sim_size.y = y_bounds[1]
 	else:
-		sim_size.y = y_bounds + 1
+		sim_size.y = y_bounds[1] + 1
 	
 	
 	for x in int(sim_size.x):
@@ -646,11 +663,11 @@ func clicked(pos):
 				tile_dict[pos]['type'] = 'safe'
 
 		if tile_dict[pos]['type'] != 'mine':
-			var score_multiplier = all_upgrade_data['click_multi']['current'] + 1
+			var score_multiplier = Globals.all_upgrade_data['click_multi']['current'] + 1
 			round_points += 1 * score_multiplier
 			update_points()
 		if tile_dict[pos]['type'] == 'mine':
-			var mine_radius = all_upgrade_data['mine_radius']['current']
+			var mine_radius = Globals.all_upgrade_data['mine_radius']['current']
 			if mine_radius > 0:
 				update_neighbors(pos,'mine')
 				
@@ -775,7 +792,6 @@ func mark(pos,chunk_pos):
 	
 	var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
 	var tile = tile_dict[pos]
-	print(tile['marked'])
 	if tile['clicked'] == false:
 
 		if tile['marked'] == false:
@@ -787,8 +803,8 @@ func mark(pos,chunk_pos):
 			if tile_node.material != null:
 				tile_node.material.set("shader", '')	
 	
-	if tile['type'] != 'mine':
-		flag_correct = false
+	#if tile['type'] != 'mine':
+		#flag_correct = false
 	
 	
 	change_texture(get_node(node_path))
@@ -1080,11 +1096,15 @@ func _on_drill_button_pressed() -> void:
 #############################################################################
 
 func check_if_drone_base(pos):
-	if $drones.get_child(0).position == pos:
-		upgrade_in_hand = true
-		upgrade = $drones.get_child(0)
-		$drones.get_child(0).clicked()
-
+	var moving = false
+	if $drones.get_child_count() > 0:
+		if $drones.get_child(0).position == pos:
+			upgrade_in_hand = true
+			upgrade = $drones.get_child(0)
+			$drones.get_child(0).clicked()
+			moving = true
+	return moving
+	
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -1096,7 +1116,7 @@ func book_chance():
 		var rand_pos = randi_range(0,revealed_tiles.size() - 1)
 		var book_load = preload("res://book.tscn")
 		var book = book_load.instantiate()
-		add_child(book)
+		$book.add_child(book)
 		book.position = revealed_tiles[rand_pos]
 		book.offset = Vector2(x_length,y_length) / 2.0
 	
@@ -1282,7 +1302,8 @@ func initialize_textures():
 			'mark0' = $sprites/new_sprites/mark/mark0.texture,
 			'mark1' = $sprites/new_sprites/mark/mark1.texture,
 			'mark2' = $sprites/new_sprites/mark/mark2.texture,
-			'mark3' = $sprites/new_sprites/mark/mark3.texture
+			'mark3' = $sprites/new_sprites/mark/mark3.texture,
+			'mark4' = $sprites/new_sprites/mark/mark4.texture
 		},
 		'hidden' = {
 			'hidden1' = $sprites/new_sprites/hidden/hidden1.texture,
@@ -1305,32 +1326,81 @@ func initialize_textures():
 func _on_game_timer_timeout() -> void:
 	$screen/border_in.time_out()
 
-
-func _on_right_click_timer_timeout() -> void:
-	drawing = true
-
+func check_marks():
+	var correct = true
+	for i in selected_mark:
+		if tile_dict[i]['type'] != 'mine':
+			correct = false
+			break
+	return correct
+			
 func create_summon(shape):
 	
-	if shape == 'circle':
-		var ball = ball_load.instantiate()
-		add_child(ball)
-		upgrade_in_hand = true
-		upgrade = ball
-		ball.clicked()
+	if check_marks():
 	
-	if shape == 'square':
-		var driller = drill_load.instantiate()
-		add_child(driller)
-		upgrade_in_hand = true
-		upgrade = driller
-		driller.clicked()
+		if shape == 'circle':
+			var ball = ball_load.instantiate()
+			add_child(ball)
+			upgrade_in_hand = true
+			upgrade = ball
+			ball.clicked()
+		
+		if shape == 'square':
+			var driller = drill_load.instantiate()
+			add_child(driller)
+			upgrade_in_hand = true
+			upgrade = driller
+			driller.clicked()
+		
+		if shape == 'triangle':
+			var drone_base = drone_base_load.instantiate()
+			$drones.add_child(drone_base)
+			upgrade_in_hand = true
+			upgrade = drone_base
+			drone_base.clicked()
 	
-	if shape == 'triangle':
-		var drone_base = drone_base_load.instantiate()
-		$drones.add_child(drone_base)
-		upgrade_in_hand = true
-		upgrade = drone_base
-		drone_base.clicked()
+		for i in selected_mark:
+			used_mark.append(i)
+			change_texture(get_node_from_pos(i))
+	else:
+		var temp_mark = []
+		for i in selected_mark:
+			temp_mark.append(i)
+		for i in temp_mark:
+			highlight_mark(i,get_nearest(i,'chunk'))
+		banned_from_summons = true
+	
+	selected_mark = []
+
+func _on_click_timer_timeout() -> void:
+	$draw_load_timers/click_timer.stop()
+	handle_draw_load(false)
+	drawing = true
+
+	
+func handle_draw_load(vis):
+	if vis:
+		$screen/draw_load.visible = true
+		$screen/draw_load.material.set("shader_parameter/time",custom_time)
 		
+	else:
 		
+		$screen/draw_load.visible = false
+
+
+func _on_shader_buffer_timeout() -> void:
+	
+		$draw_load_timers/shader_buffer.stop()
+		handle_draw_load(true)
+
+func check_if_book(pos):
+	var book = false
+	if $book.get_child_count() > 0:
+		if $book.get_child(0).position == pos:
+			$book.get_child(0).queue_free()
+			banned_from_summons = false
+	
+	return book
+		
+
 	

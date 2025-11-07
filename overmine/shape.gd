@@ -18,14 +18,14 @@ func _ready() -> void:
 func _unhandled_input(_event: InputEvent) -> void:
 	if can_draw:
 		$shape_timer.stop()
-		if Input.is_action_pressed("right_click"):
+		if Input.is_action_pressed("left_click"):
 			
 			if drawing == false:
 				list_of_pts = []
 				drawing = true
 				to_draw = ''
 		
-		if Input.is_action_just_released("right_click"):
+		if Input.is_action_just_released("left_click"):
 			if list_of_pts.size() > 0:
 				var updated_list = initialize_pts(list_of_pts)
 				handler(updated_list)
@@ -162,7 +162,7 @@ func determine_nearest_shape():
 	
 	var guess = dist_dict[min_dist]
 	
-	print('My guess is ... a ' + guess + ' with an average ' + str(min_dist) + ' pixels off from perfect' )
+	#print('My guess is ... a ' + guess + ' with an average ' + str(min_dist) + ' pixels off from perfect' )
 	
 	Globals.send_shape(guess)
 	to_draw = guess
