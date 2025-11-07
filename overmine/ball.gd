@@ -7,12 +7,14 @@ var current_pt
 var next_tile
 var current_tile
 var radius
+var health = 3
 var current_pts
 var velocity
 var flipped = false
 var current_tiles
 var next_tiles
 var speed = 4
+var click = false
 var dir = Vector2()
 
 func _ready() -> void:
@@ -29,31 +31,50 @@ func set_init(size,pos):
 	tile_size = size
 	radius = tile_size.x / 2.0
 	
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	
-	for i in len(current_pts):
-		if next_tiles[i] != current_tiles[i]:
-			
-			if flipped == false:
+	if click == true:
+		position = get_global_mouse_position()
+	else:
+		rotation_degrees += 1000 * delta
+		for i in len(current_pts):
+			if next_tiles[i] != current_tiles[i]:
 				
-				current_pt = current_pts[i]
-				current_tile = current_tiles[i]
-				next_tile = next_tiles[i]
+				if flipped == false:
+					
+					current_pt = current_pts[i]
+					current_tile = current_tiles[i]
+					next_tile = next_tiles[i]
 
-				Globals.get_tiles(self.get_path(),[next_tiles[i]],'ball')
+					Globals.get_tiles(self.get_path(),[next_tiles[i]],'ball')
+			
+		velocity = speed * dir
+		position += velocity
+		calculate_pts()
+		flipped = false
 		
-	velocity = speed * dir
-	position += velocity
-	calculate_pts()
-	flipped = false
-	
 
 func set_tiles(tile):
-	
+
 	if tile['clicked'] == false:
-		Globals.click_tile(next_tile)
+		if tile['type'] == 'mine' and tile['marked'] == false:
+			health -= 1
+		if tile['marked'] == false:
+			Globals.click_tile(next_tile)
 		flip()
 		
+	if health == 0:
+		queue_free()
+		
+func clicked():
+	click = true
+
+func place(pos):
+	
+	click = false
+	position = pos
+	
+	
 func flip():
 	
 	flipped = true

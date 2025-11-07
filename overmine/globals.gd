@@ -7,6 +7,7 @@ signal drone_ready_for_check
 signal ball_ready
 signal ball_pls
 signal timer_for_border
+signal shape_guess
 var all_upgrade_data
 
 func _ready() -> void:
@@ -33,6 +34,9 @@ func get_timer(path):
 	print('globals good')
 	emit_signal('timer_for_border',path)
 
+func send_shape(shape):
+	emit_signal('shape_guess',shape)
+	
 func handle_upgrades(upgrade_data):
 	
 	all_upgrade_data[upgrade_data]['current'] += 1

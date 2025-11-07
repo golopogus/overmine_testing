@@ -10,16 +10,20 @@ var charging_timer = 3
 var first = true
 var scan_scale = 1
 var wait = false
-var ghoul_load = preload('res://ghoul.tscn')
+var ghoul_load = preload('res://drone.tscn')
 
+func _ready() -> void:
+	
+	get_initial_upgrades()
 func _process(_delta: float) -> void:
 
 	if click == true:
 
-		position = get_global_mouse_position() - Vector2(8,8)
+		position = get_global_mouse_position() - Vector2(16,16)
 	
 
 func clicked():
+	$self/base_sprite/area.visible = true
 	click = true
 	if get_child_count() > 1:
 		for i in range(1,get_children().size()):
@@ -36,6 +40,7 @@ func place(pos):
 	if first == true:
 		num_drones += 1
 		first = false
+	$self/base_sprite/area.visible = false
 	
 	await get_tree().create_timer(.5).timeout
 	for i in num_drones:
@@ -88,12 +93,12 @@ func spawn_drone():
 	drone.initialize_values(drone_speed,scan_size,battery_size)
 	#child = drone
 
-func get_initial_upgrades(upgrades):
+func get_initial_upgrades():
 	
-	drone_speed = upgrades['drone_speed']['current']
-	scan_size = upgrades['scan_size']['current']
-	battery_size = upgrades['battery_plus']['current']
-	var charging_speed = upgrades['battery_speed']['current']
+	drone_speed = Globals.all_upgrade_data['drone_speed']['current']
+	scan_size = Globals.all_upgrade_data['scan_size']['current']
+	battery_size = Globals.all_upgrade_data['battery_plus']['current']
+	var charging_speed = Globals.all_upgrade_data['battery_speed']['current']
 	
 	update_charging_speed(charging_speed)
 	update_scan_size(scan_size)

@@ -1,6 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://kimhjv6h4o2l"]
+[gd_scene load_steps=14 format=3 uid="uid://kimhjv6h4o2l"]
 
+[ext_resource type="Script" uid="uid://bcftv5bgtiiac" path="res://home.gd" id="1_o1ld7"]
 [ext_resource type="Texture2D" uid="uid://bcrj53eh44wl0" path="res://pics/new_pics/home.png" id="1_tt30a"]
+[ext_resource type="PackedScene" uid="uid://ciloja465wfxs" path="res://upgrade_menu.tscn" id="3_2ayvv"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tt30a"]
 
@@ -23,6 +25,7 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q6q8i"]
 
 [node name="home" type="Node2D"]
+script = ExtResource("1_o1ld7")
 
 [node name="background" type="Sprite2D" parent="."]
 scale = Vector2(10, 10)
@@ -40,7 +43,7 @@ theme_override_styles/hover = SubResource("StyleBoxEmpty_o1ld7")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_2ayvv")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_w1mvj")
 
-[node name="Button" type="Button" parent="."]
+[node name="play_button" type="Button" parent="."]
 offset_left = 1197.0
 offset_top = 285.0
 offset_right = 1885.0
@@ -50,3 +53,9 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_vqw7c")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_86xni")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_qq0qw")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_q6q8i")
+
+[node name="upgrade_menu" parent="." instance=ExtResource("3_2ayvv")]
+visible = false
+
+[connection signal="pressed" from="shop_button" to="." method="_on_shop_button_pressed"]
+[connection signal="pressed" from="play_button" to="." method="_on_play_button_pressed"]

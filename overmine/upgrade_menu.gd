@@ -15,13 +15,17 @@ var max_drill_add
 var current_drill_add
 
 
-
-func _on_close_pressed() -> void:
-	queue_free()
-
-func get_upgrade_list(list):
-	list_of_upgrades = list
+func _ready() -> void:
+	list_of_upgrades = Globals.all_upgrade_data
 	initialize_upgrade_tree()
+	
+func _on_close_pressed() -> void:
+	#queue_free()
+	visible = false
+
+#func get_upgrade_list(list):
+#
+	#initialize_upgrade_tree()
 	
 func initialize_upgrade_tree():
 	for i in list_of_upgrades:

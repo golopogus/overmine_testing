@@ -11,11 +11,11 @@ script = ExtResource("2_sulth")
 
 [node name="base_sprite" type="Sprite2D" parent="self"]
 texture = ExtResource("1_3557c")
-offset = Vector2(8, 8)
+offset = Vector2(16, 16)
 
 [node name="area" type="Sprite2D" parent="self/base_sprite"]
 show_behind_parent = true
-position = Vector2(8, 8)
+position = Vector2(16, 16)
 texture = ExtResource("2_c3slu")
 region_rect = Rect2(16, 16, 16, 16)
 

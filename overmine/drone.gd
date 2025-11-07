@@ -80,6 +80,7 @@ func start_scanning(instance):
 
 
 func set_tile(can_scan):
+	
 	if can_scan == true:
 		
 		moving = false
@@ -109,12 +110,12 @@ func get_grid(scan_area):
 	
 	var center_pos = get_parent().position
 	var away_from_center = (scan_area - 1)/2.0
-	var start = center_pos - Vector2(away_from_center,away_from_center) * 16
+	var start = center_pos - Vector2(away_from_center,away_from_center) * 32
 	scan = []
 	var tile_pos
 	for x in scan_area:
 		for y in scan_area:
-			tile_pos = start + Vector2(16,16) * Vector2(x,y)
+			tile_pos = start + Vector2(32,32) * Vector2(x,y)
 			scan.append(tile_pos)
 	
 	Globals.get_tiles(self.get_path(),scan,'drone')

@@ -1,63 +1,63 @@
 [gd_scene load_steps=54 format=3 uid="uid://15d6kjfxhuns"]
 
-[ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://main_scene.gd" id="1_2c62f"]
-[ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="2_7th4q"]
-[ext_resource type="Texture2D" uid="uid://cd82ver13at5d" path="res://pics/hidden.png" id="2_gyfs4"]
-[ext_resource type="Texture2D" uid="uid://brf8whh3klgi4" path="res://pics/mine.png" id="3_m35m6"]
-[ext_resource type="Texture2D" uid="uid://d2otfn7c6mhwi" path="res://pics/mineClicked.png" id="4_u0ygc"]
-[ext_resource type="Texture2D" uid="uid://tr6a0hueci6v" path="res://pics/big_middle.png" id="4_vimvf"]
-[ext_resource type="Texture2D" uid="uid://drnmfun5hayvq" path="res://pics/mineWrong.png" id="5_7th4q"]
-[ext_resource type="Texture2D" uid="uid://buci5wrycpxsq" path="res://pics/temp_right.png" id="5_ghshe"]
-[ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="6_5smuj"]
-[ext_resource type="Texture2D" uid="uid://di0m0dfxhx64u" path="res://pics/safe.png" id="6_6jybn"]
-[ext_resource type="Texture2D" uid="uid://clol8ea4x4onc" path="res://pics/temp_left.png" id="6_fv2he"]
-[ext_resource type="Texture2D" uid="uid://hrdxaw0p0iq" path="res://pics/foundMine.png" id="6_u0ygc"]
-[ext_resource type="Texture2D" uid="uid://fg2buvvgeklp" path="res://pics/testTileHovered.png" id="7_84odl"]
-[ext_resource type="Texture2D" uid="uid://waukt442lf8j" path="res://pics/clickSmiley.png" id="7_y5ved"]
-[ext_resource type="Texture2D" uid="uid://gvxla0phgrw5" path="res://pics/temp_back_3.png" id="8_5smuj"]
-[ext_resource type="Texture2D" uid="uid://ceuk5xbfgwur5" path="res://pics/testTilePressed.png" id="8_ak604"]
-[ext_resource type="Texture2D" uid="uid://dmwihnbs60adg" path="res://pics/lostSmiley.png" id="8_kv3aw"]
-[ext_resource type="Texture2D" uid="uid://c7dp0b4wb6hml" path="res://pics/warningOne.png" id="9_vimvf"]
-[ext_resource type="Texture2D" uid="uid://bmgfg288gs2hi" path="res://pics/warningTwo.png" id="10_ghshe"]
-[ext_resource type="Texture2D" uid="uid://bbgltsjg4nhqu" path="res://pics/game_normal.png" id="10_kv3aw"]
-[ext_resource type="Texture2D" uid="uid://dnf68j8byt4q7" path="res://pics/game_hover.png" id="10_y5ved"]
-[ext_resource type="Texture2D" uid="uid://dgymjr8wxw4nl" path="res://pics/warningThree.png" id="11_fv2he"]
-[ext_resource type="Texture2D" uid="uid://cch27j4srnavi" path="res://pics/driller.png" id="11_yh4yk"]
-[ext_resource type="Texture2D" uid="uid://dke3j5b4uljme" path="res://pics/warningFour.png" id="12_5smuj"]
-[ext_resource type="Texture2D" uid="uid://d1d7gscvuw5o2" path="res://pics/drone_base.png" id="13_p8s74"]
-[ext_resource type="Texture2D" uid="uid://dtucikbn2aty5" path="res://pics/warningFive.png" id="13_y5ved"]
-[ext_resource type="Texture2D" uid="uid://cu3lxd0si2lb" path="res://pics/new_pics/mark1.png" id="14_euc68"]
-[ext_resource type="Texture2D" uid="uid://blsbo0do32j4h" path="res://pics/new_pics/tile_1.png" id="14_gfmxp"]
-[ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="14_kv3aw"]
-[ext_resource type="Texture2D" uid="uid://23o4t2xfiv30" path="res://pics/new_pics/mark.png" id="14_q1yuq"]
-[ext_resource type="Texture2D" uid="uid://cc48xqo6dcqqm" path="res://pics/new_pics/tile_2.png" id="15_1n88h"]
-[ext_resource type="Texture2D" uid="uid://cbsl0phdd4n5l" path="res://pics/new_pics/mark2.png" id="15_38t8r"]
-[ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="15_o7u2a"]
-[ext_resource type="Texture2D" uid="uid://c5xvtrm81utmf" path="res://pics/warningEight.png" id="16_ijoax"]
-[ext_resource type="Texture2D" uid="uid://mmtsfsvrt6e0" path="res://pics/new_pics/mark3.png" id="16_jef5d"]
-[ext_resource type="Texture2D" uid="uid://mo1s5lbrxon3" path="res://pics/new_pics/tile_3.png" id="16_opjno"]
-[ext_resource type="Texture2D" uid="uid://cdgd7g28w3to" path="res://pics/new_pics/cracked_1.png" id="21_q1yuq"]
-[ext_resource type="Texture2D" uid="uid://gjgqk7llq6se" path="res://pics/new_pics/cracked_2.png" id="22_uacds"]
-[ext_resource type="Texture2D" uid="uid://dnmnoaxuq6bcf" path="res://pics/new_pics/cracked_3.png" id="23_y0lqw"]
-[ext_resource type="Texture2D" uid="uid://cdnl8j2c13fq5" path="res://pics/new_pics/cracked_4.png" id="24_c5xsv"]
-[ext_resource type="Texture2D" uid="uid://3r4msnq63tyn" path="res://pics/new_pics/cracked_5.png" id="25_84x1k"]
-[ext_resource type="Texture2D" uid="uid://m1o7ouij1kp6" path="res://pics/new_pics/safe.png" id="25_jtbqm"]
-[ext_resource type="Texture2D" uid="uid://60ohmw75gha6" path="res://pics/new_pics/cracked_6.png" id="26_0hwxg"]
-[ext_resource type="Texture2D" uid="uid://1f5fihtwhqm3" path="res://pics/new_pics/cracked_7.png" id="27_si2mt"]
-[ext_resource type="Texture2D" uid="uid://b06lj4nbbrj1g" path="res://pics/new_pics/mine.png" id="28_jef5d"]
-[ext_resource type="Texture2D" uid="uid://c8uqq7svcoxlm" path="res://pics/new_pics/cracked_8.png" id="28_sp30j"]
-[ext_resource type="Texture2D" uid="uid://ds513sohl13kd" path="res://pics/new_pics/click_mine.png" id="29_q1yuq"]
-[ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="32_o4fqm"]
-[ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="33_gfmxp"]
-[ext_resource type="PackedScene" uid="uid://dw4srph7to3a5" path="res://border_in.tscn" id="50_uacds"]
-[ext_resource type="Script" uid="uid://crxob250ov8bt" path="res://shape.gd" id="51_y0lqw"]
+[ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://level.gd" id="1_dlbli"]
+[ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="2_2hox4"]
+[ext_resource type="Texture2D" uid="uid://waukt442lf8j" path="res://pics/clickSmiley.png" id="3_84hvi"]
+[ext_resource type="Texture2D" uid="uid://dmwihnbs60adg" path="res://pics/lostSmiley.png" id="4_53riq"]
+[ext_resource type="Texture2D" uid="uid://tr6a0hueci6v" path="res://pics/big_middle.png" id="5_h44gt"]
+[ext_resource type="Texture2D" uid="uid://buci5wrycpxsq" path="res://pics/temp_right.png" id="6_dqaf4"]
+[ext_resource type="Texture2D" uid="uid://clol8ea4x4onc" path="res://pics/temp_left.png" id="7_umckw"]
+[ext_resource type="Texture2D" uid="uid://gvxla0phgrw5" path="res://pics/temp_back_3.png" id="8_1x5yi"]
+[ext_resource type="Texture2D" uid="uid://bbgltsjg4nhqu" path="res://pics/game_normal.png" id="9_oif8o"]
+[ext_resource type="Texture2D" uid="uid://dnf68j8byt4q7" path="res://pics/game_hover.png" id="10_oedhs"]
+[ext_resource type="Texture2D" uid="uid://cch27j4srnavi" path="res://pics/driller.png" id="11_v5bkr"]
+[ext_resource type="FontFile" uid="uid://cq3udm4b6vmf1" path="res://fonts/ms-sans-serif-1.ttf" id="12_qr3w1"]
+[ext_resource type="Texture2D" uid="uid://d1d7gscvuw5o2" path="res://pics/drone_base.png" id="13_wif62"]
+[ext_resource type="Texture2D" uid="uid://23o4t2xfiv30" path="res://pics/new_pics/mark.png" id="14_40yk4"]
+[ext_resource type="Texture2D" uid="uid://cu3lxd0si2lb" path="res://pics/new_pics/mark1.png" id="15_njfgp"]
+[ext_resource type="Texture2D" uid="uid://cbsl0phdd4n5l" path="res://pics/new_pics/mark2.png" id="16_rw15y"]
+[ext_resource type="Texture2D" uid="uid://mmtsfsvrt6e0" path="res://pics/new_pics/mark3.png" id="17_t8qre"]
+[ext_resource type="Texture2D" uid="uid://blsbo0do32j4h" path="res://pics/new_pics/tile_1.png" id="18_562xt"]
+[ext_resource type="Texture2D" uid="uid://cc48xqo6dcqqm" path="res://pics/new_pics/tile_2.png" id="19_0sd67"]
+[ext_resource type="Texture2D" uid="uid://mo1s5lbrxon3" path="res://pics/new_pics/tile_3.png" id="20_qh1jm"]
+[ext_resource type="Texture2D" uid="uid://cdgd7g28w3to" path="res://pics/new_pics/cracked_1.png" id="21_hspc6"]
+[ext_resource type="Texture2D" uid="uid://gjgqk7llq6se" path="res://pics/new_pics/cracked_2.png" id="22_2mem0"]
+[ext_resource type="Texture2D" uid="uid://dnmnoaxuq6bcf" path="res://pics/new_pics/cracked_3.png" id="23_1acxm"]
+[ext_resource type="Texture2D" uid="uid://cdnl8j2c13fq5" path="res://pics/new_pics/cracked_4.png" id="24_ymw0v"]
+[ext_resource type="Texture2D" uid="uid://3r4msnq63tyn" path="res://pics/new_pics/cracked_5.png" id="25_w2ykt"]
+[ext_resource type="Texture2D" uid="uid://60ohmw75gha6" path="res://pics/new_pics/cracked_6.png" id="26_lojl8"]
+[ext_resource type="Texture2D" uid="uid://1f5fihtwhqm3" path="res://pics/new_pics/cracked_7.png" id="27_u38so"]
+[ext_resource type="Texture2D" uid="uid://c8uqq7svcoxlm" path="res://pics/new_pics/cracked_8.png" id="28_3s4rp"]
+[ext_resource type="Texture2D" uid="uid://ds513sohl13kd" path="res://pics/new_pics/click_mine.png" id="29_b68vv"]
+[ext_resource type="Texture2D" uid="uid://m1o7ouij1kp6" path="res://pics/new_pics/safe.png" id="30_dv2ly"]
+[ext_resource type="Texture2D" uid="uid://b06lj4nbbrj1g" path="res://pics/new_pics/mine.png" id="31_cumd2"]
+[ext_resource type="Texture2D" uid="uid://cd82ver13at5d" path="res://pics/hidden.png" id="32_la0c1"]
+[ext_resource type="Texture2D" uid="uid://d2otfn7c6mhwi" path="res://pics/mineClicked.png" id="33_ofs7l"]
+[ext_resource type="Texture2D" uid="uid://di0m0dfxhx64u" path="res://pics/safe.png" id="34_0qfi3"]
+[ext_resource type="Texture2D" uid="uid://fg2buvvgeklp" path="res://pics/testTileHovered.png" id="35_03k3n"]
+[ext_resource type="Texture2D" uid="uid://hrdxaw0p0iq" path="res://pics/foundMine.png" id="36_7rhug"]
+[ext_resource type="Texture2D" uid="uid://c7dp0b4wb6hml" path="res://pics/warningOne.png" id="37_8oijn"]
+[ext_resource type="Texture2D" uid="uid://bmgfg288gs2hi" path="res://pics/warningTwo.png" id="38_n4px5"]
+[ext_resource type="Texture2D" uid="uid://dgymjr8wxw4nl" path="res://pics/warningThree.png" id="39_f3hnb"]
+[ext_resource type="Texture2D" uid="uid://dke3j5b4uljme" path="res://pics/warningFour.png" id="40_s7ylq"]
+[ext_resource type="Texture2D" uid="uid://dtucikbn2aty5" path="res://pics/warningFive.png" id="41_j70ly"]
+[ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="42_rx63s"]
+[ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="43_8ix83"]
+[ext_resource type="Texture2D" uid="uid://c5xvtrm81utmf" path="res://pics/warningEight.png" id="44_rf5jx"]
+[ext_resource type="Texture2D" uid="uid://brf8whh3klgi4" path="res://pics/mine.png" id="45_8std4"]
+[ext_resource type="Texture2D" uid="uid://drnmfun5hayvq" path="res://pics/mineWrong.png" id="46_d7gql"]
+[ext_resource type="Texture2D" uid="uid://ceuk5xbfgwur5" path="res://pics/testTilePressed.png" id="47_7kq6u"]
+[ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="48_gpid7"]
+[ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="49_rsq42"]
+[ext_resource type="PackedScene" uid="uid://dw4srph7to3a5" path="res://border_in.tscn" id="50_oiuvo"]
+[ext_resource type="Script" uid="uid://crxob250ov8bt" path="res://shape.gd" id="51_lupeo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c5xsv"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_84x1k"]
 
-[node name="main_scene" type="Node2D"]
-script = ExtResource("1_2c62f")
+[node name="level" type="Node2D"]
+script = ExtResource("1_dlbli")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 visible = false
@@ -70,15 +70,15 @@ metadata/_edit_group_ = true
 
 [node name="normal" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
 visible = false
-texture = ExtResource("6_5smuj")
+texture = ExtResource("2_2hox4")
 
 [node name="clicked" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
 visible = false
-texture = ExtResource("7_y5ved")
+texture = ExtResource("3_84hvi")
 
 [node name="bomb" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
 visible = false
-texture = ExtResource("8_kv3aw")
+texture = ExtResource("4_53riq")
 
 [node name="off_rez" type="Control" parent="CanvasLayer"]
 visible = false
@@ -104,7 +104,7 @@ grow_vertical = 2
 
 [node name="mid" type="TextureRect" parent="CanvasLayer/off_rez/mid_box"]
 layout_mode = 2
-texture = ExtResource("4_vimvf")
+texture = ExtResource("5_h44gt")
 
 [node name="right_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
 layout_mode = 1
@@ -118,7 +118,7 @@ grow_horizontal = 0
 
 [node name="right" type="TextureRect" parent="CanvasLayer/off_rez/right_box"]
 layout_mode = 2
-texture = ExtResource("5_ghshe")
+texture = ExtResource("6_dqaf4")
 
 [node name="left_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
 layout_mode = 0
@@ -127,7 +127,7 @@ offset_bottom = 720.0
 
 [node name="left" type="TextureRect" parent="CanvasLayer/off_rez/left_box"]
 layout_mode = 2
-texture = ExtResource("6_fv2he")
+texture = ExtResource("7_umckw")
 
 [node name="normal_rez" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -142,7 +142,7 @@ layout_mode = 0
 offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
-texture = ExtResource("8_5smuj")
+texture = ExtResource("8_1x5yi")
 
 [node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game"]
 visible = false
@@ -151,8 +151,8 @@ offset_left = 8.0
 offset_top = 23.0
 offset_right = 40.0
 offset_bottom = 38.0
-texture_normal = ExtResource("10_kv3aw")
-texture_hover = ExtResource("10_y5ved")
+texture_normal = ExtResource("9_oif8o")
+texture_hover = ExtResource("10_oedhs")
 
 [node name="drill_buttons" type="Control" parent="CanvasLayer/normal_rez/game"]
 visible = false
@@ -166,7 +166,7 @@ offset_left = 531.0
 offset_top = 54.0
 offset_right = 558.0
 offset_bottom = 80.0
-texture_normal = ExtResource("11_yh4yk")
+texture_normal = ExtResource("11_v5bkr")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drill_buttons/drill_button"]
@@ -176,7 +176,7 @@ offset_top = 24.0
 offset_right = 67.0
 offset_bottom = 47.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 11
 text = "1"
 
@@ -208,7 +208,7 @@ offset_left = 349.0
 offset_top = 49.0
 offset_right = 381.0
 offset_bottom = 81.0
-texture_normal = ExtResource("13_p8s74")
+texture_normal = ExtResource("13_wif62")
 stretch_mode = 0
 
 [node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drone_buttons/drone_button"]
@@ -218,7 +218,7 @@ offset_top = 24.0
 offset_right = 67.0
 offset_bottom = 47.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 11
 text = "1"
 
@@ -243,7 +243,7 @@ offset_left = 18.0
 offset_top = 62.0
 offset_right = 60.0
 offset_bottom = 74.0
-theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 11
 text = "1000000"
 horizontal_alignment = 2
@@ -253,7 +253,7 @@ offset_left = 267.0
 offset_top = 61.0
 offset_right = 309.0
 offset_bottom = 73.0
-theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 11
 text = "1000000"
 horizontal_alignment = 2
@@ -267,153 +267,154 @@ horizontal_alignment = 2
 [node name="mark" type="Node2D" parent="sprites/new_sprites"]
 
 [node name="mark0" type="Sprite2D" parent="sprites/new_sprites/mark"]
+visible = false
 material = SubResource("ShaderMaterial_c5xsv")
-texture = ExtResource("14_q1yuq")
+texture = ExtResource("14_40yk4")
 
 [node name="mark1" type="Sprite2D" parent="sprites/new_sprites/mark"]
 visible = false
-texture = ExtResource("14_euc68")
+texture = ExtResource("15_njfgp")
 
 [node name="mark2" type="Sprite2D" parent="sprites/new_sprites/mark"]
 visible = false
-texture = ExtResource("15_38t8r")
+texture = ExtResource("16_rw15y")
 
 [node name="mark3" type="Sprite2D" parent="sprites/new_sprites/mark"]
 visible = false
-texture = ExtResource("16_jef5d")
+texture = ExtResource("17_t8qre")
 
 [node name="hidden" type="Node2D" parent="sprites/new_sprites"]
 
 [node name="hidden1" type="Sprite2D" parent="sprites/new_sprites/hidden"]
 visible = false
-texture = ExtResource("14_gfmxp")
+texture = ExtResource("18_562xt")
 
 [node name="hidden2" type="Sprite2D" parent="sprites/new_sprites/hidden"]
 visible = false
-texture = ExtResource("15_1n88h")
+texture = ExtResource("19_0sd67")
 
 [node name="hidden3" type="Sprite2D" parent="sprites/new_sprites/hidden"]
 visible = false
-texture = ExtResource("16_opjno")
+texture = ExtResource("20_qh1jm")
 
 [node name="1" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("21_q1yuq")
+texture = ExtResource("21_hspc6")
 
 [node name="2" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("22_uacds")
+texture = ExtResource("22_2mem0")
 
 [node name="3" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("23_y0lqw")
+texture = ExtResource("23_1acxm")
 
 [node name="4" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("24_c5xsv")
+texture = ExtResource("24_ymw0v")
 
 [node name="5" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("25_84x1k")
+texture = ExtResource("25_w2ykt")
 
 [node name="6" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("26_0hwxg")
+texture = ExtResource("26_lojl8")
 
 [node name="7" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("27_si2mt")
+texture = ExtResource("27_u38so")
 
 [node name="8" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("28_sp30j")
+texture = ExtResource("28_3s4rp")
 
 [node name="click_mine" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("29_q1yuq")
+texture = ExtResource("29_b68vv")
 hframes = 6
 
 [node name="safe" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("25_jtbqm")
+texture = ExtResource("30_dv2ly")
 
 [node name="mine" type="Sprite2D" parent="sprites/new_sprites"]
 visible = false
-texture = ExtResource("28_jef5d")
+texture = ExtResource("31_cumd2")
 hframes = 4
 frame = 1
 
 [node name="hidden" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("2_gyfs4")
+texture = ExtResource("32_la0c1")
 
 [node name="mine" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("4_u0ygc")
+texture = ExtResource("33_ofs7l")
 
 [node name="safe" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("6_6jybn")
+texture = ExtResource("34_0qfi3")
 
 [node name="hover" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("7_84odl")
+texture = ExtResource("35_03k3n")
 
 [node name="mark" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("6_u0ygc")
+texture = ExtResource("36_7rhug")
 
 [node name="1" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("9_vimvf")
+texture = ExtResource("37_8oijn")
 
 [node name="2" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("10_ghshe")
+texture = ExtResource("38_n4px5")
 
 [node name="3" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("11_fv2he")
+texture = ExtResource("39_f3hnb")
 
 [node name="4" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("12_5smuj")
+texture = ExtResource("40_s7ylq")
 
 [node name="5" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("13_y5ved")
+texture = ExtResource("41_j70ly")
 
 [node name="6" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("14_kv3aw")
+texture = ExtResource("42_rx63s")
 
 [node name="7" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("15_o7u2a")
+texture = ExtResource("43_8ix83")
 
 [node name="8" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("16_ijoax")
+texture = ExtResource("44_rf5jx")
 
 [node name="mine_right" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("3_m35m6")
+texture = ExtResource("45_8std4")
 
 [node name="mine_wrong" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("5_7th4q")
+texture = ExtResource("46_d7gql")
 
 [node name="press" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("8_ak604")
+texture = ExtResource("47_7kq6u")
 
 [node name="mine_scan" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("32_o4fqm")
+texture = ExtResource("48_gpid7")
 
 [node name="not_mine_scan" type="Sprite2D" parent="sprites"]
 visible = false
-texture = ExtResource("33_gfmxp")
+texture = ExtResource("49_rsq42")
 
 [node name="chunks" type="Node2D" parent="."]
 
@@ -423,7 +424,7 @@ texture = ExtResource("33_gfmxp")
 
 [node name="screen" type="CanvasLayer" parent="."]
 
-[node name="border_in" parent="screen" instance=ExtResource("50_uacds")]
+[node name="border_in" parent="screen" instance=ExtResource("50_oiuvo")]
 visible = false
 
 [node name="vignette" type="ColorRect" parent="screen"]
@@ -441,7 +442,7 @@ offset_left = 83.0
 offset_top = 60.0
 offset_right = 472.0
 offset_bottom = 227.0
-theme_override_fonts/font = ExtResource("2_7th4q")
+theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 66
 text = "ererere"
 
@@ -450,10 +451,12 @@ wait_time = 300.0
 one_shot = true
 
 [node name="shapes" type="Node2D" parent="."]
-script = ExtResource("51_y0lqw")
+script = ExtResource("51_lupeo")
 
 [node name="shape_timer" type="Timer" parent="shapes"]
 one_shot = true
+
+[node name="right_click_timer" type="Timer" parent="."]
 
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/drill_button" to="." method="_on_drill_button_pressed"]
@@ -463,3 +466,4 @@ one_shot = true
 [connection signal="pressed" from="CanvasLayer/normal_rez/upgrade_button" to="." method="_on_upgrade_button_pressed"]
 [connection signal="timeout" from="game_timer" to="." method="_on_game_timer_timeout"]
 [connection signal="timeout" from="shapes/shape_timer" to="shapes" method="_on_shape_timer_timeout"]
+[connection signal="timeout" from="right_click_timer" to="." method="_on_right_click_timer_timeout"]

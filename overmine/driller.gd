@@ -22,7 +22,7 @@ func _process(_delta: float) -> void:
 		position.y += speed * dir.y
 
 	if click == true:
-		position = get_global_mouse_position() - Vector2(8,8)
+		position = get_global_mouse_position() - Vector2(16,16)
 		if Input.is_action_just_pressed("rotate"):
 			rotation_degrees += 90
 			if dir == Vector2.LEFT:
