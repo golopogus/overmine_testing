@@ -35,7 +35,7 @@ var chunk_dict = {}
 var gamestart = false
 var revealed_tiles = []
 var initial_chunk_pos 
-var number_of_mines_per_chunk = 160
+var number_of_mines_per_chunk = 200
 var moveable = false
 var local_mous_pos
 var current_neighbors = []
@@ -263,7 +263,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		
 	if _event is InputEventMouseButton:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
-			if $Camera2D.zoom.x >= .8 and $Camera2D.zoom.y >= .8:
+			if $Camera2D.zoom.x >= .5 and $Camera2D.zoom.y >= .5:
 				$Camera2D.zoom -= Vector2(.1,.1)
 		
 					
