@@ -26,7 +26,7 @@ var is_tiles = true
 var initialized = false
 
 func _ready() -> void:
-	
+	initialize_values()
 	$body_animation.play("always")
 	x_length = 16
 	y_length = 16
@@ -98,11 +98,18 @@ func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
 	battery -= 1
 	
 	
-func initialize_values(drone_speed,scan_size,battery_size):
-	speed = 1.0/pow(0.8,drone_speed)
-	scan_speed = 1.0/pow(0.8,drone_speed)
-	battery = 1 + battery_size
-	var convert_scan_size = 6 * scan_size + 7
+#func initialize_values(drone_speed,scan_size,battery_size):
+	#speed = 1.0/pow(0.8,drone_speed)
+	#scan_speed = 1.0/pow(0.8,drone_speed)
+	#battery = 1 + battery_size
+	#var convert_scan_size = 6 * scan_size + 7
+	#area_2_scan = get_grid(convert_scan_size)
+
+func initialize_values():
+	speed = 1.0/pow(0.8,Globals.all_upgrade_data['drone_speed']['current'])
+	scan_speed = 1.0/pow(0.8,Globals.all_upgrade_data['drone_speed']['current'])
+	battery = 1
+	var convert_scan_size = 6 * Globals.all_upgrade_data['scan_size']['current'] + 7
 	area_2_scan = get_grid(convert_scan_size)
 	
 

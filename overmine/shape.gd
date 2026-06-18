@@ -57,9 +57,12 @@ func _draw() -> void:
 	
 	if to_draw != '':
 		if to_draw == 'circle':
-			draw_circle(center,radius,Color(.9,.3,.3),false,4)
+			if Globals.spell_book['ball']['owned'] == 1:
+				draw_circle(center,radius,Color(.9,.3,.3),false,4)
 		else:
-			draw_polyline(shape_dict[to_draw]['all_pts'],Color(.9,.3,.3),4)
+			for i in Globals.spell_book:
+				if Globals.spell_book[i]['shape'] == to_draw and Globals.spell_book[i]['owned'] == 1:
+					draw_polyline(shape_dict[to_draw]['all_pts'],Color(.9,.3,.3),4)
 
 	#match to_draw:
 		#'square': draw_polyline(shape_dict[to_draw]['all_pts'],Color(.9,.3,.3),4)

@@ -456,12 +456,30 @@ theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 66
 text = "ererere"
 
+[node name="Quit" type="Label" parent="screen"]
+visible = false
+offset_left = 1467.0
+offset_top = 49.0
+offset_right = 1856.0
+offset_bottom = 216.0
+theme_override_fonts/font = ExtResource("12_qr3w1")
+theme_override_font_sizes/font_size = 66
+text = "Quit"
+
 [node name="draw_load" type="Sprite2D" parent="screen"]
 visible = false
 top_level = true
 material = SubResource("ShaderMaterial_84hvi")
 texture = ExtResource("33_53riq")
 offset = Vector2(32, 32)
+
+[node name="quit_button" type="Button" parent="screen"]
+offset_left = 1703.0
+offset_top = 32.0
+offset_right = 1874.0
+offset_bottom = 147.0
+theme_override_font_sizes/font_size = 78
+text = "Quit"
 
 [node name="game_timer" type="Timer" parent="."]
 wait_time = 300.0
@@ -476,7 +494,7 @@ one_shot = true
 [node name="draw_load_timers" type="Node2D" parent="."]
 
 [node name="click_timer" type="Timer" parent="draw_load_timers"]
-wait_time = 1.3499999999999999
+wait_time = 1.35
 
 [node name="shader_buffer" type="Timer" parent="draw_load_timers"]
 wait_time = 0.15
@@ -489,6 +507,7 @@ wait_time = 0.15
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drone_buttons/buy_drone" to="." method="_on_buy_drone_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drone_buttons/drone_button" to="." method="_on_drone_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/upgrade_button" to="." method="_on_upgrade_button_pressed"]
+[connection signal="pressed" from="screen/quit_button" to="." method="_on_quit_button_pressed"]
 [connection signal="timeout" from="game_timer" to="." method="_on_game_timer_timeout"]
 [connection signal="timeout" from="shapes/shape_timer" to="shapes" method="_on_shape_timer_timeout"]
 [connection signal="timeout" from="draw_load_timers/click_timer" to="." method="_on_click_timer_timeout"]

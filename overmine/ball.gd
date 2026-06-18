@@ -7,24 +7,30 @@ var current_pt
 var next_tile
 var current_tile
 var radius
-var health = 3
+var health = 1
 var current_pts
 var velocity
 var flipped = false
 var current_tiles
 var next_tiles
-var speed = 4
+var speed = 1
 var click = false
 var dir = Vector2()
 
 func _ready() -> void:
 	
+	initialize_stats()
 	position = get_global_mouse_position()
 	Globals.get_init(self.get_path())
 	get_rand_dir()
 	velocity = speed * dir
 	calculate_pts()
+
+func initialize_stats():
+	speed = Globals.all_upgrade_data['ball_speed']['current'] + 1
+	health = Globals.all_upgrade_data['ball_health']['current'] + 1
 	
+					
 func set_init(size,pos):
 	
 	initial_pos = pos

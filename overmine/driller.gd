@@ -3,20 +3,29 @@ extends Sprite2D
 var drilling = false
 
 var speed = 0
+var move_speed = 0
 
 var dir = Vector2.LEFT
 var next_pos = Vector2()
 var reade = false
 var click = false
-var health = 3
+var health = 1
 var first_check
+
+func _ready() -> void:
+	initialize_stats()
+func initialize_stats():
+	move_speed = Globals.all_upgrade_data['drill_speed']['current'] + 1
+	health = Globals.all_upgrade_data['drill_dur']['current'] + 1
+	
 func _process(_delta: float) -> void:
 
 	if position == next_pos and reade == true:
+		print('ok')
 		drill_block()
 	if click == false:
 		if drilling == false:
-			speed = 1
+			speed = move_speed
 		
 		position.x += speed * dir.x
 		position.y += speed * dir.y

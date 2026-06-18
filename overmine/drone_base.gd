@@ -38,7 +38,6 @@ func place(pos):
 	click = false
 	position = pos
 	if first == true:
-		num_drones += 1
 		first = false
 	$self/base_sprite/area.visible = false
 	
@@ -90,18 +89,19 @@ func spawn_drone():
 	#var drone = drone_load.instantiate()
 	var drone = ghoul_load.instantiate()
 	add_child(drone)
-	drone.initialize_values(drone_speed,scan_size,battery_size)
+	#drone.initialize_values(drone_speed,scan_size,battery_size)
 	#child = drone
 
 func get_initial_upgrades():
 	
 	drone_speed = Globals.all_upgrade_data['drone_speed']['current']
 	scan_size = Globals.all_upgrade_data['scan_size']['current']
-	battery_size = Globals.all_upgrade_data['battery_plus']['current']
-	var charging_speed = Globals.all_upgrade_data['battery_speed']['current']
+	num_drones = Globals.all_upgrade_data['drone_add']['current'] + 1
+	#battery_size = Globals.all_upgrade_data['battery_plus']['current']
+	#var charging_speed = Globals.all_upgrade_data['battery_speed']['current']
 	
-	update_charging_speed(charging_speed)
-	update_scan_size(scan_size)
+	#update_charging_speed(charging_speed)
+	#update_scan_size(scan_size)
 	
 func update_upgrade(upgrade,val):
 	if upgrade == 'battery_speed':

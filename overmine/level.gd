@@ -35,7 +35,7 @@ var chunk_dict = {}
 var gamestart = false
 var revealed_tiles = []
 var initial_chunk_pos 
-var number_of_mines_per_chunk = 200
+var number_of_mines_per_chunk = 175
 var moveable = false
 var local_mous_pos
 var current_neighbors = []
@@ -63,7 +63,7 @@ var custom_time = 0.0
 var mine_thread
 var texture_dict
 var selected_mark = []
-var banned_from_summons = true
+var banned_from_summons = Globals.book_ban
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -119,7 +119,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	
 	$screen/draw_load.position = get_viewport().get_mouse_position()
-	custom_time += delta
+	#Globals.custom_time += delta
 	$screen/Label.text = str(roundi($game_timer.time_left))
 	
 	if moveable and mouse_in:
@@ -197,10 +197,11 @@ func _unhandled_input(_event: InputEvent) -> void:
 									#print('number of safe tiles revealed = ' + str(revealed_tiles.size()))
 
 								else:
+									
 									if tile_dict[nearest_tile_pos]['marked'] == false:			
 										clicked(nearest_tile_pos)
-										if book_spawned == false:
-											if revealed_tiles.size() >= 9:
+										if book_spawned == false and Globals.book_ban == true:
+											if revealed_tiles.size() >= 6:
 												book_chance()
 									elif nearest_tile_pos not in used_mark and banned_from_summons == false:
 										highlight_mark(nearest_tile_pos,nearest_chunk_pos)
@@ -625,10 +626,10 @@ func clicked(pos):
 				if mine_radius > 0:
 					update_neighbors(pos,'mine')
 					
-			if tile['type'] != 'mine':
-				var score_mulitplier = Globals.get_upgrade_data('click_multi') + 1#all_upgrade_data['click_multi']['current'] + 1
-				round_points += 1 * score_mulitplier
-				update_points()
+			#if tile['type'] != 'mine':
+				#var score_mulitplier = Globals.get_upgrade_data('click_multi') + 1
+				#round_points += 1 * score_mulitplier
+				#update_points()
 		
 		
 		# reveal if tile complete
@@ -663,8 +664,8 @@ func clicked(pos):
 				tile_dict[pos]['type'] = 'safe'
 
 		if tile_dict[pos]['type'] != 'mine':
-			var score_multiplier = Globals.all_upgrade_data['click_multi']['current'] + 1
-			round_points += 1 * score_multiplier
+			#var score_multiplier = Globals.all_upgrade_data['click_multi']['current'] + 1
+			#round_points += 1 * score_multiplier
 			update_points()
 		if tile_dict[pos]['type'] == 'mine':
 			var mine_radius = Globals.all_upgrade_data['mine_radius']['current']
@@ -1119,7 +1120,7 @@ func book_chance():
 		$book.add_child(book)
 		book.position = revealed_tiles[rand_pos]
 		book.offset = Vector2(x_length,y_length) / 2.0
-	
+
 #func initialize_upgrade_data():
 	#
 	##MINE_DATA
@@ -1324,7 +1325,8 @@ func initialize_textures():
 
 
 func _on_game_timer_timeout() -> void:
-	$screen/border_in.time_out()
+	get_tree().change_scene_to_file("res://home.tscn")
+	#$screen/border_in.time_out()
 
 func check_marks():
 	var correct = true
@@ -1337,8 +1339,10 @@ func check_marks():
 func create_summon(shape):
 	
 	if check_marks():
-	
+		var num_mark = len(selected_mark)
+		
 		if shape == 'circle':
+			print(num_mark)
 			var ball = ball_load.instantiate()
 			add_child(ball)
 			upgrade_in_hand = true
@@ -1381,7 +1385,7 @@ func _on_click_timer_timeout() -> void:
 func handle_draw_load(vis):
 	if vis:
 		$screen/draw_load.visible = true
-		$screen/draw_load.material.set("shader_parameter/time",custom_time)
+		$screen/draw_load.material.set("shader_parameter/time",Globals.custom_time)
 		
 	else:
 		
@@ -1389,9 +1393,9 @@ func handle_draw_load(vis):
 
 
 func _on_shader_buffer_timeout() -> void:
-	
-		$draw_load_timers/shader_buffer.stop()
-		handle_draw_load(true)
+	print('hello')	
+	$draw_load_timers/shader_buffer.stop()
+	handle_draw_load(true)
 
 func check_if_book(pos):
 	var book = false
@@ -1399,8 +1403,15 @@ func check_if_book(pos):
 		if $book.get_child(0).position == pos:
 			$book.get_child(0).queue_free()
 			banned_from_summons = false
+			Globals.has_book()
+			
 	
 	return book
 		
 
 	
+
+
+func _on_quit_button_pressed() -> void:
+	
+	get_tree().change_scene_to_file("res://home.tscn")
