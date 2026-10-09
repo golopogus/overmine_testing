@@ -21,7 +21,6 @@ func initialize_stats():
 func _process(_delta: float) -> void:
 
 	if position == next_pos and reade == true:
-		print('ok')
 		drill_block()
 	if click == false:
 		if drilling == false:

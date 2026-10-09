@@ -165,29 +165,34 @@ func _unhandled_input(_event: InputEvent) -> void:
 		elif check_if_book(nearest_tile_pos):
 			pass
 			
-		elif gamestart == true and selected_mark.size() > 0:
-				$draw_load_timers/shader_buffer.start()
-				$draw_load_timers/click_timer.start()
-	
+		#elif gamestart == true and selected_mark.size() > 0:
+				#$draw_load_timers/shader_buffer.start()
+				#$draw_load_timers/click_timer.start()
+	if Input.is_action_just_pressed("b"):
+		Globals.has_book()
+		banned_from_summons = false
 	if Input.is_action_pressed("left_click"):
-			if drawing == true:
-				$shapes.draw_true()
-		#if nearest_tile_pos != stored_pos:
-			#if panning == false:
-				#local_mous_pos = get_global_mouse_position()
-			#panning = true
+			#if drawing == true:
+				#$shapes.draw_true()
+			var diff = (mouse_pos - stored_mous_pos).length()
+			
+			#if nearest_tile_pos != stored_pos:
+			if diff > 10:
+				if moveable == false:
+					local_mous_pos = get_global_mouse_position()
+				moveable = true
 		#if spell == true:
 			#$shapes.draw_true()
 			
 		
 	if Input.is_action_just_released("left_click"):
 			
-			$draw_load_timers/shader_buffer.stop()
-			$draw_load_timers/click_timer.stop()
-			handle_draw_load(false)
+			#$draw_load_timers/shader_buffer.stop()
+			#$draw_load_timers/click_timer.stop()
+			#handle_draw_load(false)
 				
 			revealed_tiles = []
-			if drawing == false:
+			if moveable == false:
 				if upgrade_in_hand == false:
 					if nearest_tile_pos == stored_pos:
 							if tile_dict.has(nearest_tile_pos):
@@ -211,12 +216,12 @@ func _unhandled_input(_event: InputEvent) -> void:
 					#change_texture(get_node_from_pos(i))
 					
 					
-				drawing = false
+				moveable = false
 				#selected_mark = []
 					#elif spell == true:
 						#if tile_dict[nearest_tile_pos]['marked'] == true:
 							#highlight_mark(nearest_tile_pos,nearest_chunk_pos)
-											
+			#moveable = false
 	if Input.is_action_just_pressed("right_click"):
 
 		if tile_dict.has(nearest_tile_pos):
@@ -230,12 +235,12 @@ func _unhandled_input(_event: InputEvent) -> void:
 	
 
 	if Input.is_action_pressed("pan"):
-		
-		
-		if moveable == false:
-			local_mous_pos = get_global_mouse_position()
-			
-		moveable = true
+		if Globals.book_ban == false and selected_mark.size() > 0:
+			$shapes.draw_true()
+		#if moveable == false:
+			#local_mous_pos = get_global_mouse_position()
+			#
+		#moveable = true
 		
 	if Input.is_action_just_released("pan"):
 		moveable = false
@@ -822,7 +827,12 @@ func get_nearest(pos, val):
 		'chunk':
 			nearest = floor(pos / chunk_size) * chunk_size + initial_pos
 		'tile':
+			#print(x_length)
+			#print(y_length)
+			#print(pos)
+			#print(initial_pos)
 			nearest = floor(pos / Vector2(x_length,y_length)) * Vector2(x_length,y_length) + initial_pos
+			#print(nearest)
 	return nearest
 	
 #############################################################################	
@@ -1098,13 +1108,24 @@ func _on_drill_button_pressed() -> void:
 
 func check_if_drone_base(pos):
 	var moving = false
-	if $drones.get_child_count() > 0:
-		if $drones.get_child(0).position == pos:
+	for child in $drones.get_children():
+		if child.position == pos:
 			upgrade_in_hand = true
-			upgrade = $drones.get_child(0)
-			$drones.get_child(0).clicked()
+			upgrade = child
+			child.clicked()
 			moving = true
 	return moving
+	
+	
+	#if $drones.get_child_count() > 0:
+#
+		#
+		#if $drones.get_child(0).position == pos:
+			#upgrade_in_hand = true
+			#upgrade = $drones.get_child(0)
+			#$drones.get_child(0).clicked()
+			#moving = true
+	#return moving
 	
 #############################################################################	
 #############################################################################	
@@ -1342,7 +1363,7 @@ func create_summon(shape):
 		var num_mark = len(selected_mark)
 		
 		if shape == 'circle':
-			print(num_mark)
+		#	print(num_mark)
 			var ball = ball_load.instantiate()
 			add_child(ball)
 			upgrade_in_hand = true
@@ -1376,10 +1397,10 @@ func create_summon(shape):
 	
 	selected_mark = []
 
-func _on_click_timer_timeout() -> void:
-	$draw_load_timers/click_timer.stop()
-	handle_draw_load(false)
-	drawing = true
+#func _on_click_timer_timeout() -> void:
+	#$draw_load_timers/click_timer.stop()
+	#handle_draw_load(false)
+	#drawing = true
 
 	
 func handle_draw_load(vis):
@@ -1393,7 +1414,7 @@ func handle_draw_load(vis):
 
 
 func _on_shader_buffer_timeout() -> void:
-	print('hello')	
+#	print('hello')	
 	$draw_load_timers/shader_buffer.stop()
 	handle_draw_load(true)
 

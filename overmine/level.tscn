@@ -268,13 +268,13 @@ horizontal_alignment = 2
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="sprites" type="Node2D" parent="."]
+visible = false
 
 [node name="new_sprites" type="Node2D" parent="sprites"]
 
 [node name="mark" type="Node2D" parent="sprites/new_sprites"]
 
 [node name="mark0" type="Sprite2D" parent="sprites/new_sprites/mark"]
-visible = false
 material = SubResource("ShaderMaterial_c5xsv")
 texture = ExtResource("14_40yk4")
 
@@ -494,7 +494,7 @@ one_shot = true
 [node name="draw_load_timers" type="Node2D" parent="."]
 
 [node name="click_timer" type="Timer" parent="draw_load_timers"]
-wait_time = 1.35
+wait_time = 1.3499999999999999
 
 [node name="shader_buffer" type="Timer" parent="draw_load_timers"]
 wait_time = 0.15

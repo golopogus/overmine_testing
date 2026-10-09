@@ -16,7 +16,6 @@ func time_out():
 
 func _process(delta: float) -> void:
 	if closing == true:
-		print(radius)
 		radius -= .005 * delta
 		$ColorRect.material.set("shader_parameter/radius",radius)
 		
