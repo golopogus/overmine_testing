@@ -51,7 +51,6 @@ theme_override_font_sizes/font_size = 11
 text = "Mine Radius (X/X)"
 
 [node name="drone_speed" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 33.0
 offset_top = 148.0
@@ -72,7 +71,6 @@ theme_override_font_sizes/font_size = 11
 text = "Drone Speed (X/X)"
 
 [node name="drone_add" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 32.0
 offset_top = 84.0
@@ -113,7 +111,6 @@ theme_override_font_sizes/font_size = 11
 text = "Steel Heart (X/X)"
 
 [node name="drill_speed" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 384.0
 offset_top = 157.0
@@ -134,7 +131,6 @@ theme_override_font_sizes/font_size = 11
 text = "Drill Speed (X/X)"
 
 [node name="drill_size" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 383.0
 offset_top = 122.0
@@ -155,7 +151,6 @@ theme_override_font_sizes/font_size = 11
 text = "Drill Size (X/X)"
 
 [node name="scan_size" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 32.0
 offset_top = 117.0
@@ -176,7 +171,6 @@ theme_override_font_sizes/font_size = 11
 text = "Scan Radius (X/X)"
 
 [node name="drill_dur" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 383.0
 offset_top = 86.0
@@ -197,7 +191,6 @@ theme_override_font_sizes/font_size = 11
 text = "Drill Durability (X/X)"
 
 [node name="ball_speed" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 212.0
 offset_top = 113.0
@@ -218,7 +211,6 @@ theme_override_font_sizes/font_size = 11
 text = "Ball Speed (X/X)"
 
 [node name="ball_health" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 213.0
 offset_top = 160.0
@@ -239,7 +231,6 @@ theme_override_font_sizes/font_size = 11
 text = "Ball Health (X/X)"
 
 [node name="ball_split" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 210.0
 offset_top = 67.0
@@ -261,7 +252,6 @@ text = "Ball Split
  (X/X)"
 
 [node name="bomber_radius" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 30.0
 offset_top = 252.0
@@ -282,7 +272,6 @@ theme_override_font_sizes/font_size = 11
 text = "Bomber Radius (X/X)"
 
 [node name="bomber_capacity" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 27.0
 offset_top = 292.0
@@ -303,7 +292,6 @@ theme_override_font_sizes/font_size = 11
 text = "Add Bomber (X/X)"
 
 [node name="timer_add_time" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 216.0
 offset_top = 277.0
@@ -324,7 +312,6 @@ theme_override_font_sizes/font_size = 11
 text = "More Time Added (X/X)"
 
 [node name="timer_buy" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 216.0
 offset_top = 229.0
@@ -345,7 +332,6 @@ theme_override_font_sizes/font_size = 11
 text = "Timer (X/X)"
 
 [node name="ball_buy" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 207.0
 offset_top = 29.0
@@ -366,7 +352,6 @@ theme_override_font_sizes/font_size = 11
 text = "Ball (X/X)"
 
 [node name="drill_buy" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 377.0
 offset_top = 28.0
@@ -387,7 +372,6 @@ theme_override_font_sizes/font_size = 11
 text = "Driller (X/X)"
 
 [node name="drone_buy" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 27.0
 offset_top = 39.0
@@ -408,7 +392,6 @@ theme_override_font_sizes/font_size = 11
 text = "Drone (X/X)"
 
 [node name="bomber_buy" type="TextureButton" parent="."]
-visible = false
 layout_mode = 0
 offset_left = 30.0
 offset_top = 208.0

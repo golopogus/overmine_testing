@@ -9,7 +9,7 @@ signal ball_pls
 signal timer_for_border
 signal shape_guess
 var all_upgrade_data
-var book_ban = true
+var book_ban = false
 var custom_time = 0.0
 
 var spell_book = {

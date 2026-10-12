@@ -1,6 +1,6 @@
-[gd_scene load_steps=58 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=59 format=3 uid="uid://15d6kjfxhuns"]
 
-[ext_resource type="Script" uid="uid://c4s62xpkh1som" path="res://level.gd" id="1_dlbli"]
+[ext_resource type="Script" uid="uid://ekk4tvoietwe" path="res://level_controller.gd" id="1_h44gt"]
 [ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="2_2hox4"]
 [ext_resource type="Texture2D" uid="uid://waukt442lf8j" path="res://pics/clickSmiley.png" id="3_84hvi"]
 [ext_resource type="Texture2D" uid="uid://dmwihnbs60adg" path="res://pics/lostSmiley.png" id="4_53riq"]
@@ -52,6 +52,7 @@
 [ext_resource type="Texture2D" uid="uid://ceuk5xbfgwur5" path="res://pics/testTilePressed.png" id="47_7kq6u"]
 [ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="48_gpid7"]
 [ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="49_rsq42"]
+[ext_resource type="Script" uid="uid://3ca1yi7dui2" path="res://map_generator.gd" id="50_53riq"]
 [ext_resource type="PackedScene" uid="uid://dw4srph7to3a5" path="res://border_in.tscn" id="50_oiuvo"]
 [ext_resource type="Script" uid="uid://crxob250ov8bt" path="res://shape.gd" id="51_lupeo"]
 
@@ -64,7 +65,7 @@ shader = ExtResource("32_84hvi")
 shader_parameter/time = 0.0
 
 [node name="level" type="Node2D"]
-script = ExtResource("1_dlbli")
+script = ExtResource("1_h44gt")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 visible = false
@@ -267,167 +268,170 @@ horizontal_alignment = 2
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="sprites" type="Node2D" parent="."]
+[node name="chunk_manager" type="Node2D" parent="."]
+script = ExtResource("50_53riq")
+
+[node name="sprites" type="Node2D" parent="chunk_manager"]
 visible = false
 
-[node name="new_sprites" type="Node2D" parent="sprites"]
+[node name="new_sprites" type="Node2D" parent="chunk_manager/sprites"]
 
-[node name="mark" type="Node2D" parent="sprites/new_sprites"]
+[node name="mark" type="Node2D" parent="chunk_manager/sprites/new_sprites"]
 
-[node name="mark0" type="Sprite2D" parent="sprites/new_sprites/mark"]
+[node name="mark0" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
 material = SubResource("ShaderMaterial_c5xsv")
 texture = ExtResource("14_40yk4")
 
-[node name="mark1" type="Sprite2D" parent="sprites/new_sprites/mark"]
+[node name="mark1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
 visible = false
 texture = ExtResource("15_njfgp")
 
-[node name="mark2" type="Sprite2D" parent="sprites/new_sprites/mark"]
+[node name="mark2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
 visible = false
 texture = ExtResource("16_rw15y")
 
-[node name="mark3" type="Sprite2D" parent="sprites/new_sprites/mark"]
+[node name="mark3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
 visible = false
 texture = ExtResource("17_t8qre")
 
-[node name="mark4" type="Sprite2D" parent="sprites/new_sprites/mark"]
+[node name="mark4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
 visible = false
 texture = ExtResource("18_53riq")
 
-[node name="hidden" type="Node2D" parent="sprites/new_sprites"]
+[node name="hidden" type="Node2D" parent="chunk_manager/sprites/new_sprites"]
 
-[node name="hidden1" type="Sprite2D" parent="sprites/new_sprites/hidden"]
+[node name="hidden1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
 visible = false
 texture = ExtResource("18_562xt")
 
-[node name="hidden2" type="Sprite2D" parent="sprites/new_sprites/hidden"]
+[node name="hidden2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
 visible = false
 texture = ExtResource("19_0sd67")
 
-[node name="hidden3" type="Sprite2D" parent="sprites/new_sprites/hidden"]
+[node name="hidden3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
 visible = false
 texture = ExtResource("20_qh1jm")
 
-[node name="1" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("21_hspc6")
 
-[node name="2" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("22_2mem0")
 
-[node name="3" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("23_1acxm")
 
-[node name="4" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("24_ymw0v")
 
-[node name="5" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="5" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("25_w2ykt")
 
-[node name="6" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="6" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("26_lojl8")
 
-[node name="7" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="7" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("27_u38so")
 
-[node name="8" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="8" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("28_3s4rp")
 
-[node name="click_mine" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="click_mine" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("29_b68vv")
 hframes = 6
 
-[node name="safe" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="safe" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("30_dv2ly")
 
-[node name="mine" type="Sprite2D" parent="sprites/new_sprites"]
+[node name="mine" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false
 texture = ExtResource("31_cumd2")
 hframes = 4
 frame = 1
 
-[node name="hidden" type="Sprite2D" parent="sprites"]
+[node name="hidden" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("32_la0c1")
 
-[node name="mine" type="Sprite2D" parent="sprites"]
+[node name="mine" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("33_ofs7l")
 
-[node name="safe" type="Sprite2D" parent="sprites"]
+[node name="safe" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("34_0qfi3")
 
-[node name="hover" type="Sprite2D" parent="sprites"]
+[node name="hover" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("35_03k3n")
 
-[node name="mark" type="Sprite2D" parent="sprites"]
+[node name="mark" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("36_7rhug")
 
-[node name="1" type="Sprite2D" parent="sprites"]
+[node name="1" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("37_8oijn")
 
-[node name="2" type="Sprite2D" parent="sprites"]
+[node name="2" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("38_n4px5")
 
-[node name="3" type="Sprite2D" parent="sprites"]
+[node name="3" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("39_f3hnb")
 
-[node name="4" type="Sprite2D" parent="sprites"]
+[node name="4" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("40_s7ylq")
 
-[node name="5" type="Sprite2D" parent="sprites"]
+[node name="5" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("41_j70ly")
 
-[node name="6" type="Sprite2D" parent="sprites"]
+[node name="6" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("42_rx63s")
 
-[node name="7" type="Sprite2D" parent="sprites"]
+[node name="7" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("43_8ix83")
 
-[node name="8" type="Sprite2D" parent="sprites"]
+[node name="8" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("44_rf5jx")
 
-[node name="mine_right" type="Sprite2D" parent="sprites"]
+[node name="mine_right" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("45_8std4")
 
-[node name="mine_wrong" type="Sprite2D" parent="sprites"]
+[node name="mine_wrong" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("46_d7gql")
 
-[node name="press" type="Sprite2D" parent="sprites"]
+[node name="press" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("47_7kq6u")
 
-[node name="mine_scan" type="Sprite2D" parent="sprites"]
+[node name="mine_scan" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("48_gpid7")
 
-[node name="not_mine_scan" type="Sprite2D" parent="sprites"]
+[node name="not_mine_scan" type="Sprite2D" parent="chunk_manager/sprites"]
 visible = false
 texture = ExtResource("49_rsq42")
 
-[node name="chunks" type="Node2D" parent="."]
+[node name="chunks" type="Node2D" parent="chunk_manager"]
 
 [node name="drones" type="Node2D" parent="."]
 
@@ -494,7 +498,7 @@ one_shot = true
 [node name="draw_load_timers" type="Node2D" parent="."]
 
 [node name="click_timer" type="Timer" parent="draw_load_timers"]
-wait_time = 1.3499999999999999
+wait_time = 1.35
 
 [node name="shader_buffer" type="Timer" parent="draw_load_timers"]
 wait_time = 0.15

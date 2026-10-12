@@ -1,0 +1,1155 @@
+extends Node2D
+
+#notes for changing textures
+
+#need to update draw_chunk, clicked, and marked
+var flag_correct = true
+var lives = 1
+var test
+var panning = false
+var drawing = false
+var chance = 5
+var stored_mous_pos = Vector2()
+var book_spawned = false
+var round_points = 0
+var total_clicked = 0
+var hold_chunks =[]
+var all_upgrade_data = {}
+var all_store_data = {}
+var upgrade_in_hand = false
+var upgrade
+var timer = 5
+var used_mark = []
+# final game grid = [40,25] x (25x50)
+const grid_size_options = [[40,20],[4,4],[8,8]]
+var chosen_grid_size = grid_size_options[0]
+#var num_of_chunks = Vector2(25,50)
+var num_of_chunks = Vector2(10,10)
+var chunk_split
+var initial_pos = Vector2(0,0)
+var chunk_size = Vector2()
+var x_length
+var y_length
+var start = false
+var chunk_dict = {}
+var gamestart = false
+var revealed_tiles = []
+var initial_chunk_pos 
+var number_of_mines_per_chunk = 175
+var moveable = false
+var local_mous_pos
+var current_neighbors = []
+var stored_pos = Vector2()
+var current_chunk = Vector2()
+var visible_area
+var safe_tiles = []
+var tiles_in_current_chunk = []
+var in_game_menu = false
+var tile_dict = {} # pos = [tile.name, 'unknown' (type), value, true (hidden),marked]
+var tile_load = preload("res://tile.tscn")
+var test_load = preload("res://test.tscn")
+var chunk_load = preload("res://chunk_loc.tscn")
+var tile_holder_load = preload("res://tile_holder.tscn")
+var upgrade_load = preload("res://upgrade_menu.tscn")
+var ball_load = preload("res://ball.tscn")
+var mark_load = preload('res://mark.tscn')
+var mat = load('res://mark.gdshader')
+var mat2 = load("res://load.gdshader")
+var drill_load = preload('res://driller.tscn')
+var drone_base_load = preload('res://drone_base.tscn')
+var mouse_in = true
+var view_port_size
+var custom_time = 0.0
+var mine_thread
+var texture_dict
+var selected_mark = []
+var banned_from_summons = Globals.book_ban
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func _notification(what: int) -> void:
+	
+	if what == NOTIFICATION_WM_MOUSE_ENTER:
+		mouse_in = true
+	
+	if what == NOTIFICATION_WM_MOUSE_EXIT:
+		mouse_in = false
+		
+func _ready() -> void:
+	
+	mine_thread = Thread.new()
+
+	#Globals.connect("ready_to_click",clicked)
+	#Globals.connect("drone_ready", send_tiles)
+	#Globals.connect("drill_ready", send_tiles)
+	#Globals.connect("ball_ready",send_init)
+	#Globals.connect("ball_pls",send_tiles)
+	#Globals.connect("shape_guess",create_summon)
+	#Globals.connect("drone_ready_for_check",check_tile_for_drone)
+	x_length = $sprites/new_sprites/hidden/hidden1.texture.get_width()
+	y_length = $sprites/new_sprites/hidden/hidden1.texture.get_height()
+
+
+	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
+	chunk_split = -floor(num_of_chunks/2)
+	
+	initial_chunk_pos = get_nearest(Vector2(chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0,chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0),'chunk')
+
+	current_chunk = initial_chunk_pos
+	
+	initialize_textures()
+
+	update_points()
+	#update_lives(0)
+	place_chunk_loc()
+	place_tile_loc()
+	
+	
+	
+	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
+	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+#func _process(delta: float) -> void:
+	#
+	#$screen/draw_load.position = get_viewport().get_mouse_position()
+	#
+	#$screen/Label.text = str(roundi($game_timer.time_left))
+	#
+	#if moveable and mouse_in:
+	#
+	#
+		#var difference = local_mous_pos - get_global_mouse_position()
+		#$Camera2D.position += difference
+	#
+	#var nearest_chunk_pos = Vector2()
+	#
+	#var chunk_follow_pos = $Camera2D.position
+#
+	#nearest_chunk_pos = get_nearest(chunk_follow_pos,'chunk')
+	#
+	#if nearest_chunk_pos != current_chunk:
+#
+		#current_chunk = nearest_chunk_pos
+		#call_deferred('update_chunk_pos',current_chunk)
+
+############################################################################	
+#############################################################################	
+#############################################################################
+	
+#func _unhandled_input(_event: InputEvent) -> void:
+	#
+	#var mouse_pos = get_global_mouse_position()
+	#var nearest_tile_pos = get_nearest(mouse_pos, 'tile')
+	#var nearest_chunk_pos = get_nearest(nearest_tile_pos,'chunk')
+	#
+	#if Input.is_action_just_pressed("left_click"):
+		#stored_mous_pos = get_global_mouse_position()
+		#stored_pos = nearest_tile_pos
+		#
+		#if upgrade_in_hand == true:
+			#if tile_dict[nearest_tile_pos]['clicked'] == true:
+				#upgrade.place(nearest_tile_pos)
+				#upgrade_in_hand = false
+				#upgrade = 'NONE'
+		#
+		#elif check_if_drone_base(nearest_tile_pos):
+			#pass
+		#
+		#elif check_if_book(nearest_tile_pos):
+			#pass
+			#
+#
+	#if Input.is_action_just_pressed("b"):
+		#Globals.has_book()
+		#banned_from_summons = false
+	#if Input.is_action_pressed("left_click"):
+	#
+			#var diff = (mouse_pos - stored_mous_pos).length()
+			#
+			#
+			#if diff > 10:
+				#if moveable == false:
+					#local_mous_pos = get_global_mouse_position()
+				#moveable = true
+	#
+			#
+		#
+	#if Input.is_action_just_released("left_click"):
+			#
+	#
+				#
+			#revealed_tiles = []
+			#if moveable == false:
+				#if upgrade_in_hand == false:
+					#if nearest_tile_pos == stored_pos:
+							#if tile_dict.has(nearest_tile_pos):
+								#if gamestart == false:
+									#current_chunk = get_nearest(nearest_tile_pos,'chunk')
+									#start_game(nearest_tile_pos)
+									#
+								#else:
+									#
+									#if tile_dict[nearest_tile_pos]['marked'] == false:			
+										#clicked(nearest_tile_pos)
+										#if book_spawned == false and Globals.book_ban == true:
+											#if revealed_tiles.size() >= 6:
+												#book_chance()
+									#elif nearest_tile_pos not in used_mark and banned_from_summons == false:
+										#highlight_mark(nearest_tile_pos,nearest_chunk_pos)
+			#else:
+#
+				#moveable = false
+#
+	#
+	#if Input.is_action_just_pressed("right_click"):
+#
+		#if tile_dict.has(nearest_tile_pos):
+			#if nearest_tile_pos not in used_mark:
+				#mark(nearest_tile_pos, nearest_chunk_pos)
+#
+#
+				#
+	#if Input.is_action_just_pressed("restart"):
+		#get_tree().reload_current_scene()
+	#
+#
+	#if Input.is_action_pressed("pan"):
+		#if Globals.book_ban == false and selected_mark.size() > 0:
+			#$shapes.draw_true()
+#
+		#
+	#if Input.is_action_just_released("pan"):
+		#moveable = false
+	#
+	#if Input.is_action_just_pressed("add"):
+		#update_lives(1)
+	#if Input.is_action_just_pressed("subtract"):
+		#var ball = ball_load.instantiate()
+		#add_child(ball)
+	#
+	#if Input.is_action_just_pressed("esc"):
+		#get_tree().change_scene_to_file("res://home.tscn")
+#
+	#if _event is InputEventMouseButton:
+		#if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
+			#if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
+				#$Camera2D.zoom += Vector2(.1,.1)
+		#
+	#if _event is InputEventMouseButton:
+		#if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
+			#if $Camera2D.zoom.x >= .5 and $Camera2D.zoom.y >= .5:
+				#$Camera2D.zoom -= Vector2(.1,.1)
+		
+					
+#############################################################################
+#█ █▄░█ █ ▀█▀ █ ▄▀█ ▀█▀ █ █▄░█ █▀▀   █▀▀ █▀█ █ █▀▄
+#█ █░▀█ █ ░█░ █ █▀█ ░█░ █ █░▀█ █▄█   █▄█ █▀▄ █ █▄▀
+#############################################################################	
+
+func get_node_from_pos(pos):
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	return get_node(node_path)
+	
+	
+func place_chunk_loc():
+	
+	var start_pos = Vector2()
+	var chunk_position = Vector2()
+	
+	for x in num_of_chunks.x:
+		for y in num_of_chunks.y:
+			chunk_position = start_pos + Vector2(x,y)*chunk_size
+			chunk_dict[chunk_position] = {
+				'name':'not_named',
+				'drawn': false,
+				'mines': false
+				}
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+	
+func place_tile_loc():
+	
+	var start_pos = Vector2()  
+	var x_tiles = chosen_grid_size[0] * num_of_chunks.x
+	var y_tiles = chosen_grid_size[1] * num_of_chunks.y
+	var tile_pos = Vector2()
+
+	for x in x_tiles:
+		for y in y_tiles:
+			tile_pos = start_pos + Vector2(x_length,y_length) * Vector2(x,y)
+			if tile_dict.has(tile_pos) == false:
+				
+				tile_dict[tile_pos] = {
+					'name': 'none',
+					'type': 'unknown',
+					'value': 0,
+					'clicked': false,
+					'marked': false,
+					'scan_type': 'NONE'	
+				}
+					
+	draw_initial_chunks(initial_chunk_pos)
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+			
+func randomize_mine_placement(pos):
+	
+	var unused_tile_grid = get_chunk_grid()
+	var unused_tile_pos = convert_grid_to_pos(unused_tile_grid,pos)
+
+	for i in safe_tiles:
+		unused_tile_pos.erase(i)
+	if chunk_dict[pos]['mines'] == false:
+		for mine in number_of_mines_per_chunk:
+			
+			var rand_tile_pos = Vector2()
+			
+			rand_tile_pos = unused_tile_pos[randi_range(0, len(unused_tile_pos)-1)]					
+			unused_tile_pos.erase(rand_tile_pos)		
+			tile_dict[rand_tile_pos]['type'] = 'mine'
+			
+			var neighbors = create_neighbors(rand_tile_pos,x_length,y_length, 'ALL')
+			
+			for i in neighbors:
+				if tile_dict[i]['type'] != 'mine':
+					tile_dict[i]['type'] = 'warning'
+					tile_dict[i]['value'] += 1
+						
+		chunk_dict[pos]['mines'] = true
+						
+#############################################################################	
+#█▀▀ █░█ █░█ █▄░█ █▄▀ █ █▄░█ █▀▀
+#█▄▄ █▀█ █▄█ █░▀█ █░█ █ █░▀█ █▄█	
+#############################################################################
+
+func update_chunk_pos(pos):
+	
+	var pos_to_move = []
+	
+	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
+	current_neighbors.append(pos)
+	
+	var chunks_to_move = move_chunks(current_neighbors)
+
+	
+	for i in current_neighbors:
+		if chunk_dict.has(i):
+			if chunk_dict[i]['drawn'] == false:
+				pos_to_move.append(i)
+	
+
+	for i in len(pos_to_move):
+
+		if len(pos_to_move) == len(chunks_to_move):
+			
+			chunks_to_move[i].position = pos_to_move[i]
+			chunk_dict[chunks_to_move[i].position]['drawn'] = true
+			chunk_dict[chunks_to_move[i].position]['name'] = chunks_to_move[i].name
+			
+			if chunk_dict[chunks_to_move[i].position]['mines'] == false and gamestart == true:
+				safe_tiles = []
+				check_chunk_boundary(chunks_to_move[i].position)
+
+				call_deferred('randomize_mine_placement',chunks_to_move[i].position)
+
+		
+	for chunk in chunks_to_move:
+		var chunk_children = chunk.get_children()
+		for child in chunk_children:
+
+			call_deferred('change_texture',child)
+			
+func highlight_mark(pos,chunk_pos):
+	var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	var tile = get_node(node_path)
+	
+	if pos in selected_mark:
+		selected_mark.erase(pos)
+		tile.material.set("shader", '')
+	else:
+		selected_mark.append(pos)
+		tile.material = ShaderMaterial.new()
+		tile.material.set("shader", mat)
+	
+func change_texture(tile):
+	
+	var pos = tile.global_position
+	var sprite
+	var tile_pos = tile_dict[pos]
+
+	tile_dict[pos]['name'] = tile.name
+	if tile_pos['clicked'] == false:
+		if tile_pos['marked'] == true:
+			if pos in used_mark:
+				tile.texture = texture_dict['mark']['mark4']
+			else:
+				tile.texture = texture_dict['mark']['mark0']
+
+		else:
+		
+			tile.texture = texture_dict['hidden']['hidden1']# + str(rand_num)]
+	else:		
+		if tile_pos['type'] == 'warning':
+			sprite = str(tile_pos['value'])
+			tile.texture = texture_dict[sprite]
+		else:
+			sprite = tile_pos['type']
+			tile.texture = texture_dict[sprite]
+		
+	
+		
+	
+func draw_initial_chunks(pos):
+	
+	current_neighbors = create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
+	current_neighbors.append(pos)
+	
+	for i in current_neighbors:
+		
+		var chunk = chunk_load.instantiate()
+
+		$chunks.add_child(chunk)
+		chunk_dict[i]['name'] = chunk.name
+		chunk_dict[i]['drawn'] = true
+		chunk.position = i
+		
+
+		
+		for x in chosen_grid_size[0]:
+			for y in chosen_grid_size[1]:
+			
+				var tile = tile_load.instantiate()
+				var global_pos = Vector2(x,y) * Vector2(x_length, y_length) + initial_pos + i
+				
+				chunk.add_child(tile)
+				tile.global_position = global_pos
+				tile_dict[tile.global_position]['name'] = tile.name	
+				
+				
+				tile.texture = MapData.texture_dict['hidden']['hidden1']
+	MapData.tile_dict = tile_dict
+	MapData.chunk_dict = chunk_dict
+
+					
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func check_chunk_boundary(pos):
+	
+	var x_bounds = [0,chosen_grid_size[0] - 1] 
+	
+	var y_bounds = [0,chosen_grid_size[1] -1]
+	
+	var global_bounds = [Vector2(x_bounds[0],y_bounds[0]) * Vector2(x_length, y_length) + initial_pos + pos - Vector2(x_length, y_length),
+						 Vector2(x_bounds[1],y_bounds[1]) * Vector2(x_length, y_length) + initial_pos + pos + Vector2(x_length, y_length)]
+	var jump = 3
+	var sim_size = Vector2()
+	
+	var border_up = []
+	var border_down = []
+	var border_left = []
+	var border_right = []	
+	if x_bounds[1] % 3 == 0 or x_bounds[1] % 3 == 1:
+		sim_size.x = x_bounds[1]
+	else:
+		sim_size.x = x_bounds[1] + 1
+		
+	if y_bounds[1] % 3 == 0 or y_bounds[1] % 3 == 1:
+		sim_size.y = y_bounds[1]
+	else:
+		sim_size.y = y_bounds[1] + 1
+	
+	
+	for x in int(sim_size.x):
+		
+		if x % jump == 0:
+		
+			var top_row_pos = Vector2(x,y_bounds[0])
+			var top_row_pos_global = (top_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_above_pos = create_neighbors(top_row_pos_global,x_length,y_length,'TOP')
+			
+			for i in tiles_above_pos:
+				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
+					border_up.append(i)
+			
+			var bottom_row_pos = Vector2(x,y_bounds[1])
+			var bottom_row_pos_global = (bottom_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_below_pos = create_neighbors(bottom_row_pos_global,x_length,y_length,'BOTTOM')
+			
+			for i in tiles_below_pos:
+				if i.x >= global_bounds[0].x and i.x <= global_bounds[1].x:
+					border_down.append(i)
+		
+	for y in int(sim_size.y):
+		
+		if y % jump == 0:
+			
+			var left_col_pos = Vector2(x_bounds[0],y)
+			var left_col_pos_global = (left_col_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_left_of_pos = create_neighbors(left_col_pos_global,x_length,y_length,'LEFT')
+			
+			for i in tiles_left_of_pos:
+				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
+					border_left.append(i)
+			
+			var right_row_pos = Vector2(x_bounds[1],y)
+			var right_row_pos_global = (right_row_pos * Vector2(x_length, y_length)) + initial_pos + pos
+			var tiles_right_of_pos = create_neighbors(right_row_pos_global,x_length,y_length,'RIGHT')
+			
+			for i in tiles_right_of_pos:
+				if i.y >= global_bounds[0].y and i.y <= global_bounds[1].y:
+					border_right.append(i)
+	
+	var border = {
+		'up' = border_up,
+		'down' = border_down,
+		'left' = border_left,
+		'right' = border_right,
+	}
+	
+	find_clicked_on_border(border)
+
+func find_clicked_on_border(border):
+	
+	for i in border['up']:
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+			var down_neighbors = create_neighbors(i,x_length,y_length,'BOTTOM')
+			for neighbor in down_neighbors:
+				if neighbor not in safe_tiles:
+					safe_tiles.append(neighbor)
+	
+	for i in border['down']:
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+			var up_neighbors = create_neighbors(i,x_length,y_length,'TOP')
+			for neighbor in up_neighbors:
+				if neighbor not in safe_tiles:
+					safe_tiles.append(neighbor)
+		
+	for i in border['left']:
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+			var right_neighbors = create_neighbors(i,x_length,y_length,'RIGHT')
+			for neighbor in right_neighbors:
+				if neighbor not in safe_tiles:
+					safe_tiles.append(neighbor)
+		
+	for i in border['right']:
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+			var left_neighbors = create_neighbors(i,x_length,y_length,'LEFT')
+			for neighbor in left_neighbors:
+				if neighbor not in safe_tiles:
+					safe_tiles.append(neighbor)
+					
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func start_game(click_pos):
+	$game_timer.start()
+	gamestart = true
+	
+	var safe_neighbors = create_neighbors(click_pos,x_length,y_length, 'ALL')
+	
+	safe_neighbors.append(click_pos)
+	
+	for i in safe_neighbors:
+		tile_dict[i]['type'] = 'safe'
+		safe_tiles.append(i)
+	 
+	var chunk_pos = get_nearest(click_pos,'chunk')
+	var chunk_neighbors = create_neighbors(chunk_pos,chunk_size.x,chunk_size.y, 'ALL')
+	
+	chunk_neighbors.append(chunk_pos)
+	
+	for i in chunk_neighbors:
+		check_chunk_boundary(i)
+		randomize_mine_placement(i)	
+	
+	clicked(click_pos)
+			
+#############################################################################	
+#############################################################################	
+#############################################################################						
+func clicked(pos):
+	
+	revealed_tiles.append(pos)
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	var tile = tile_dict[pos]
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile['name']
+	
+	if chunk_dict[nearest_chunk_pos]['drawn'] == true:
+		if tile['clicked'] == false:
+			total_clicked += 1
+			tile['clicked'] = true
+			if tile['type'] == 'unknown':
+				tile['type'] = 'safe'
+
+			change_texture(get_node(node_path))
+
+			if tile['type'] == 'mine':
+				
+				var mine_radius = Globals.get_upgrade_data('mine_radius')#all_upgrade_data['mine_radius']['current']
+				if mine_radius > 0:
+					update_neighbors(pos,'mine')
+					
+
+		elif tile['clicked'] == true:
+			
+			if tile['type'] == 'warning':
+				
+				var neighbors = create_neighbors(pos,x_length,y_length,'ALL')
+				var count = 0
+				for i in neighbors:
+					if tile_dict[i]['type'] == 'mine':
+						if tile_dict[i]['clicked'] == true or tile_dict[i]['marked'] == true:
+							count += 1
+				if count == tile['value']:
+					for i in neighbors:
+						if tile_dict[i]['type'] != 'mine' and tile_dict[i]['clicked'] == false:
+							clicked(i)
+							
+			
+						
+			
+				
+	elif chunk_dict[nearest_chunk_pos]['drawn'] == false:
+		tile_dict[pos]['clicked'] = true
+		total_clicked += 1
+		if chunk_dict[nearest_chunk_pos]['mines'] == false:
+			safe_tiles = []
+			safe_tiles.append(pos)
+			check_chunk_boundary(nearest_chunk_pos)
+			randomize_mine_placement(nearest_chunk_pos)
+		if tile_dict[pos]['type'] == 'unknown':
+				tile_dict[pos]['type'] = 'safe'
+
+		if tile_dict[pos]['type'] != 'mine':
+			update_points()
+		if tile_dict[pos]['type'] == 'mine':
+			var mine_radius = Globals.all_upgrade_data['mine_radius']['current']
+			if mine_radius > 0:
+				update_neighbors(pos,'mine')
+				
+	if tile_dict[pos]['type'] == 'safe':
+		
+		update_neighbors(pos,'safe')					
+	
+			
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func update_neighbors(pos,type):	
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	
+	if chunk_dict[nearest_chunk_pos]['mines'] == false:
+		await randomize_mine_placement(nearest_chunk_pos)
+	
+	var neighbors
+	var mine_neighbors
+	
+	if type == 'safe':
+		neighbors = create_neighbors(pos, x_length, y_length, 'ALL')
+		for i in neighbors:
+			if tile_dict[i]['clicked'] == false:
+				if tile_dict[i]['type'] != 'mine':
+					clicked(i) 
+	elif type == 'mine':
+		mine_neighbors = create_explosion(pos)
+		await get_tree().create_timer(.1).timeout
+		for i in mine_neighbors:
+			if tile_dict[i]['clicked'] == false:
+				clicked(i)
+	
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func move_chunks(dont_erase):
+	
+	var delete = true
+	var chunks_to_move = []
+			
+	for chunk in $chunks.get_children():		
+		for pos in dont_erase:
+			if chunk.position == pos:
+				chunk_dict[chunk.position]['drawn'] = true
+				delete = false
+		if delete == true:
+			chunk_dict[chunk.position]['drawn'] = false
+			chunks_to_move.append(chunk)
+		delete = true
+
+	return chunks_to_move
+
+	
+
+#############################################################################	
+#█▀▄▀█ █ █▀ █▀▀
+#█░▀░█ █ ▄█ █▄▄	
+#############################################################################
+
+var neighbor_dict
+func create_neighbors(pos,x,y,dir):
+	
+	
+	
+	var pre_neighbors
+	var n = pos + Vector2(0,-1) * Vector2(x,y)
+	var ne = pos + Vector2(1,-1) * Vector2(x,y)
+	var nw = pos + Vector2(-1,-1) * Vector2(x,y)
+	var s = pos + Vector2(0,1) * Vector2(x,y)
+	var se = pos + Vector2(1,1) * Vector2(x,y)
+	var sw = pos + Vector2(-1,1) * Vector2(x,y)
+	var w = pos + Vector2(-1,0) * Vector2(x,y)
+	var e = pos + Vector2(1,0) * Vector2(x,y)
+	
+	match dir:
+	
+		'TOP':
+			pre_neighbors = [n,ne,nw]
+		'BOTTOM':
+			pre_neighbors = [sw,s,se]
+		'RIGHT':
+			pre_neighbors = [ne,e,se]
+		'LEFT':
+			pre_neighbors = [nw,w,sw]
+		'ALL':
+			pre_neighbors = [n,ne,e,se,s,sw,w,nw]
+	
+	var neighbors = []
+
+	for i in pre_neighbors:
+		var nearest_chunk_pos = get_nearest(i,'chunk')
+
+		if chunk_dict.has(nearest_chunk_pos):
+			neighbors.append(i)
+
+				
+	return neighbors
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func get_chunk_grid():
+	
+	var chunk_grid = []
+	
+	for x in chosen_grid_size[0]:
+		for y in chosen_grid_size[1]:
+			chunk_grid.append(Vector2(x,y))
+	
+	return chunk_grid
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+			
+func mark(pos,chunk_pos):	
+	
+	var node_path = 'chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	var tile = tile_dict[pos]
+	if tile['clicked'] == false:
+
+		if tile['marked'] == false:
+			tile['marked'] = true
+			
+		elif tile['marked'] == true:
+			tile['marked'] = false	
+			var tile_node = get_node(node_path)
+			if tile_node.material != null:
+				tile_node.material.set("shader", '')	
+	
+	
+	change_texture(get_node(node_path))
+		
+#############################################################################	
+#############################################################################	
+#############################################################################
+	
+func get_nearest(pos, val):
+	
+	var nearest = Vector2()
+	
+	match val:
+		'chunk':
+			nearest = floor(pos / chunk_size) * chunk_size + initial_pos
+		'tile':
+
+			nearest = floor(pos / Vector2(x_length,y_length)) * Vector2(x_length,y_length) + initial_pos
+		
+	return nearest
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func convert_grid_to_pos(grid,pos):
+	
+	var new_grid = []
+	for i in grid:
+		var new_pos = (i * Vector2(x_length, y_length)) + initial_pos + pos
+		new_grid.append(new_pos)
+	return new_grid
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func update_points():
+	$CanvasLayer/Label2.text = str(total_clicked/1000000.0 * 100) + '% Completed! So CLOSE!'
+	$CanvasLayer/Label.text = str(round_points)
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func send_tiles(path,grid,type):
+	
+	var tiles = check_tiles(grid,type)
+
+	get_node(path).set_tiles(tiles)
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+	
+func check_tiles(all_tile_positions,type):
+
+	var tiles = []
+	for tile_pos in all_tile_positions:
+		if tile_dict.has(tile_pos):
+			if type == 'drone':
+				if tile_dict[tile_pos]['clicked'] == false and tile_dict[tile_pos]['marked'] == false and tile_dict[tile_pos]['scan_type'] == 'NONE':
+					tiles.append(tile_pos)
+			else:
+				tiles = tile_dict[tile_pos]
+	
+	return tiles
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func check_tile_for_drone(pos,path,instance):
+	
+	if instance == 1:
+		if tile_dict[pos]['clicked'] == false and tile_dict[pos]['marked'] == false and tile_dict[pos]['scan_type'] == 'NONE':
+			tile_dict[pos]['scan_type'] = 'TAKEN'
+			get_node(path).set_tile(true)
+		else:
+			get_node(path).set_tile(false)
+	elif instance == 2:
+		if tile_dict[pos]['clicked'] == false and tile_dict[pos]['marked'] == false:
+			change_tile_sprite(pos)
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+	
+		
+func change_tile_sprite(pos):
+	
+	var nearest_chunk_pos = get_nearest(pos, 'chunk')
+	var node_path = 'chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
+	if nearest_chunk_pos in current_neighbors:
+		if tile_dict[pos]['type'] == 'mine':
+			var sprite_path = $sprites/mine_scan.texture
+			get_node(node_path).texture = sprite_path
+		else:
+			var sprite_path = $sprites/not_mine_scan.texture
+			get_node(node_path).texture = sprite_path
+	
+	if tile_dict[pos]['type'] == 'mine':
+		tile_dict[pos]['scan_type'] = 'MINE_SCAN'
+	else:
+		tile_dict[pos]['scan_type'] = "SAFE_SCAN"
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func create_explosion(pos):
+	
+	var n = pos + Vector2(0,-1) * Vector2(x_length,y_length)
+	var s = pos + Vector2(0,1) * Vector2(x_length,y_length)
+	var w = pos + Vector2(-1,0) * Vector2(x_length,y_length)
+	var e = pos + Vector2(1,0) * Vector2(x_length,y_length)
+	
+	var pre_neighbors = [n,e,s,w]
+	
+	var mine_radius = Globals.all_upgrade_data['mine_radius']['current']
+	for i in range(mine_radius + 1):
+		
+		n = [pos + Vector2(0,-i) * Vector2(x_length,y_length)]
+		pre_neighbors += n
+		s = [pos + Vector2(0,i) * Vector2(x_length,y_length)]
+		pre_neighbors += s
+		w = [pos + Vector2(-i,0) * Vector2(x_length,y_length)]
+		pre_neighbors += w
+		e = [pos + Vector2(i,0) * Vector2(x_length,y_length)]
+		pre_neighbors += e
+	
+	var neighbors = []
+
+	for i in pre_neighbors:
+		var nearest_chunk_pos = get_nearest(i,'chunk')
+		
+		if chunk_dict.has(nearest_chunk_pos):
+			neighbors.append(i)
+				
+	return neighbors
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+#func update_lives(change):
+	#
+	#var heart_holder = $CanvasLayer/normal_rez/heart_container
+	#
+	#if change == 1 or change == 0:
+		#
+		#var heart_load = preload("res://heart.tscn")
+		#var heart = heart_load.instantiate()
+		#heart_holder.add_child(heart)
+		#heart.position.x = (heart_holder.get_child_count()-1) * 20
+		#
+	#if change == -1:
+		#
+		#if heart_holder.get_child_count() > 0:
+			#heart_holder.get_child(heart_holder.get_child_count()-1).queue_free()
+	#
+	#lives += change
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+
+#############################################################################	
+#############################################################################	
+#############################################################################	
+
+func _on_drone_button_pressed() -> void:
+	if all_store_data['drone']['inventory'] > 0:
+		if $drones.get_child_count() == 0:
+			var drone_base_load = preload("res://drone_base.tscn")
+			var drone_base = drone_base_load.instantiate()
+			$drones.add_child(drone_base)
+			drone_base.get_initial_upgrades(all_upgrade_data)
+			upgrade_in_hand = true
+			upgrade = drone_base
+			drone_base.clicked()
+		else:
+			$drones.get_child(0).new_spawn()
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func _on_drill_button_pressed() -> void:
+	
+	if all_store_data['drill']['inventory'] > 0:
+	
+		var driller_load = preload("res://driller.tscn")
+		var driller = driller_load.instantiate()
+		#add to folder?
+		add_child(driller)
+		upgrade_in_hand = true
+		upgrade = driller
+		driller.clicked()
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+
+#############################################################################	
+#############################################################################	
+#############################################################################
+
+func check_if_drone_base(pos):
+	var moving = false
+	for child in $drones.get_children():
+		if child.position == pos:
+			upgrade_in_hand = true
+			upgrade = child
+			child.clicked()
+			moving = true
+	return moving
+	
+	
+
+	
+#############################################################################	
+#############################################################################	
+#############################################################################
+func book_chance():
+	chance -= 1
+	var rand_num = randi_range(1,chance)
+	if rand_num == chance:
+		book_spawned = true
+		var rand_pos = randi_range(0,revealed_tiles.size() - 1)
+		var book_load = preload("res://book.tscn")
+		var book = book_load.instantiate()
+		$book.add_child(book)
+		book.position = revealed_tiles[rand_pos]
+		book.offset = Vector2(x_length,y_length) / 2.0
+	
+func send_init(path):
+	
+	get_node(path).set_init(Vector2(x_length,y_length),initial_pos)
+
+func initialize_textures():
+		MapData.texture_dict = {
+		'mark' = {
+			'mark0' = $sprites/new_sprites/mark/mark0.texture,
+			'mark1' = $sprites/new_sprites/mark/mark1.texture,
+			'mark2' = $sprites/new_sprites/mark/mark2.texture,
+			'mark3' = $sprites/new_sprites/mark/mark3.texture,
+			'mark4' = $sprites/new_sprites/mark/mark4.texture
+		},
+		'hidden' = {
+			'hidden1' = $sprites/new_sprites/hidden/hidden1.texture,
+			'hidden2' = $sprites/new_sprites/hidden/hidden2.texture,
+			'hidden3' = $sprites/new_sprites/hidden/hidden3.texture
+		},
+		'1' = $"sprites/new_sprites/1".texture,
+		'2' = $"sprites/new_sprites/2".texture,
+		'3' = $"sprites/new_sprites/3".texture,
+		'4' = $"sprites/new_sprites/4".texture,
+		'5' = $"sprites/new_sprites/5".texture,
+		'6' = $"sprites/new_sprites/6".texture,
+		'7' = $"sprites/new_sprites/7".texture,
+		'8' = $"sprites/new_sprites/8".texture,
+		'safe' = $sprites/new_sprites/safe.texture,
+		'mine' = $sprites/new_sprites/mine.texture
+	}
+
+
+func _on_game_timer_timeout() -> void:
+	get_tree().change_scene_to_file("res://home.tscn")
+	#$screen/border_in.time_out()
+
+func check_marks():
+	var correct = true
+	for i in selected_mark:
+		if tile_dict[i]['type'] != 'mine':
+			correct = false
+			break
+	return correct
+			
+func create_summon(shape):
+	
+	if check_marks():
+		var num_mark = len(selected_mark)
+		
+		if shape == 'circle':
+		#	print(num_mark)
+			var ball = ball_load.instantiate()
+			add_child(ball)
+			upgrade_in_hand = true
+			upgrade = ball
+			ball.clicked()
+		
+		if shape == 'square':
+			var driller = drill_load.instantiate()
+			add_child(driller)
+			upgrade_in_hand = true
+			upgrade = driller
+			driller.clicked()
+		
+		if shape == 'triangle':
+			var drone_base = drone_base_load.instantiate()
+			$drones.add_child(drone_base)
+			upgrade_in_hand = true
+			upgrade = drone_base
+			drone_base.clicked()
+	
+		for i in selected_mark:
+			used_mark.append(i)
+			change_texture(get_node_from_pos(i))
+	else:
+		var temp_mark = []
+		for i in selected_mark:
+			temp_mark.append(i)
+		for i in temp_mark:
+			highlight_mark(i,get_nearest(i,'chunk'))
+		banned_from_summons = true
+	
+	selected_mark = []
+
+
+
+	
+func handle_draw_load(vis):
+	if vis:
+		$screen/draw_load.visible = true
+		$screen/draw_load.material.set("shader_parameter/time",Globals.custom_time)
+		
+	else:
+		
+		$screen/draw_load.visible = false
+
+
+func _on_shader_buffer_timeout() -> void:
+#	print('hello')	
+	$draw_load_timers/shader_buffer.stop()
+	handle_draw_load(true)
+
+func check_if_book(pos):
+	var book = false
+	if $book.get_child_count() > 0:
+		if $book.get_child(0).position == pos:
+			$book.get_child(0).queue_free()
+			banned_from_summons = false
+			Globals.has_book()
+			
+	
+	return book
+		
+
+	
+
+
+func _on_quit_button_pressed() -> void:
+	
+	get_tree().change_scene_to_file("res://home.tscn")

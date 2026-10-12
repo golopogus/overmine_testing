@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b2x6tujcxi5bm"]
+
+[ext_resource type="Script" uid="uid://dn3o6di6n2qwb" path="res://map_manager.gd" id="1_qhulj"]
+
+[node name="map_controller" type="Node2D"]
+script = ExtResource("1_qhulj")
