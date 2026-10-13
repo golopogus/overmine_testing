@@ -2,7 +2,7 @@ extends Sprite2D
 
 var tile_size
 var next_pts
-var initial_pos
+
 var current_pt
 var next_tile
 var current_tile
@@ -16,31 +16,30 @@ var next_tiles
 var speed = 1
 var click = false
 var dir = Vector2()
+enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
+enum states {SELECTED,IDLE,MOVING,ATTACKING,DEAD}
+var state = states.SELECTED: set = set_state
+enum mark_states {UNMARKED,MARKED,SELECTED,USED}
+
 
 func _ready() -> void:
-	print("BALL READY: ", get_path())
-	print("PARENT: ", get_parent())
-	print("SCENE: ", get_tree().current_scene)
+	
 	initialize_stats()
 	position = get_global_mouse_position()
-	get_rand_dir()
-	velocity = speed * dir
-	calculate_pts()
 
 func initialize_stats():
 	
-	speed = GameManager.all_upgrade_data['ball_speed']['current'] + 1
-	health = GameManager.all_upgrade_data['ball_health']['current'] + 1
-	initial_pos = MapManager.initial_pos
+	speed = GameManager.all_upgrade_data['roller_speed']['current'] + 1
+	health = GameManager.all_upgrade_data['roller_health']['current'] + 1
+
 	tile_size = Vector2(MapManager.x_length,MapManager.y_length)
 	radius = tile_size.x / 2.0
 	
-	
 func _process(delta: float) -> void:
 	
-	if click == true:
+	if state == states.SELECTED:
 		position = get_global_mouse_position()
-	else:
+	elif state == states.MOVING:
 		rotation_degrees += 1000 * delta
 		for i in len(current_pts):
 			if next_tiles[i] != current_tiles[i]:
@@ -50,48 +49,14 @@ func _process(delta: float) -> void:
 					current_pt = current_pts[i]
 					current_tile = current_tiles[i]
 					next_tile = next_tiles[i]
-
-					GameManager.get_tiles(self.get_path(),[next_tiles[i]],'ball')
+					
+					set_tiles(MapManager.tile_dict[next_tile])
 			
 		velocity = speed * dir
 		position += velocity
 		calculate_pts()
 		flipped = false
 		
-
-func set_tiles(tile):
-
-	if tile['clicked'] == false:
-		if tile['type'] == 'mine' and tile['marked'] == false:
-			health -= 1
-		if tile['marked'] == false:
-			GameManager.click_tile(next_tile)
-		flip()
-		
-	if health == 0:
-		queue_free()
-		
-func clicked():
-	click = true
-
-func place(pos):
-	
-	click = false
-	position = pos
-	
-	
-func flip():
-	
-	flipped = true
-	
-	if get_nearest_tile(current_pt + Vector2(-velocity.x,velocity.y)) != next_tile:
-		dir.x *= -1
-	elif get_nearest_tile(current_pt + Vector2(velocity.x,-velocity.y)) != next_tile:
-		dir.y *= -1
-	else: 
-		dir *= -1
-
-	
 func calculate_pts():
 	
 	current_pts = []
@@ -111,24 +76,54 @@ func calculate_pts():
 	
 	for pt in pts_dict:
 		current_pts.append(pts_dict[pt])
-		current_tiles.append(get_nearest_tile(pts_dict[pt]))
+		current_tiles.append(MapCalculator.get_nearest(pts_dict[pt],'tile'))
 		
 		var next_pt = pts_dict[pt] + velocity
-		
 		next_pts.append(next_pt)
-		next_tiles.append(get_nearest_tile(next_pt))
+		next_tiles.append(MapCalculator.get_nearest(next_pt,'tile'))
+		
+func set_tiles(tile):
+
+	if tile['clicked'] == false:
+		if tile['type'] == tile_types.MINE and tile['mark_state'] == mark_states.UNMARKED:
+			health -= 1
+		if tile['mark_state'] == mark_states.UNMARKED:
+			var nearest_chunk = MapCalculator.get_nearest(next_tile,'chunk')
+			MapManager.clicked(next_tile,nearest_chunk)
+
+		flip()
+		
+	if health == 0:
+		queue_free()
+
+func place(pos):
 	
+	get_rand_dir()
+	velocity = speed * dir
+	calculate_pts()
+	position = pos
+	state = states.MOVING
+	
+func set_state(new_state):
+	state = new_state	
+
+func flip():
+	
+	flipped = true
+	if MapCalculator.get_nearest(current_pt + Vector2(-velocity.x,velocity.y),'tile') != next_tile:
+		dir.x *= -1
+	elif MapCalculator.get_nearest(current_pt + Vector2(velocity.x,-velocity.y),'tile') != next_tile:
+		dir.y *= -1
+	else: 
+		dir *= -1
+
 func get_rand_dir():
 	
 	var angle = deg_to_rad(randi_range(0,360))
-	
 	dir = (Vector2(1,1) * Vector2(cos(angle),sin(angle))).normalized()
 
-func get_nearest_tile(pos):
-	
-	var nearest = floor(pos / tile_size) * tile_size + initial_pos
-	
-	return nearest
+
+
 	
 
 	

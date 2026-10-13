@@ -3,6 +3,7 @@ extends Node2D
 # used for calculations for map
 
 var bounds
+enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
 
 func create_bounds(initial_pos,chunk_size,num_of_chunks):
 	var outer = chunk_size * num_of_chunks
@@ -165,54 +166,34 @@ func check_chunk_boundary(pos):
 	}
 	
 	for i in border['up']:
-		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != tile_types.MINE:
 			var down_neighbors = create_neighbors(i,x_length,y_length,'BOTTOM')
 			for neighbor in down_neighbors:
 				if neighbor not in safe_tiles:
 					safe_tiles.append(neighbor)
 	
 	for i in border['down']:
-		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != tile_types.MINE:
 			var up_neighbors = create_neighbors(i,x_length,y_length,'TOP')
 			for neighbor in up_neighbors:
 				if neighbor not in safe_tiles:
 					safe_tiles.append(neighbor)
 		
 	for i in border['left']:
-		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != tile_types.MINE:
 			var right_neighbors = create_neighbors(i,x_length,y_length,'RIGHT')
 			for neighbor in right_neighbors:
 				if neighbor not in safe_tiles:
 					safe_tiles.append(neighbor)
 		
 	for i in border['right']:
-		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != 'mine':
+		if tile_dict[i]['clicked'] == true and tile_dict[i]['type'] != tile_types.MINE:
 			var left_neighbors = create_neighbors(i,x_length,y_length,'LEFT')
 			for neighbor in left_neighbors:
 				if neighbor not in safe_tiles:
 					safe_tiles.append(neighbor)
 	
 	return safe_tiles
-
-func send_tiles(path,grid,type):
-	
-	var tiles = check_tiles(grid,type)
-
-	get_node(path).set_tiles(tiles)
-
-func check_tiles(all_tile_positions,type):
-
-	var tiles = []
-	for tile_pos in all_tile_positions:
-		if check_in_bounds(tile_pos):
-		#if MapManager.tile_dict.has(tile_pos):
-			if type == 'drone':
-				if MapManager.tile_dict[tile_pos]['clicked'] == false and MapManager.tile_dict[tile_pos]['marked'] == false and MapManager.tile_dict[tile_pos]['scan_type'] == 'NONE':
-					tiles.append(tile_pos)
-			else:
-				tiles = MapManager.tile_dict[tile_pos]
-	
-	return tiles
 
 func create_explosion_radius(pos):
 	
@@ -251,7 +232,7 @@ func create_explosion_radius(pos):
 func check_marks():
 	var correct = true
 	for i in MapManager.selected_mark:
-		if MapManager.tile_dict[i]['type'] != 'mine':
+		if MapManager.tile_dict[i]['type'] != tile_types.MINE:
 			correct = false
 			break
 	return correct

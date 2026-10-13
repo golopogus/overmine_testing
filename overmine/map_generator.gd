@@ -16,6 +16,8 @@ var chunk_load = preload("res://chunk_loc.tscn")
 var chosen_grid_size = MapManager.chosen_grid_size
 enum mark_states {UNMARKED, MARKED, SELECTED, USED}
 var mark_state = mark_states.UNMARKED
+enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
+
 	
 func _ready() -> void:
 
@@ -69,7 +71,7 @@ func place_tile_loc():
 				
 				tile_dict[tile_pos] = {
 					'name': 'none',
-					'type': 'unknown',
+					'type': tile_types.UNKNOWN,
 					'value': 0,
 					'clicked': false,
 					'mark_state': mark_state,

@@ -11,25 +11,20 @@ var reade = false
 var click = false
 var health = 1
 var first_check
+enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
+enum states {SELECTED,CHECKING,MOVING,ATTACKING,DEAD}
+var state = states.SELECTED: set = set_state
+enum mark_states {UNMARKED,MARKED,SELECTED,USED}
 
 func _ready() -> void:
 	initialize_stats()
 func initialize_stats():
-	move_speed = GameManager.all_upgrade_data['drill_speed']['current'] + 1
-	health = GameManager.all_upgrade_data['drill_dur']['current'] + 1
+	move_speed = GameManager.all_upgrade_data['driller_speed']['current'] + 1
+	health = GameManager.all_upgrade_data['driller_dur']['current'] + 1
 	
 func _process(_delta: float) -> void:
-
-	if position == next_pos and reade == true:
-		drill_block()
-	if click == false:
-		if drilling == false:
-			speed = move_speed
-		
-		position.x += speed * dir.x
-		position.y += speed * dir.y
-
-	if click == true:
+	
+	if state == states.SELECTED:
 		position = get_global_mouse_position() - Vector2(16,16)
 		if Input.is_action_just_pressed("rotate"):
 			rotation_degrees += 90
@@ -42,33 +37,43 @@ func _process(_delta: float) -> void:
 			elif dir == Vector2.DOWN:
 				dir = Vector2.LEFT
 		
-func set_tiles(pos_dict):
+	elif state == states.MOVING:
+		speed = move_speed
+		position.x += speed * dir.x
+		position.y += speed * dir.y
 	
-	if pos_dict['clicked'] == false:
-		drilling = true
-		reade = false
+	if position == next_pos:
+		state = states.CHECKING
+		
+
+func check_block():
+	next_pos = position + dir * 32
+	if MapManager.tile_dict[next_pos]['clicked'] == false:
+		state = states.ATTACKING
 		speed = 0
-		await GameManager.click_tile(next_pos)
-		if pos_dict['type'] == 'mine':
+		var nearest_chunk = MapCalculator.get_nearest(next_pos,'chunk')
+		MapManager.clicked(next_pos,nearest_chunk)
+		if MapManager.tile_dict[next_pos]['type'] == tile_types.MINE:
 			health -= 1
 			if health == 0:
 				queue_free()
 		$Timer.start()
-		
-func drill_block():
-	next_pos = position + dir * 32
-	GameManager.get_tiles(self.get_path(),[next_pos],'drill')
-
-func clicked():
-	click = true
+	else:
+		state = states.MOVING
+	
+func set_state(new_state):
+	state = new_state
+	if state == states.CHECKING:
+		check_block()
 	
 func place(pos):
-	click = false
+	
+	state = states.MOVING
 	position = pos
-	drill_block()
-	reade = true
+	check_block()
+	
+
 
 
 func _on_timer_timeout() -> void:
-	drilling = false
-	reade = true
+	state = states.MOVING

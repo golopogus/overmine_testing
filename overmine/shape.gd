@@ -58,7 +58,7 @@ func _draw() -> void:
 	
 	if to_draw != '':
 		if to_draw == 'circle':
-			if GameManager.spell_book['ball']['owned'] == 1:
+			if GameManager.spell_book['roller']['owned'] == 1:
 				draw_circle(center,radius,Color(.9,.3,.3),false,4)
 		else:
 			for i in GameManager.spell_book:

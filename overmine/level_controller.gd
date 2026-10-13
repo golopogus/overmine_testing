@@ -2,7 +2,6 @@ extends Node2D
 
 #notes for changing textures
 
-#need to update draw_chunk, clicked, and marked
 var flag_correct = true
 var lives = 1
 var test
@@ -18,7 +17,6 @@ var all_store_data = {}
 var upgrade
 var timer = 5
 var used_mark = []
-
 var num_of_chunks
 var chunk_size
 var x_length
@@ -40,11 +38,8 @@ enum states {HOVERING, HOLDING, DRAWING, CLICKING, PANNING}
 var state: states = states.HOVERING: set = set_state
 var book_spawned = false
 var mark_selected = false
-var selected_mark = []
 var banned_from_summons = false
-#############################################################################	
-#############################################################################	
-#############################################################################
+
 
 func _notification(what: int) -> void:
 	
@@ -63,24 +58,20 @@ func _ready() -> void:
 	current_chunk = MapManager.current_chunk
 	num_of_chunks = MapManager.num_of_chunks
 	update_lives(0)
-	#print(chunk_size,num_of_chunks)
+
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
-
 
 
 func _process(delta: float) -> void:
 	
 	$screen/draw_load.position = get_viewport().get_mouse_position()
-	#GameManager.custom_time += delta
 	$screen/Label.text = str(roundi($game_timer.time_left))
 	
 	if state == states.PANNING:
 		var difference = local_mous_pos - get_global_mouse_position()
 		$Camera2D.position += difference
-	#if moveable and mouse_in:
-		#var difference = local_mous_pos - get_global_mouse_position()
-		#$Camera2D.position += difference
+
 	
 	var nearest_chunk_pos = Vector2()
 	
@@ -89,16 +80,10 @@ func _process(delta: float) -> void:
 	nearest_chunk_pos = MapCalculator.get_nearest(chunk_follow_pos,'chunk')
 	
 	
-	
 	if nearest_chunk_pos != current_chunk:
 		current_chunk = nearest_chunk_pos
 		MapManager.update_chunk_pos(current_chunk)
 		
-		#call_deferred('update_chunk_pos',current_chunk)
-
-############################################################################	
-#############################################################################	
-#############################################################################
 	
 func _unhandled_input(_event: InputEvent) -> void:
 
@@ -133,8 +118,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 				state = states.DRAWING
 				$shapes.draw_true()
 
-			
-		
+				
 	if Input.is_action_just_released("left_click"):
 			
 		if state == states.HOVERING:
@@ -216,7 +200,6 @@ func update_lives(change):
 	
 	lives += change
 
-	
 func book_chance():
 	chance -= 1
 	var rand_num = randi_range(1,chance)
@@ -229,15 +212,9 @@ func book_chance():
 		book.position = MapManager.revealed_tiles[rand_pos]
 		book.offset = Vector2(x_length,y_length) / 2.0
 
-
-	
-
-
 func _on_game_timer_timeout() -> void:
 	get_tree().change_scene_to_file("res://home.tscn")
-	#$screen/border_in.time_out()
-
-			
+		
 func create_summon(shape):
 	
 	if MapCalculator.check_marks():
@@ -247,14 +224,12 @@ func create_summon(shape):
 			add_child(ball)
 			state = states.HOLDING
 			upgrade = ball
-			ball.clicked()
-		
+			
 		if shape == 'square':
 			var driller = drill_load.instantiate()
 			add_child(driller)
 			state = states.HOLDING
 			upgrade = driller
-			driller.clicked()
 		
 		if shape == 'triangle':
 			var drone_base = drone_base_load.instantiate()
@@ -263,26 +238,14 @@ func create_summon(shape):
 			upgrade = drone_base
 			drone_base.clicked()
 		
-
 	else:
 		banned_from_summons = true
-		
-	for i in MapManager.selected_mark:
-		
+	
+	var selected_mark = MapManager.selected_mark.duplicate()
+	
+	for i in selected_mark:
 		var nearest_chunk_pos = MapCalculator.get_nearest(i, 'chunk')
 		MapManager.change_mark_state(i,nearest_chunk_pos,'use')
-		#var node_path = 'chunk_manager/chunks/' +  MapManager.chunk_dict[nearest_chunk_pos]['name'] + '/' + MapManager.tile_dict[i]['name']
-		#var node = MapCalculator.get_node_from_path(node_path)
-		#MapManager.change_texture(node)
-		
-			
-	
-
-
-#func _on_click_timer_timeout() -> void:
-	#$draw_load_timers/click_timer.stop()
-	#handle_draw_load(false)
-	#drawing = true
 
 	
 func handle_draw_load(vis):
@@ -296,7 +259,6 @@ func handle_draw_load(vis):
 
 
 func _on_shader_buffer_timeout() -> void:
-#	print('hello')	
 	$draw_load_timers/shader_buffer.stop()
 	handle_draw_load(true)
 
@@ -308,10 +270,8 @@ func check_if_book(pos):
 		
 func set_state(new_state):
 	state = new_state
-	#print(new_state)
-	pass
-	
-	
+
+		
 func _on_quit_button_pressed() -> void:
 	
 	get_tree().change_scene_to_file("res://home.tscn")

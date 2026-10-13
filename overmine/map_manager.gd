@@ -44,7 +44,7 @@ var visible_area
 var safe_tiles = []
 var tiles_in_current_chunk = []
 var in_game_menu = false
-var tile_dict = {} # pos = [tile.name, 'unknown' (type), value, true (hidden),marked]
+var tile_dict = {}
 var tile_load = preload("res://tile.tscn")
 var test_load = preload("res://test.tscn")
 var chunk_load = preload("res://chunk_loc.tscn")
@@ -61,7 +61,8 @@ var view_port_size
 var custom_time = 0.0
 var mine_thread
 var texture_dict
-enum mark_states {UNMARKED, MARKED, SELECTED, USED}
+enum mark_states {UNMARKED,MARKED,SELECTED,USED}
+enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
 var selected_mark = []
 #var mark_state = mark_states.UNMARKED: set = set_mark_state
 
@@ -82,13 +83,13 @@ func randomize_mine_placement(pos):
 			
 			rand_tile_pos = unused_tile_pos[randi_range(0, len(unused_tile_pos)-1)]					
 			unused_tile_pos.erase(rand_tile_pos)		
-			tile_dict[rand_tile_pos]['type'] = 'mine'
+			tile_dict[rand_tile_pos]['type'] = tile_types.MINE
 			
 			var neighbors = MapCalculator.create_neighbors(rand_tile_pos,x_length,y_length, 'ALL')
 			
 			for i in neighbors:
-				if tile_dict[i]['type'] != 'mine':
-					tile_dict[i]['type'] = 'warning'
+				if tile_dict[i]['type'] != tile_types.MINE:
+					tile_dict[i]['type'] = tile_types.WARNING
 					tile_dict[i]['value'] += 1
 						
 		chunk_dict[pos]['mines'] = true
@@ -162,12 +163,13 @@ func change_texture(tile):
 		else:
 			tile.texture = texture_dict['hidden']['hidden1']# + str(rand_num)]
 	else:		
-		if tile_pos['type'] == 'warning':
+		if tile_pos['type'] == tile_types.WARNING:
 			sprite = str(tile_pos['value'])
 			tile.texture = texture_dict[sprite]
-		else:
-			sprite = tile_pos['type']
-			tile.texture = texture_dict[sprite]
+		elif tile_pos['type'] == tile_types.SAFE:
+			tile.texture = texture_dict['safe']
+		elif tile_pos['type'] == tile_types.MINE:
+			tile.texture = texture_dict['mine']
 
 func first_click(nearest_tile_pos,nearest_chunk_pos):
 	
@@ -178,7 +180,7 @@ func first_click(nearest_tile_pos,nearest_chunk_pos):
 	safe_neighbors.append(nearest_tile_pos)
 	
 	for i in safe_neighbors:
-		tile_dict[i]['type'] = 'safe'
+		tile_dict[i]['type'] = tile_types.SAFE
 		safe_tiles.append(i)
 	 
 	var chunk_neighbors = MapCalculator.create_neighbors(nearest_chunk_pos,chunk_size.x,chunk_size.y, 'ALL')
@@ -201,20 +203,20 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 	var node = MapCalculator.get_node_from_path(node_path)
 	if chunk_dict[nearest_chunk_pos]['drawn'] == true:
 		if tile['clicked'] == false:
-			if tile['type'] == 'mine':
+			if tile['type'] == tile_types.MINE:
 				if tile['mark_state'] == mark_states.UNMARKED:
 					tile['clicked'] = true
 					change_texture(node)
 					var mine_radius = GameManager.get_upgrade_data('mine_radius')
 					if mine_radius > 0:
-						update_neighbors(nearest_tile_pos,'mine')
+						update_neighbors(nearest_tile_pos,tile_types.MINE)
 					
 				elif tile['mark_state'] != mark_states.USED:
 					highlight_mark(node,tile['mark_state'],nearest_tile_pos)
 			
 			else:
-				if tile['type'] == 'unknown':
-					tile['type'] = 'safe'
+				if tile['type'] == tile_types.UNKNOWN:
+					tile['type'] = tile_types.SAFE
 				
 				if book_spawned == false and GameManager.book_collected == false:
 					revealed_tiles.append(nearest_tile_pos)
@@ -226,17 +228,17 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 
 		elif tile['clicked'] == true:
 			
-			if tile['type'] == 'warning':
+			if tile['type'] == tile_types.WARNING:
 				
 				var neighbors = MapCalculator.create_neighbors(nearest_tile_pos,x_length,y_length,'ALL')
 				var count = 0
 				for i in neighbors:
-					if tile_dict[i]['type'] == 'mine':
+					if tile_dict[i]['type'] == tile_types.MINE:
 						if tile_dict[i]['clicked'] == true or tile_dict[i]['mark_state'] != mark_states.UNMARKED:
 							count += 1
 				if count == tile['value']:
 					for i in neighbors:
-						if tile_dict[i]['type'] != 'mine' and tile_dict[i]['clicked'] == false:
+						if tile_dict[i]['type'] != tile_types.MINE and tile_dict[i]['clicked'] == false:
 							var i_chunk = MapCalculator.get_nearest(i, 'chunk')
 							clicked(i,i_chunk)
 	
@@ -250,17 +252,17 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 			safe_tiles = MapCalculator.check_chunk_boundary(nearest_chunk_pos)
 		
 			randomize_mine_placement(nearest_chunk_pos)
-		if tile_dict[nearest_tile_pos]['type'] == 'unknown':
-				tile_dict[nearest_tile_pos]['type'] = 'safe'
+		if tile_dict[nearest_tile_pos]['type'] == tile_types.UNKNOWN:
+				tile_dict[nearest_tile_pos]['type'] = tile_types.SAFE
 
-		if tile_dict[nearest_tile_pos]['type'] == 'mine':
+		if tile_dict[nearest_tile_pos]['type'] == tile_types.MINE:
 			var mine_radius = GameManager.all_upgrade_data['mine_radius']['current']
 			if mine_radius > 0:
-				update_neighbors(nearest_tile_pos,'mine')
+				update_neighbors(nearest_tile_pos,tile_types.MINE)
 				
-	if tile_dict[nearest_tile_pos]['type'] == 'safe':
+	if tile_dict[nearest_tile_pos]['type'] == tile_types.SAFE:
 		
-		update_neighbors(nearest_tile_pos,'safe')					
+		update_neighbors(nearest_tile_pos,tile_types.SAFE)					
 	
 
 func update_neighbors(pos,type):	
@@ -273,14 +275,14 @@ func update_neighbors(pos,type):
 	var neighbors
 	var mine_neighbors
 	
-	if type == 'safe':
+	if type == tile_types.SAFE:
 		neighbors = MapCalculator.create_neighbors(pos, x_length, y_length, 'ALL')
 		for i in neighbors:
 			if tile_dict[i]['clicked'] == false:
-				if tile_dict[i]['type'] != 'mine':
+				if tile_dict[i]['type'] != tile_types.MINE:
 					var i_chunk = MapCalculator.get_nearest(i, 'chunk')
 					clicked(i,i_chunk) 
-	elif type == 'mine':
+	elif type == tile_types.MINE:
 		mine_neighbors = MapCalculator.create_explosion_radius(pos)
 		await get_tree().create_timer(.1).timeout
 		for i in mine_neighbors:
@@ -311,7 +313,7 @@ func move_chunks(dont_erase):
 			
 func change_mark_state(pos,chunk_pos,action):	
 	
-	
+
 	var node_path = 'chunk_manager/chunks/' +  chunk_dict[chunk_pos]['name'] + '/' + tile_dict[pos]['name']
 	var tile_node = MapCalculator.get_node_from_path(node_path)
 	var tile = tile_dict[pos]
@@ -334,29 +336,7 @@ func change_mark_state(pos,chunk_pos,action):
 	
 		change_texture(tile_node)
 
-	
-#func change_tile_sprite(pos):
-	#
-	#var nearest_chunk_pos = MapCalculator.get_nearest(pos, 'chunk')
-	#var node_path = 'chunk_manager/chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile_dict[pos]['name']
-	#var node = MapCalculator.get_node_from_path(node_path)
-	#if nearest_chunk_pos in current_neighbors:
-		#if tile_dict[pos]['type'] == 'mine':
-			#var sprite_path = $chunk_manager/sprites/mine_scan#.texture
-			#var sprite = MapCalculator.get_node_from_path(sprite_path).texture
-			#node.texture = sprite
-		#else:
-			#var sprite_path = $chunk_manager/sprites/not_mine_scan#.texture
-			#var sprite = MapCalculator.get_node_from_path(sprite_path).texture
-			#node.texture = sprite
-	#
-	#if tile_dict[pos]['type'] == 'mine':
-		#tile_dict[pos]['scan_type'] = 'MINE_SCAN'
-	#else:
-		#tile_dict[pos]['scan_type'] = "SAFE_SCAN"
 
-#func set_mark_state(new_state):
-	#mark_state = new_state
 	
 		
 	

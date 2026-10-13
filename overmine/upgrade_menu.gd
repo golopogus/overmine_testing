@@ -29,7 +29,7 @@ func toggle_spells():
 	$bomber_buy.visible = true
 	
 	for i in GameManager.spell_book:
-		if GameManager.spell_book['drone']['owned'] == 1:
+		if GameManager.spell_book['eye']['owned'] == 1:
 			$drone_add.visible = true
 			$drone_speed.visible = true
 			$scan_size.visible = true
@@ -42,12 +42,12 @@ func toggle_spells():
 		if GameManager.spell_book['timer']['owned'] == 1:
 			$timer_add_time.visible = true
 			
-		if GameManager.spell_book['ball']['owned'] == 1:
+		if GameManager.spell_book['roller']['owned'] == 1:
 			$ball_health.visible = true
 			$ball_speed.visible = true
 			$ball_split.visible = true
 			
-		if GameManager.spell_book['bomber']['owned'] == 1:
+		if GameManager.spell_book['homing']['owned'] == 1:
 			$bomber_capacity.visible = true
 			$bomber_radius.visible = true		
 			
@@ -69,7 +69,7 @@ func update_text(upgrade):
 	var max_value = list_of_upgrades[upgrade]['max']
 	var i_name = list_of_upgrades[upgrade]['name']
 	var node_path = upgrade + '/text'
-	get_node(node_path).text = i_name + ' (' + str(current_value) + '/' + str(max_value) +')'
+	#get_node(node_path).text = i_name + ' (' + str(current_value) + '/' + str(max_value) +')'
 
 	
 func send_signal(upgrade_data):
