@@ -2,16 +2,33 @@ extends Node2D
 
 # used for calculations for map
 
-func get_nearest(pos, type):
+var bounds
+
+func create_bounds(initial_pos,chunk_size,num_of_chunks):
+	var outer = chunk_size * num_of_chunks
+	var inner = initial_pos
+	bounds = Rect2(inner,outer)
 	
-	var nearest = Vector2()
-	match type:
-		'chunk':
-			nearest = floor(pos / MapManager.chunk_size) * MapManager.chunk_size + MapManager.initial_pos
-		'tile':
-			nearest = floor(pos / Vector2(MapManager.x_length,MapManager.y_length)) * Vector2(MapManager.x_length,MapManager.y_length) + MapManager.initial_pos
-		
-	return nearest
+	
+func get_nearest(pos, type):
+
+	if check_in_bounds(pos):
+		var nearest = Vector2()
+		match type:
+			'chunk':
+				nearest = floor(pos / MapManager.chunk_size) * MapManager.chunk_size + MapManager.initial_pos
+			'tile':
+				nearest = floor(pos / Vector2(MapManager.x_length,MapManager.y_length)) * Vector2(MapManager.x_length,MapManager.y_length) + MapManager.initial_pos
+			
+		return nearest
+	else:
+		pass
+	
+func check_in_bounds(pos):
+	if pos != null and bounds.has_point(pos):
+		return true
+	else:
+		return false
 	
 func create_neighbors(pos,x,y,dir):
 	
@@ -39,8 +56,8 @@ func create_neighbors(pos,x,y,dir):
 	
 	var neighbors = []
 	for i in pre_neighbors:
-		var nearest_chunk_pos = get_nearest(i,'chunk')
-		if MapManager.chunk_dict.has(nearest_chunk_pos):
+		if check_in_bounds(i):
+		#var nearest_chunk_pos = get_nearest(i,'chunk')
 			neighbors.append(i)
 		
 	return neighbors
@@ -67,7 +84,7 @@ func get_node_from_pos(pos):
 	
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
 	var node_path = 'chunks/' +  MapManager.chunk_dict[nearest_chunk_pos]['name'] + '/' + MapManager.tile_dict[pos]['name']
-	
+	#var node = get_node_from_path()
 	return get_node(node_path)
 
 func check_chunk_boundary(pos):
@@ -187,7 +204,8 @@ func check_tiles(all_tile_positions,type):
 
 	var tiles = []
 	for tile_pos in all_tile_positions:
-		if MapManager.tile_dict.has(tile_pos):
+		if check_in_bounds(tile_pos):
+		#if MapManager.tile_dict.has(tile_pos):
 			if type == 'drone':
 				if MapManager.tile_dict[tile_pos]['clicked'] == false and MapManager.tile_dict[tile_pos]['marked'] == false and MapManager.tile_dict[tile_pos]['scan_type'] == 'NONE':
 					tiles.append(tile_pos)
@@ -207,7 +225,7 @@ func create_explosion_radius(pos):
 	
 	var pre_neighbors = [n,e,s,w]
 	
-	var mine_radius = Globals.all_upgrade_data['mine_radius']['current']
+	var mine_radius = GameManager.all_upgrade_data['mine_radius']['current']
 	for i in range(mine_radius + 1):
 		
 		n = [pos + Vector2(0,-i) * Vector2(x_length,y_length)]
@@ -222,9 +240,10 @@ func create_explosion_radius(pos):
 	var neighbors = []
 
 	for i in pre_neighbors:
-		var nearest_chunk_pos = get_nearest(i,'chunk')
+		#var nearest_chunk_pos = get_nearest(i,'chunk')
 		
-		if MapManager.chunk_dict.has(nearest_chunk_pos):
+		#if MapManager.chunk_dict.has(nearest_chunk_pos):
+		if check_in_bounds(i):
 			neighbors.append(i)
 				
 	return neighbors
@@ -242,14 +261,3 @@ func get_node_from_path(tree_path):
 	var node = get_tree().current_scene.get_node(tree_path)
 	
 	return node
-#func check_tile_for_drone(pos,path,instance):
-	#
-	#if instance == 1:
-		#if tile_dict[pos]['clicked'] == false and tile_dict[pos]['marked'] == false and tile_dict[pos]['scan_type'] == 'NONE':
-			#tile_dict[pos]['scan_type'] = 'TAKEN'
-			#get_node(path).set_tile(true)
-		#else:
-			#get_node(path).set_tile(false)
-	#elif instance == 2:
-		#if tile_dict[pos]['clicked'] == false and tile_dict[pos]['marked'] == false:
-			#change_tile_sprite(pos)

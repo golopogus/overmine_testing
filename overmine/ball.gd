@@ -18,24 +18,23 @@ var click = false
 var dir = Vector2()
 
 func _ready() -> void:
-	
+	print("BALL READY: ", get_path())
+	print("PARENT: ", get_parent())
+	print("SCENE: ", get_tree().current_scene)
 	initialize_stats()
 	position = get_global_mouse_position()
-	Globals.get_init(self.get_path())
 	get_rand_dir()
 	velocity = speed * dir
 	calculate_pts()
 
 func initialize_stats():
-	speed = Globals.all_upgrade_data['ball_speed']['current'] + 1
-	health = Globals.all_upgrade_data['ball_health']['current'] + 1
 	
-					
-func set_init(size,pos):
-	
-	initial_pos = pos
-	tile_size = size
+	speed = GameManager.all_upgrade_data['ball_speed']['current'] + 1
+	health = GameManager.all_upgrade_data['ball_health']['current'] + 1
+	initial_pos = MapManager.initial_pos
+	tile_size = Vector2(MapManager.x_length,MapManager.y_length)
 	radius = tile_size.x / 2.0
+	
 	
 func _process(delta: float) -> void:
 	
@@ -52,7 +51,7 @@ func _process(delta: float) -> void:
 					current_tile = current_tiles[i]
 					next_tile = next_tiles[i]
 
-					Globals.get_tiles(self.get_path(),[next_tiles[i]],'ball')
+					GameManager.get_tiles(self.get_path(),[next_tiles[i]],'ball')
 			
 		velocity = speed * dir
 		position += velocity
@@ -66,7 +65,7 @@ func set_tiles(tile):
 		if tile['type'] == 'mine' and tile['marked'] == false:
 			health -= 1
 		if tile['marked'] == false:
-			Globals.click_tile(next_tile)
+			GameManager.click_tile(next_tile)
 		flip()
 		
 	if health == 0:

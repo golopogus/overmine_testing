@@ -16,9 +16,9 @@ var current_drill_add
 
 
 func _ready() -> void:
-	list_of_upgrades = Globals.all_upgrade_data
+	list_of_upgrades = GameManager.all_upgrade_data
 	initialize_upgrade_tree()
-	if Globals.book_ban == false:
+	if GameManager.book_collected == false:
 		toggle_spells()
 
 func toggle_spells():
@@ -28,26 +28,26 @@ func toggle_spells():
 	$drone_buy.visible = true
 	$bomber_buy.visible = true
 	
-	for i in Globals.spell_book:
-		if Globals.spell_book['drone']['owned'] == 1:
+	for i in GameManager.spell_book:
+		if GameManager.spell_book['drone']['owned'] == 1:
 			$drone_add.visible = true
 			$drone_speed.visible = true
 			$scan_size.visible = true
 		
-		if Globals.spell_book['driller']['owned'] == 1:
+		if GameManager.spell_book['driller']['owned'] == 1:
 			$drill_dur.visible = true
 			$drill_size.visible = true
 			$drill_speed.visible = true
 			
-		if Globals.spell_book['timer']['owned'] == 1:
+		if GameManager.spell_book['timer']['owned'] == 1:
 			$timer_add_time.visible = true
 			
-		if Globals.spell_book['ball']['owned'] == 1:
+		if GameManager.spell_book['ball']['owned'] == 1:
 			$ball_health.visible = true
 			$ball_speed.visible = true
 			$ball_split.visible = true
 			
-		if Globals.spell_book['bomber']['owned'] == 1:
+		if GameManager.spell_book['bomber']['owned'] == 1:
 			$bomber_capacity.visible = true
 			$bomber_radius.visible = true		
 			
@@ -80,28 +80,28 @@ func send_signal(upgrade_data):
 
 	if current_upgrade < max_upgrade:
 		current_upgrade += 1
-		Globals.handle_upgrades(upgrade_data)
+		GameManager.handle_upgrades(upgrade_data)
 		#emit_signal("update_upgrades",upgrade_data)
 		update_text(upgrade_data)
 		
 func _on_timer_buy_pressed() -> void:
-	#Globals.spell_book['timer']['owned'] = 1
+	#GameManager.spell_book['timer']['owned'] = 1
 	pass
 
 func _on_ball_buy_pressed() -> void:
-	Globals.spell_book['ball']['owned'] = 1
+	GameManager.spell_book['ball']['owned'] = 1
 	$ball_buy/Label.text = 'bought'
 
 func _on_drill_buy_pressed() -> void:
-	Globals.spell_book['driller']['owned'] = 1
+	GameManager.spell_book['driller']['owned'] = 1
 	$drill_buy/Label.text = 'bought'
 
 func _on_drone_buy_pressed() -> void:
-	Globals.spell_book['drone']['owned'] = 1
+	GameManager.spell_book['drone']['owned'] = 1
 	$drone_buy/Label.text = 'bought'
 
 func _on_bomber_buy_pressed() -> void:
-	#Globals.spell_book['bomber']['owned'] = 1
+	#GameManager.spell_book['bomber']['owned'] = 1
 	pass
 	
 ## MINE 

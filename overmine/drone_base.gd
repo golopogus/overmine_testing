@@ -94,11 +94,11 @@ func spawn_drone():
 
 func get_initial_upgrades():
 	
-	drone_speed = Globals.all_upgrade_data['drone_speed']['current']
-	scan_size = Globals.all_upgrade_data['scan_size']['current']
-	num_drones = Globals.all_upgrade_data['drone_add']['current'] + 1
-	#battery_size = Globals.all_upgrade_data['battery_plus']['current']
-	#var charging_speed = Globals.all_upgrade_data['battery_speed']['current']
+	drone_speed = GameManager.all_upgrade_data['drone_speed']['current']
+	scan_size = GameManager.all_upgrade_data['scan_size']['current']
+	num_drones = GameManager.all_upgrade_data['drone_add']['current'] + 1
+	#battery_size = GameManager.all_upgrade_data['battery_plus']['current']
+	#var charging_speed = GameManager.all_upgrade_data['battery_speed']['current']
 	
 	#update_charging_speed(charging_speed)
 	#update_scan_size(scan_size)

@@ -9,23 +9,24 @@ var can_print = false
 var to_draw = ''
 var can_draw = false
 var center = Vector2()
-
+enum states {IDLE,DRAWING}
 
 func _ready() -> void:
 	
-	initialize_shapes()
+	shape_dict = GameManager.shape_dict
+	#initialize_shapes()
 	
 func _unhandled_input(_event: InputEvent) -> void:
 	if can_draw:
 		$shape_timer.stop()
-		if Input.is_action_pressed("pan"):
+		if Input.is_action_pressed("left_click"):
 			
 			if drawing == false:
 				list_of_pts = []
 				drawing = true
 				to_draw = ''
 		
-		if Input.is_action_just_released("pan"):
+		if Input.is_action_just_released("left_click"):
 			if list_of_pts.size() > 0:
 				var updated_list = initialize_pts(list_of_pts)
 				handler(updated_list)
@@ -57,11 +58,11 @@ func _draw() -> void:
 	
 	if to_draw != '':
 		if to_draw == 'circle':
-			if Globals.spell_book['ball']['owned'] == 1:
+			if GameManager.spell_book['ball']['owned'] == 1:
 				draw_circle(center,radius,Color(.9,.3,.3),false,4)
 		else:
-			for i in Globals.spell_book:
-				if Globals.spell_book[i]['shape'] == to_draw and Globals.spell_book[i]['owned'] == 1:
+			for i in GameManager.spell_book:
+				if GameManager.spell_book[i]['shape'] == to_draw and GameManager.spell_book[i]['owned'] == 1:
 					draw_polyline(shape_dict[to_draw]['all_pts'],Color(.9,.3,.3),4)
 
 	#match to_draw:
@@ -167,7 +168,7 @@ func determine_nearest_shape():
 	
 	#print('My guess is ... a ' + guess + ' with an average ' + str(min_dist) + ' pixels off from perfect' )
 	
-	Globals.send_shape(guess)
+	GameManager.send_shape(guess)
 	to_draw = guess
 	queue_redraw()
 	$shape_timer.start()
@@ -291,97 +292,97 @@ func calculate_dir(v1,v2):
 	var dir = (v2 - v1).normalized()
 	return dir
 
-func initialize_shapes():
-	
-	shape_dict = {	
-	'circle' = {
-		'all_pts' = [center],
-		'avg_dist' = 0,
-		'lines' = {
-			
-			}
-		},	
-	'square' = {
-		'all_pts' = [],
-		'avg_dist' = 0,
-		'lines' = {
-			'line1' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line2' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line3' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line4' = {
-				'pts': 0,
-				'slope': 0
-				}
-			}
-		},
-	'triangle' = {
-		'all_pts' = [],
-		'avg_dist' = 0,
-		'lines' = {
-			'line1' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line2' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line3' = {
-				'pts': 0,
-				'slope': 0
-				}
-			}
-		},
-	'diamond' = {
-		'all_pts' = [],
-		'avg_dist' = 0,
-		'lines' = {
-			'line1' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line2' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line3' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line4' = {
-				'pts': 0,
-				'slope': 0
-				}
-			}
-		},
-	'upside_down_triangle' = {
-		'all_pts' = [],
-		'avg_dist' = 0,
-		'lines' = {
-			'line1' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line2' = {
-				'pts': 0,
-				'slope': 0
-				},
-			'line3' = {
-				'pts': 0,
-				'slope': 0
-				}
-			}
-		}
-	}
+#func initialize_shapes():
+	#
+	#shape_dict = {	
+	#'circle' = {
+		#'all_pts' = [center],
+		#'avg_dist' = 0,
+		#'lines' = {
+			#
+			#}
+		#},	
+	#'square' = {
+		#'all_pts' = [],
+		#'avg_dist' = 0,
+		#'lines' = {
+			#'line1' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line2' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line3' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line4' = {
+				#'pts': 0,
+				#'slope': 0
+				#}
+			#}
+		#},
+	#'triangle' = {
+		#'all_pts' = [],
+		#'avg_dist' = 0,
+		#'lines' = {
+			#'line1' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line2' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line3' = {
+				#'pts': 0,
+				#'slope': 0
+				#}
+			#}
+		#},
+	#'diamond' = {
+		#'all_pts' = [],
+		#'avg_dist' = 0,
+		#'lines' = {
+			#'line1' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line2' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line3' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line4' = {
+				#'pts': 0,
+				#'slope': 0
+				#}
+			#}
+		#},
+	#'upside_down_triangle' = {
+		#'all_pts' = [],
+		#'avg_dist' = 0,
+		#'lines' = {
+			#'line1' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line2' = {
+				#'pts': 0,
+				#'slope': 0
+				#},
+			#'line3' = {
+				#'pts': 0,
+				#'slope': 0
+				#}
+			#}
+		#}
+	#}
 func get_square_pts(dist_from_center):
 	
 	var pt1 = center + Vector2(-1,-1) * dist_from_center

@@ -10,10 +10,12 @@ var y_length
 var chunk_dict = {}
 var initial_chunk_pos 
 var num_of_chunks = MapManager.num_of_chunks
-var tile_dict = {} # pos = [tile.name, 'unknown' (type), value, true (hidden),marked]
+var tile_dict = {}
 var tile_load = preload("res://tile.tscn")
 var chunk_load = preload("res://chunk_loc.tscn")
 var chosen_grid_size = MapManager.chosen_grid_size
+enum mark_states {UNMARKED, MARKED, SELECTED, USED}
+var mark_state = mark_states.UNMARKED
 	
 func _ready() -> void:
 
@@ -26,6 +28,7 @@ func _ready() -> void:
 	
 	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
 	MapManager.chunk_size = chunk_size
+	MapCalculator.create_bounds(initial_pos,chunk_size,num_of_chunks)
 	
 	
 	chunk_split = -floor(num_of_chunks/2)
@@ -33,7 +36,6 @@ func _ready() -> void:
 	
 	initial_chunk_pos = MapCalculator.get_nearest(Vector2(chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0,chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0),'chunk')
 	MapManager.initial_chunk_pos = initial_chunk_pos
-	
 	initialize_textures()
 	place_chunk_loc()
 	place_tile_loc()
@@ -62,14 +64,15 @@ func place_tile_loc():
 	for x in x_tiles:
 		for y in y_tiles:
 			tile_pos = start_pos + Vector2(x_length,y_length) * Vector2(x,y)
-			if tile_dict.has(tile_pos) == false:
+			if MapCalculator.check_in_bounds(tile_pos):
+			#if tile_dict.has(tile_pos) == false:
 				
 				tile_dict[tile_pos] = {
 					'name': 'none',
 					'type': 'unknown',
 					'value': 0,
 					'clicked': false,
-					'marked': false,
+					'mark_state': mark_state,
 					'scan_type': 'NONE'	
 				}
 					

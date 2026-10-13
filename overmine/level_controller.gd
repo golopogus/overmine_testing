@@ -10,60 +10,38 @@ var panning = false
 var drawing = false
 var chance = 5
 var stored_mous_pos = Vector2()
-var book_spawned = false
 var round_points = 0
 var total_clicked = 0
 var hold_chunks =[]
 var all_upgrade_data = {}
 var all_store_data = {}
-var upgrade_in_hand = false
 var upgrade
 var timer = 5
 var used_mark = []
-# final game grid = [40,25] x (25x50)
-const grid_size_options = [[40,20],[4,4],[8,8]]
-var chosen_grid_size = grid_size_options[0]
-#var num_of_chunks = Vector2(25,50)
-var num_of_chunks = Vector2(10,10)
-var chunk_split
-var initial_pos = Vector2(0,0)
-var chunk_size = Vector2()
+
+var num_of_chunks
+var chunk_size
 var x_length
 var y_length
-var start = false
-var chunk_dict = {}
 var gamestart = false
-var revealed_tiles = []
 var initial_chunk_pos 
-var number_of_mines_per_chunk = 175
 var moveable = false
 var local_mous_pos
-var current_neighbors = []
 var stored_pos = Vector2()
 var current_chunk = Vector2()
-var visible_area
-var safe_tiles = []
-var tiles_in_current_chunk = []
-var in_game_menu = false
-#var tile_dict = {} # pos = [tile.name, 'unknown' (type), value, true (hidden),marked]
-var tile_load = preload("res://tile.tscn")
-var test_load = preload("res://test.tscn")
-var chunk_load = preload("res://chunk_loc.tscn")
-var tile_holder_load = preload("res://tile_holder.tscn")
-var upgrade_load = preload("res://upgrade_menu.tscn")
 var ball_load = preload("res://ball.tscn")
-var mark_load = preload('res://mark.tscn')
 var mat = load('res://mark.gdshader')
 var mat2 = load("res://load.gdshader")
 var drill_load = preload('res://driller.tscn')
 var drone_base_load = preload('res://drone_base.tscn')
 var mouse_in = true
-var view_port_size
 var custom_time = 0.0
-var mine_thread
-
+enum states {HOVERING, HOLDING, DRAWING, CLICKING, PANNING}
+var state: states = states.HOVERING: set = set_state
+var book_spawned = false
+var mark_selected = false
 var selected_mark = []
-var banned_from_summons = Globals.book_ban
+var banned_from_summons = false
 #############################################################################	
 #############################################################################	
 #############################################################################
@@ -78,14 +56,14 @@ func _notification(what: int) -> void:
 		
 func _ready() -> void:
 	
-	Globals.connect("shape_guess",create_summon)
+	GameManager.connect("shape_guess",create_summon)
 	x_length = MapManager.x_length
 	y_length = MapManager.y_length
 	chunk_size = MapManager.chunk_size
-	chunk_split = -floor(num_of_chunks/2)
-	initial_chunk_pos = MapManager.initial_chunk_pos
 	current_chunk = MapManager.current_chunk
+	num_of_chunks = MapManager.num_of_chunks
 	update_lives(0)
+	#print(chunk_size,num_of_chunks)
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
 
@@ -94,14 +72,15 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	
 	$screen/draw_load.position = get_viewport().get_mouse_position()
-	#Globals.custom_time += delta
+	#GameManager.custom_time += delta
 	$screen/Label.text = str(roundi($game_timer.time_left))
 	
-	if moveable and mouse_in:
-	#if panning and mouse_in:
-	
+	if state == states.PANNING:
 		var difference = local_mous_pos - get_global_mouse_position()
 		$Camera2D.position += difference
+	#if moveable and mouse_in:
+		#var difference = local_mous_pos - get_global_mouse_position()
+		#$Camera2D.position += difference
 	
 	var nearest_chunk_pos = Vector2()
 	
@@ -122,7 +101,7 @@ func _process(delta: float) -> void:
 #############################################################################
 	
 func _unhandled_input(_event: InputEvent) -> void:
-	
+
 	var tile_dict = MapManager.tile_dict
 	var mouse_pos = get_global_mouse_position()
 	var nearest_tile_pos = MapCalculator.get_nearest(mouse_pos, 'tile')
@@ -132,112 +111,73 @@ func _unhandled_input(_event: InputEvent) -> void:
 		stored_mous_pos = get_global_mouse_position()
 		stored_pos = nearest_tile_pos
 		
-		if upgrade_in_hand == true:
+		if GameManager.book_collected == false:
+			check_if_book(nearest_tile_pos)
+			
+		if state == states.HOLDING:
 			if tile_dict[nearest_tile_pos]['clicked'] == true:
 				upgrade.place(nearest_tile_pos)
-				upgrade_in_hand = false
 				upgrade = 'NONE'
-		
-		#elif check_if_book(nearest_tile_pos):
-			#pass
+				state = states.HOVERING
 			
-		#elif gamestart == true and selected_mark.size() > 0:
-				#$draw_load_timers/shader_buffer.start()
-				#$draw_load_timers/click_timer.start()
 	if Input.is_action_just_pressed("b"):
-		Globals.has_book()
-		banned_from_summons = false
+		GameManager.collect_book()
+	
 	if Input.is_action_pressed("left_click"):
-			#if drawing == true:
-				#$shapes.draw_true()
+
+		if (banned_from_summons == false 
+		and MapManager.selected_mark.size() > 0
+		and GameManager.book_collected == true):
 			var diff = (mouse_pos - stored_mous_pos).length()
-			
-			#if nearest_tile_pos != stored_pos:
 			if diff > 10:
-				if moveable == false:
-					local_mous_pos = get_global_mouse_position()
-				moveable = true
-		#if spell == true:
-			#$shapes.draw_true()
+				state = states.DRAWING
+				$shapes.draw_true()
+
 			
 		
 	if Input.is_action_just_released("left_click"):
 			
-			#$draw_load_timers/shader_buffer.stop()
-			#$draw_load_timers/click_timer.stop()
-			#handle_draw_load(false)
-				
-			revealed_tiles = []
-			if moveable == false:
-				if upgrade_in_hand == false:
-					if nearest_tile_pos == stored_pos:
-							if tile_dict.has(nearest_tile_pos):
-								if gamestart == false:
-									current_chunk = MapCalculator.get_nearest(nearest_tile_pos,'chunk')
-									MapManager.start_game(nearest_tile_pos)
-									gamestart = true
-									#print('number of safe tiles revealed = ' + str(revealed_tiles.size()))
-
-								else:
-									
-									if tile_dict[nearest_tile_pos]['marked'] == false:			
-										MapManager.clicked(nearest_tile_pos)
-										if book_spawned == false and Globals.book_ban == true:
-											if revealed_tiles.size() >= 6:
-												book_chance()
-									elif nearest_tile_pos not in MapManager.used_mark and banned_from_summons == false:
-										
-										if nearest_tile_pos in selected_mark:
-											selected_mark.erase(nearest_tile_pos)
-											MapManager.highlight_mark(nearest_tile_pos,nearest_chunk_pos,true)
-										else:
-											selected_mark.append(nearest_tile_pos)
-											MapManager.highlight_mark(nearest_tile_pos,nearest_chunk_pos,false)
-									else:
-										print(banned_from_summons)
-			else:
-				#for i in selected_mark:
-					#used_mark.append(i)
-					#change_texture(get_node_from_pos(i))
-					
-					
-				moveable = false
-				#selected_mark = []
-					#elif spell == true:
-						#if tile_dict[nearest_tile_pos]['marked'] == true:
-							#highlight_mark(nearest_tile_pos,nearest_chunk_pos)
-			#moveable = false
+		if state == states.HOVERING:
+			if nearest_tile_pos == stored_pos:
+				if gamestart == false:
+					MapManager.first_click(nearest_tile_pos,nearest_chunk_pos)
+					gamestart = true
+				else:
+					MapManager.clicked(nearest_tile_pos,nearest_chunk_pos)
+					if GameManager.book_collected == false and book_spawned == false:
+						if MapManager.revealed_tiles.size() >= 6:
+							book_chance()
+			MapManager.revealed_tiles = []
+		
 	if Input.is_action_just_pressed("right_click"):
+		
+		MapManager.change_mark_state(nearest_tile_pos, nearest_chunk_pos,'flip')
 
-		if tile_dict.has(nearest_tile_pos):
-			if nearest_tile_pos not in MapManager.used_mark:
-				MapManager.mark(nearest_tile_pos, nearest_chunk_pos)
-
-
-				
 	if Input.is_action_just_pressed("restart"):
+		
 		get_tree().reload_current_scene()
 	
-
-	if Input.is_action_pressed("pan"):
-		if Globals.book_ban == false and selected_mark.size() > 0:
-			$shapes.draw_true()
-		#if moveable == false:
-			#local_mous_pos = get_global_mouse_position()
-			#
-		#moveable = true
+	if Input.is_action_just_pressed("pan"):
 		
+		if state == states.HOVERING:
+			state = states.PANNING
+			local_mous_pos = get_global_mouse_position()
+
 	if Input.is_action_just_released("pan"):
-		moveable = false
+		
+		if state == states.PANNING:
+			state = states.HOVERING
 	
 	if Input.is_action_just_pressed("add"):
 		update_lives(1)
+		
 	if Input.is_action_just_pressed("subtract"):
 		var ball = ball_load.instantiate()
 		add_child(ball)
 	
 	if Input.is_action_just_pressed("esc"):
 		get_tree().change_scene_to_file("res://home.tscn")
+		
 	# LAPTOP
 	
 	#if Input.is_action_just_pressed('zoom_in'):
@@ -282,11 +222,11 @@ func book_chance():
 	var rand_num = randi_range(1,chance)
 	if rand_num == chance:
 		book_spawned = true
-		var rand_pos = randi_range(0,revealed_tiles.size() - 1)
+		var rand_pos = randi_range(0,MapManager.revealed_tiles.size() - 1)
 		var book_load = preload("res://book.tscn")
 		var book = book_load.instantiate()
 		$book.add_child(book)
-		book.position = revealed_tiles[rand_pos]
+		book.position = MapManager.revealed_tiles[rand_pos]
 		book.offset = Vector2(x_length,y_length) / 2.0
 
 
@@ -301,43 +241,43 @@ func _on_game_timer_timeout() -> void:
 func create_summon(shape):
 	
 	if MapCalculator.check_marks():
-		var num_mark = len(selected_mark)
-		
+
 		if shape == 'circle':
-		#	print(num_mark)
 			var ball = ball_load.instantiate()
 			add_child(ball)
-			upgrade_in_hand = true
+			state = states.HOLDING
 			upgrade = ball
 			ball.clicked()
 		
 		if shape == 'square':
 			var driller = drill_load.instantiate()
 			add_child(driller)
-			upgrade_in_hand = true
+			state = states.HOLDING
 			upgrade = driller
 			driller.clicked()
 		
 		if shape == 'triangle':
 			var drone_base = drone_base_load.instantiate()
 			$drones.add_child(drone_base)
-			upgrade_in_hand = true
+			state = states.HOLDING
 			upgrade = drone_base
 			drone_base.clicked()
-	
-		for i in selected_mark:
-			used_mark.append(i)
-			MapManager.used_mark = used_mark
-			MapManager.change_texture(MapCalculator.get_node_from_pos(i))
+		
+
 	else:
-		var temp_mark = []
-		for i in selected_mark:
-			temp_mark.append(i)
-		for i in temp_mark:
-			MapManager.highlight_mark(i,MapCalculator.get_nearest(i,'chunk'),true)
 		banned_from_summons = true
+		
+	for i in MapManager.selected_mark:
+		
+		var nearest_chunk_pos = MapCalculator.get_nearest(i, 'chunk')
+		MapManager.change_mark_state(i,nearest_chunk_pos,'use')
+		#var node_path = 'chunk_manager/chunks/' +  MapManager.chunk_dict[nearest_chunk_pos]['name'] + '/' + MapManager.tile_dict[i]['name']
+		#var node = MapCalculator.get_node_from_path(node_path)
+		#MapManager.change_texture(node)
+		
+			
 	
-	selected_mark = []
+
 
 #func _on_click_timer_timeout() -> void:
 	#$draw_load_timers/click_timer.stop()
@@ -348,7 +288,7 @@ func create_summon(shape):
 func handle_draw_load(vis):
 	if vis:
 		$screen/draw_load.visible = true
-		$screen/draw_load.material.set("shader_parameter/time",Globals.custom_time)
+		$screen/draw_load.material.set("shader_parameter/time",GameManager.custom_time)
 		
 	else:
 		
@@ -361,17 +301,17 @@ func _on_shader_buffer_timeout() -> void:
 	handle_draw_load(true)
 
 func check_if_book(pos):
-	var book = false
 	if $book.get_child_count() > 0:
 		if $book.get_child(0).position == pos:
 			$book.get_child(0).queue_free()
-			banned_from_summons = false
-			Globals.has_book()
-			
-	
-	return book
+			GameManager.collect_book()
 		
-
+func set_state(new_state):
+	state = new_state
+	#print(new_state)
+	pass
+	
+	
 func _on_quit_button_pressed() -> void:
 	
 	get_tree().change_scene_to_file("res://home.tscn")

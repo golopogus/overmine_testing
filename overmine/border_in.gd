@@ -3,7 +3,7 @@ var closing = false
 var radius = 1.1
 var mat = load('res://border_in.gdshader')
 func _ready() -> void:
-	Globals.get_timer(self.get_path())
+	GameManager.get_timer(self.get_path())
 	
 	$ColorRect.material = ShaderMaterial.new()
 	$ColorRect.material.set("shader", mat)

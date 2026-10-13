@@ -15,8 +15,8 @@ var first_check
 func _ready() -> void:
 	initialize_stats()
 func initialize_stats():
-	move_speed = Globals.all_upgrade_data['drill_speed']['current'] + 1
-	health = Globals.all_upgrade_data['drill_dur']['current'] + 1
+	move_speed = GameManager.all_upgrade_data['drill_speed']['current'] + 1
+	health = GameManager.all_upgrade_data['drill_dur']['current'] + 1
 	
 func _process(_delta: float) -> void:
 
@@ -48,7 +48,7 @@ func set_tiles(pos_dict):
 		drilling = true
 		reade = false
 		speed = 0
-		await Globals.click_tile(next_pos)
+		await GameManager.click_tile(next_pos)
 		if pos_dict['type'] == 'mine':
 			health -= 1
 			if health == 0:
@@ -57,7 +57,7 @@ func set_tiles(pos_dict):
 		
 func drill_block():
 	next_pos = position + dir * 32
-	Globals.get_tiles(self.get_path(),[next_pos],'drill')
+	GameManager.get_tiles(self.get_path(),[next_pos],'drill')
 
 func clicked():
 	click = true

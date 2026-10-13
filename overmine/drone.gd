@@ -36,7 +36,7 @@ func _process(_delta: float) -> void:
 	
 	if battery > 0 and going_home == false:
 		if scanning == false and initialized == true:
-			Globals.get_tiles(self.get_path(),scan,'drone')
+			GameManager.get_tiles(self.get_path(),scan,'drone')
 		if moving == true:
 			var dir = get_dir_to()
 			velocity = speed * dir
@@ -76,7 +76,7 @@ func get_dir_to():
 	return dir
 
 func start_scanning(instance):
-	Globals.check_tile(scan_pos,self.get_path(),instance)
+	GameManager.check_tile(scan_pos,self.get_path(),instance)
 
 
 func set_tile(can_scan):
@@ -90,7 +90,7 @@ func set_tile(can_scan):
 		$Timer.start()
 	else:
 		scanning = false
-		Globals.get_tiles(self.get_path(),scan,'drone')
+		GameManager.get_tiles(self.get_path(),scan,'drone')
 
 func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
 	$AnimationPlayer.stop()
@@ -106,10 +106,10 @@ func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
 	#area_2_scan = get_grid(convert_scan_size)
 
 func initialize_values():
-	speed = 1.0/pow(0.8,Globals.all_upgrade_data['drone_speed']['current'])
-	scan_speed = 1.0/pow(0.8,Globals.all_upgrade_data['drone_speed']['current'])
+	speed = 1.0/pow(0.8,GameManager.all_upgrade_data['drone_speed']['current'])
+	scan_speed = 1.0/pow(0.8,GameManager.all_upgrade_data['drone_speed']['current'])
 	battery = 1
-	var convert_scan_size = 6 * Globals.all_upgrade_data['scan_size']['current'] + 7
+	var convert_scan_size = 6 * GameManager.all_upgrade_data['scan_size']['current'] + 7
 	area_2_scan = get_grid(convert_scan_size)
 	
 
@@ -125,7 +125,7 @@ func get_grid(scan_area):
 			tile_pos = start + Vector2(32,32) * Vector2(x,y)
 			scan.append(tile_pos)
 	
-	Globals.get_tiles(self.get_path(),scan,'drone')
+	GameManager.get_tiles(self.get_path(),scan,'drone')
 	
 func update_upgrade(upgrade,val):
 	
