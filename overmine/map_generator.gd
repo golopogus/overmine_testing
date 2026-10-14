@@ -105,6 +105,7 @@ func draw_initial_chunks(pos):
 				chunk.add_child(tile)
 				tile.global_position = global_pos
 				tile_dict[tile.global_position]['name'] = tile.name	
+				#tile.get_child(0).texture = MapManager.texture_dict['hidden']['hidden4']
 				tile.texture = MapManager.texture_dict['hidden']['hidden1']
 	
 	MapManager.tile_dict = tile_dict
@@ -122,7 +123,8 @@ func initialize_textures():
 		'hidden' = {
 			'hidden1' = $sprites/new_sprites/hidden/hidden1.texture,
 			'hidden2' = $sprites/new_sprites/hidden/hidden2.texture,
-			'hidden3' = $sprites/new_sprites/hidden/hidden3.texture
+			'hidden3' = $sprites/new_sprites/hidden/hidden3.texture,
+			'hidden4' = $sprites/new_sprites/hidden/hidden4.texture
 		},
 		'1' = $"sprites/new_sprites/1".texture,
 		'2' = $"sprites/new_sprites/2".texture,

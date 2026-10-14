@@ -31,7 +31,8 @@ var ball_load = preload("res://ball.tscn")
 var mat = load('res://mark.gdshader')
 var mat2 = load("res://load.gdshader")
 var drill_load = preload('res://driller.tscn')
-var drone_base_load = preload('res://drone_base.tscn')
+var drone_load = preload('res://drone.tscn')
+var ball_split_load = preload("res://ball_split.tscn")
 var mouse_in = true
 var custom_time = 0.0
 enum states {HOVERING, HOLDING, DRAWING, CLICKING, PANNING}
@@ -120,7 +121,6 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 				
 	if Input.is_action_just_released("left_click"):
-			
 		if state == states.HOVERING:
 			if nearest_tile_pos == stored_pos:
 				if gamestart == false:
@@ -232,11 +232,11 @@ func create_summon(shape):
 			upgrade = driller
 		
 		if shape == 'triangle':
-			var drone_base = drone_base_load.instantiate()
-			$drones.add_child(drone_base)
+			var drone = drone_load.instantiate()
+			add_child(drone)
 			state = states.HOLDING
-			upgrade = drone_base
-			drone_base.clicked()
+			upgrade = drone
+			#drone.clicked()
 		
 	else:
 		banned_from_summons = true
@@ -275,3 +275,12 @@ func set_state(new_state):
 func _on_quit_button_pressed() -> void:
 	
 	get_tree().change_scene_to_file("res://home.tscn")
+
+func spawn_balls(num_of_spawn,pos):
+	
+	for i in num_of_spawn:
+		var ball_split = ball_split_load.instantiate()
+		add_child(ball_split)
+		ball_split.place(pos)
+	
+	

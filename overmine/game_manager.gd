@@ -73,7 +73,7 @@ func initialize_upgrade_data():
 		'roller_health': {
 			'name': 'Roller Health',
 			'description': '',
-			'current': 0,
+			'current': 2,
 			'max': 3,
 			'cost': 10,
 			'owner': 'roller'
@@ -81,13 +81,21 @@ func initialize_upgrade_data():
 		'roller_speed': {
 			'name': 'Roller Speed',
 			'description': '',
-			'current': 0,
+			'current': 3,
 			'max': 3,
 			'cost': 10,
 			'owner': 'roller'
 		},
 		'roller_split': {
 			'name': 'Roller Split',
+			'description': '',
+			'current': 0,
+			'max': 3,
+			'cost': 10,
+			'owner': 'roller'
+		},
+		'roller_split_health': {
+			'name': 'Roller Split Health',
 			'description': '',
 			'current': 0,
 			'max': 3,
@@ -125,7 +133,7 @@ func initialize_upgrade_data():
 		'eye_speed': {
 			'name': 'Eye Speed',
 			'description': '',
-			'current': 1.0,
+			'current': 5,
 			'max': 3,
 			'cost': 10,
 			'owner': 'eye'

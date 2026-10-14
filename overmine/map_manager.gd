@@ -155,14 +155,16 @@ func change_texture(tile):
 
 	tile_dict[pos]['name'] = tile.name
 	if tile_pos['clicked'] == false:
+		#tile.get_child(0).texture = texture_dict['hidden']['hidden4']
 		if tile_pos['mark_state'] == mark_states.USED:
 			tile.texture = texture_dict['mark']['mark4']
 		elif tile_pos['mark_state'] != mark_states.UNMARKED:
 			tile.texture = texture_dict['mark']['mark0']
 
 		else:
-			tile.texture = texture_dict['hidden']['hidden1']# + str(rand_num)]
-	else:		
+			tile.texture = texture_dict['hidden']['hidden1']
+	else:	
+		#tile.get_child(0).texture = null	
 		if tile_pos['type'] == tile_types.WARNING:
 			sprite = str(tile_pos['value'])
 			tile.texture = texture_dict[sprite]
@@ -196,7 +198,6 @@ func first_click(nearest_tile_pos,nearest_chunk_pos):
 								
 func clicked(nearest_tile_pos,nearest_chunk_pos):
 	
-
 	#var nearest_chunk_pos = MapCalculator.get_nearest(pos, 'chunk')
 	var tile = tile_dict[nearest_tile_pos]
 	var node_path = 'chunk_manager/chunks/' +  chunk_dict[nearest_chunk_pos]['name'] + '/' + tile['name']
@@ -335,6 +336,26 @@ func change_mark_state(pos,chunk_pos,action):
 			selected_mark.erase(pos)
 	
 		change_texture(tile_node)
+		
+func check_scan(all_tile_positions):
+	
+	if all_tile_positions.size() == 1:
+		var tile_pos = all_tile_positions[0]
+		if tile_dict[tile_pos]['clicked'] == false and tile_dict[tile_pos]['mark_state'] == mark_states.UNMARKED and tile_dict[tile_pos]['scan_type'] == 'NONE':
+			tile_dict[tile_pos]['scan_type'] = 'TAKEN'
+			return true
+		else:
+			return false
+		
+	else:
+		
+		var tiles = []
+		for tile_pos in all_tile_positions:
+			if tile_dict.has(tile_pos):
+				if tile_dict[tile_pos]['clicked'] == false and tile_dict[tile_pos]['mark_state'] == mark_states.UNMARKED and tile_dict[tile_pos]['scan_type'] == 'NONE':
+					tiles.append(tile_pos)
+		
+		return tiles
 
 
 	

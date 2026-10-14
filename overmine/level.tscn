@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=60 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://ekk4tvoietwe" path="res://level_controller.gd" id="1_h44gt"]
 [ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="2_2hox4"]
@@ -24,6 +24,7 @@
 [ext_resource type="Texture2D" uid="uid://cdgd7g28w3to" path="res://pics/new_pics/cracked_1.png" id="21_hspc6"]
 [ext_resource type="Texture2D" uid="uid://gjgqk7llq6se" path="res://pics/new_pics/cracked_2.png" id="22_2mem0"]
 [ext_resource type="Texture2D" uid="uid://dnmnoaxuq6bcf" path="res://pics/new_pics/cracked_3.png" id="23_1acxm"]
+[ext_resource type="Texture2D" uid="uid://c1avveaq6afn3" path="res://pics/new_pics/Sprite-0005.png" id="23_dqaf4"]
 [ext_resource type="Texture2D" uid="uid://cdnl8j2c13fq5" path="res://pics/new_pics/cracked_4.png" id="24_ymw0v"]
 [ext_resource type="Texture2D" uid="uid://3r4msnq63tyn" path="res://pics/new_pics/cracked_5.png" id="25_w2ykt"]
 [ext_resource type="Texture2D" uid="uid://60ohmw75gha6" path="res://pics/new_pics/cracked_6.png" id="26_lojl8"]
@@ -311,6 +312,10 @@ texture = ExtResource("19_0sd67")
 [node name="hidden3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
 visible = false
 texture = ExtResource("20_qh1jm")
+
+[node name="hidden4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
+visible = false
+texture = ExtResource("23_dqaf4")
 
 [node name="1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
 visible = false

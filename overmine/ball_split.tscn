@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dtdtg51w85lbr"]
+
+[ext_resource type="Texture2D" uid="uid://d7xr5dh2divu" path="res://pics/new_pics/rampager_ball.png" id="1_ca0oo"]
+[ext_resource type="Script" uid="uid://d3los0tm6bm2i" path="res://ball_split.gd" id="2_ca0oo"]
+
+[node name="ball_split" type="Sprite2D"]
+modulate = Color(0.28235295, 1, 1, 1)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("1_ca0oo")
+script = ExtResource("2_ca0oo")

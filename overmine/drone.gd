@@ -6,6 +6,7 @@ var scannable_chunk
 var x_length
 var y_length
 var chunk_size
+var home_pos
 const grid_size_options = [[20,20],[50,50],[4,4]]
 var chosen_grid_size = grid_size_options[0]
 var scanning_tile = Vector2()
@@ -15,6 +16,7 @@ var checked_tiles = []
 var initial_scan_time = 4.8
 var scan_pos
 var speed
+var scan_area
 var scan = []
 var area_2_scan
 var tile_info
@@ -24,9 +26,12 @@ var going_home = false
 var g_pos = Vector2()
 var is_tiles = true
 var initialized = false
+enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
+enum states {SELECTED,IDLE,MOVING,SCANNING,DEAD}
+var state = states.SELECTED: set = set_state
 
 func _ready() -> void:
-	initialize_values()
+	#initialize_values()
 	$body_animation.play("always")
 	x_length = 16
 	y_length = 16
@@ -34,40 +39,68 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	
-	if battery > 0 and going_home == false:
-		if scanning == false and initialized == true:
-			GameManager.get_tiles(self.get_path(),scan,'drone')
-		if moving == true:
-			var dir = get_dir_to()
-			velocity = speed * dir
+	if state == states.SELECTED:
+		position = get_global_mouse_position()
+	
+	elif state == states.MOVING:
+		var dir = get_dir_to()
+		velocity = speed * dir
+		if (global_position - scan_pos).length() <= 3:
 			
-			if (global_position - scan_pos).length() <= 1:
-				velocity = Vector2()
-				dir = Vector2()
-				global_position = scan_pos
-				start_scanning(1)
-	
-	elif battery == 0:
-		return_to_base('battery')
-	
-	elif going_home == true:
-		return_to_base('no_tiles')
-
+			velocity = Vector2()
+			dir = Vector2()
+			global_position = scan_pos
+			state = states.SCANNING
+			#start_scanning()
+			
 	move_and_collide(velocity)
 		
-func set_tiles(unclicked_tiles):
+func set_state(new_state):
+	state = new_state
+	if state == states.SCANNING:
+		start_scanning()
+	elif state == states.IDLE:
+		get_grid(scan_area)
 
-	possible_tiles = unclicked_tiles
-	if len(possible_tiles) > 0:
-		
-		var rand_int = randi() % len(possible_tiles)
-		scan_pos = possible_tiles[rand_int]
-		initialized = true
-		moving = true
-		scanning = true
+func start_scanning():
 	
+	if MapManager.check_scan([scan_pos]):
+		
+		$AnimationPlayer.play("scanning")
+		$AnimationPlayer.speed_scale = scan_speed
 	else:
-		going_home = true
+		state = states.IDLE
+		#$Timer.wait_time = initial_scan_time - (initial_scan_time * (scan_speed - 1)/2.0)
+		#$Timer.start()
+	#if battery > 0 and going_home == false:
+		#if scanning == false and initialized == true:
+			#GameManager.get_tiles(self.get_path(),scan,'eye')
+		#if moving == true:
+			#var dir = get_dir_to()
+			#velocity = speed * dir
+			#
+			#if (global_position - scan_pos).length() <= 1:
+				#velocity = Vector2()
+				#dir = Vector2()
+				#global_position = scan_pos
+				#start_scanning(1)
+	
+
+
+		
+#func set_tiles(unclicked_tiles):
+#
+	#possible_tiles = unclicked_tiles
+	#if len(possible_tiles) > 0:
+		#
+		#var rand_int = randi() % len(possible_tiles)
+		#scan_pos = possible_tiles[rand_int]
+		#initialized = true
+		#moving = true
+		#scanning = true
+	#
+	#else:
+		#going_home = true
 	
 func get_dir_to():
 		
@@ -75,47 +108,54 @@ func get_dir_to():
 	
 	return dir
 
-func start_scanning(instance):
-	GameManager.check_tile(scan_pos,self.get_path(),instance)
+#func start_scanning(instance):
+	#GameManager.check_tile(scan_pos,self.get_path(),instance)
 
 
-func set_tile(can_scan):
-	
-	if can_scan == true:
-		
-		moving = false
-		$AnimationPlayer.play("scanning")
-		$AnimationPlayer.speed_scale = scan_speed
-		$Timer.wait_time = initial_scan_time - (initial_scan_time * (scan_speed - 1)/2.0)
-		$Timer.start()
-	else:
-		scanning = false
-		GameManager.get_tiles(self.get_path(),scan,'drone')
+#func set_tile(can_scan):
+	#
+	#if can_scan == true:
+		#
+		#moving = false
+		#$AnimationPlayer.play("scanning")
+		#$AnimationPlayer.speed_scale = scan_speed
+		#$Timer.wait_time = initial_scan_time - (initial_scan_time * (scan_speed - 1)/2.0)
+		#$Timer.start()
+	#else:
+		#scanning = false
+		#GameManager.get_tiles(self.get_path(),scan,'eye')
 
 func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
 	$AnimationPlayer.stop()
-	scanning = false
-	battery -= 1
+	scan_tile()
+	
+func scan_tile():
+	var nearest_chunk = MapCalculator.get_nearest(scan_pos,'chunk')
+	MapManager.change_mark_state(scan_pos,nearest_chunk,'flip')
+	state = states.IDLE
 	
 	
-#func initialize_values(drone_speed,scan_size,battery_size):
-	#speed = 1.0/pow(0.8,drone_speed)
-	#scan_speed = 1.0/pow(0.8,drone_speed)
+#func initialize_values(eye_speed,scan_size,battery_size):
+	#speed = 1.0/pow(0.8,eye_speed)
+	#scan_speed = 1.0/pow(0.8,eye_speed)
 	#battery = 1 + battery_size
 	#var convert_scan_size = 6 * scan_size + 7
 	#area_2_scan = get_grid(convert_scan_size)
 
 func initialize_values():
-	speed = 1.0/pow(0.8,GameManager.all_upgrade_data['drone_speed']['current'])
-	scan_speed = 1.0/pow(0.8,GameManager.all_upgrade_data['drone_speed']['current'])
-	battery = 1
-	var convert_scan_size = 6 * GameManager.all_upgrade_data['scan_size']['current'] + 7
-	area_2_scan = get_grid(convert_scan_size)
+	speed = 1.0/pow(0.8,GameManager.all_upgrade_data['eye_speed']['current'])
+	scan_speed = 1.0/pow(0.8,GameManager.all_upgrade_data['eye_speed']['current'])
+	#battery = 1
+	scan_area = 6 * GameManager.all_upgrade_data['eye_size']['current'] + 7
+	#print(convert_scan_size)
+	get_grid(scan_area)
+	print('o')
+	update_area(scan_area)
 	
 
 func get_grid(scan_area):
 	
-	var center_pos = get_parent().position
+	var center_pos = home_pos
 	var away_from_center = (scan_area - 1)/2.0
 	var start = center_pos - Vector2(away_from_center,away_from_center) * 32
 	scan = []
@@ -125,39 +165,53 @@ func get_grid(scan_area):
 			tile_pos = start + Vector2(32,32) * Vector2(x,y)
 			scan.append(tile_pos)
 	
-	GameManager.get_tiles(self.get_path(),scan,'drone')
+	var tiles = MapManager.check_scan(scan)
+	find_scan_tile(tiles)
+
+func find_scan_tile(tiles):
 	
-func update_upgrade(upgrade,val):
+	if len(tiles) > 0:
+		
+		var rand_int = randi() % len(tiles)
+		scan_pos = tiles[rand_int]
+		state = states.MOVING
+	else:
+		queue_free()
 	
-	if upgrade == 'battery_size':
-		battery += val
-	if upgrade == 'scan_size':
-		var convert_scan_size = 6 * val + 7
-		area_2_scan = get_grid(convert_scan_size)
-	if upgrade == 'drone_speed':
-		speed *= (1.0/0.8)
-		scan_speed *= (1.0/0.8)
+	
+	#GameManager.check_tiles(scan)
+	
+#func update_upgrade(upgrade,val):
+	#
+	#if upgrade == 'battery_size':
+		#battery += val
+	#if upgrade == 'scan_size':
+		#var convert_scan_size = 6 * val + 7
+		#area_2_scan = get_grid(convert_scan_size)
+	#if upgrade == 'eye_speed':
+		#speed *= (1.0/0.8)
+		#scan_speed *= (1.0/0.8)
 		
 	
 
 
 func _on_timer_timeout() -> void:
-	start_scanning(2)
 
 	$Timer.stop()	
 	
-func return_to_base(reason):
-		
-		var dir = (get_parent().position - global_position).normalized()
-		
-		velocity = speed * dir 
-		
-		if (global_position - get_parent().position).length() <= 1:
-			
-			if reason == 'battery':
-				get_parent().charging(self.get_path())
-			elif reason == 'no_tiles':
-				get_parent().waiting(self.get_path())
+
+func place(pos):
+	home_pos = pos
+	state = states.DEAD
+	position = pos
+	$area.visible = false
+	initialize_values()
+	
+	
+
+func update_area(scan_scale):
+	$area.scale = Vector2(1,1) * scan_scale
+	$area.visible = true
 
 				
 

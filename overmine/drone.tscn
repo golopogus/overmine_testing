@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://b60885sjfo4rx"]
+[gd_scene load_steps=12 format=3 uid="uid://b60885sjfo4rx"]
 
 [ext_resource type="Script" uid="uid://dpoqvy1as0y1c" path="res://drone.gd" id="1_puw62"]
 [ext_resource type="Texture2D" uid="uid://cbuaotppc1l85" path="res://pics/drone_idle.png" id="2_30i2v"]
 [ext_resource type="Texture2D" uid="uid://c42hiv14qeuvx" path="res://pics/drone_scan.png" id="3_ardpj"]
+[ext_resource type="Texture2D" uid="uid://ccr2uot0bov6p" path="res://pics/drone_area.png" id="4_30i2v"]
 
 [sub_resource type="Animation" id="Animation_30i2v"]
 length = 0.001
@@ -110,14 +111,14 @@ libraries = {
 [node name="body" type="Sprite2D" parent="."]
 position = Vector2(0, -10)
 texture = ExtResource("2_30i2v")
-offset = Vector2(8, 8)
+offset = Vector2(16, 16)
 hframes = 6
 
 [node name="scanner" type="Sprite2D" parent="."]
 z_index = 2
 position = Vector2(0, -10)
 texture = ExtResource("3_ardpj")
-offset = Vector2(8, 8)
+offset = Vector2(16, 16)
 hframes = 29
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -127,6 +128,11 @@ libraries = {
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 4.800000000000001
+
+[node name="area" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("4_30i2v")
+offset = Vector2(16, 16)
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

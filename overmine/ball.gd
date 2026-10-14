@@ -20,6 +20,7 @@ enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
 enum states {SELECTED,IDLE,MOVING,ATTACKING,DEAD}
 var state = states.SELECTED: set = set_state
 enum mark_states {UNMARKED,MARKED,SELECTED,USED}
+var num_split
 
 
 func _ready() -> void:
@@ -29,9 +30,11 @@ func _ready() -> void:
 
 func initialize_stats():
 	
+	
+	
 	speed = GameManager.all_upgrade_data['roller_speed']['current'] + 1
 	health = GameManager.all_upgrade_data['roller_health']['current'] + 1
-
+	num_split = GameManager.all_upgrade_data['roller_split']['current'] + 1
 	tile_size = Vector2(MapManager.x_length,MapManager.y_length)
 	radius = tile_size.x / 2.0
 	
@@ -94,6 +97,7 @@ func set_tiles(tile):
 		flip()
 		
 	if health == 0:
+		split()
 		queue_free()
 
 func place(pos):
@@ -121,6 +125,12 @@ func get_rand_dir():
 	
 	var angle = deg_to_rad(randi_range(0,360))
 	dir = (Vector2(1,1) * Vector2(cos(angle),sin(angle))).normalized()
+
+func split():
+	
+	get_parent().spawn_balls(num_split,position)
+	
+	
 
 
 
