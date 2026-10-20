@@ -81,7 +81,7 @@ func initialize_upgrade_data():
 		'roller_speed': {
 			'name': 'Roller Speed',
 			'description': '',
-			'current': 3,
+			'current': 1,
 			'max': 3,
 			'cost': 10,
 			'owner': 'roller'
@@ -89,7 +89,7 @@ func initialize_upgrade_data():
 		'roller_split': {
 			'name': 'Roller Split',
 			'description': '',
-			'current': 0,
+			'current': 3,
 			'max': 3,
 			'cost': 10,
 			'owner': 'roller'

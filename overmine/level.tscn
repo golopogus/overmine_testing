@@ -1,4 +1,4 @@
-[gd_scene load_steps=60 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene load_steps=44 format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://ekk4tvoietwe" path="res://level_controller.gd" id="1_h44gt"]
 [ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="2_2hox4"]
@@ -34,28 +34,19 @@
 [ext_resource type="Texture2D" uid="uid://m1o7ouij1kp6" path="res://pics/new_pics/safe.png" id="30_dv2ly"]
 [ext_resource type="Texture2D" uid="uid://b06lj4nbbrj1g" path="res://pics/new_pics/mine.png" id="31_cumd2"]
 [ext_resource type="Shader" uid="uid://dlma1pbpxdhva" path="res://load.gdshader" id="32_84hvi"]
-[ext_resource type="Texture2D" uid="uid://cd82ver13at5d" path="res://pics/hidden.png" id="32_la0c1"]
 [ext_resource type="Texture2D" uid="uid://nubc0fyh6iya" path="res://pics/new_pics/summon_bar.png" id="33_53riq"]
-[ext_resource type="Texture2D" uid="uid://d2otfn7c6mhwi" path="res://pics/mineClicked.png" id="33_ofs7l"]
-[ext_resource type="Texture2D" uid="uid://di0m0dfxhx64u" path="res://pics/safe.png" id="34_0qfi3"]
-[ext_resource type="Texture2D" uid="uid://fg2buvvgeklp" path="res://pics/testTileHovered.png" id="35_03k3n"]
-[ext_resource type="Texture2D" uid="uid://hrdxaw0p0iq" path="res://pics/foundMine.png" id="36_7rhug"]
-[ext_resource type="Texture2D" uid="uid://c7dp0b4wb6hml" path="res://pics/warningOne.png" id="37_8oijn"]
-[ext_resource type="Texture2D" uid="uid://bmgfg288gs2hi" path="res://pics/warningTwo.png" id="38_n4px5"]
-[ext_resource type="Texture2D" uid="uid://dgymjr8wxw4nl" path="res://pics/warningThree.png" id="39_f3hnb"]
-[ext_resource type="Texture2D" uid="uid://dke3j5b4uljme" path="res://pics/warningFour.png" id="40_s7ylq"]
-[ext_resource type="Texture2D" uid="uid://dtucikbn2aty5" path="res://pics/warningFive.png" id="41_j70ly"]
-[ext_resource type="Texture2D" uid="uid://duxwumlbxtkhy" path="res://pics/warningSix.png" id="42_rx63s"]
-[ext_resource type="Texture2D" uid="uid://vp0ti1w47ymj" path="res://pics/warningSeven.png" id="43_8ix83"]
-[ext_resource type="Texture2D" uid="uid://c5xvtrm81utmf" path="res://pics/warningEight.png" id="44_rf5jx"]
-[ext_resource type="Texture2D" uid="uid://brf8whh3klgi4" path="res://pics/mine.png" id="45_8std4"]
-[ext_resource type="Texture2D" uid="uid://drnmfun5hayvq" path="res://pics/mineWrong.png" id="46_d7gql"]
-[ext_resource type="Texture2D" uid="uid://ceuk5xbfgwur5" path="res://pics/testTilePressed.png" id="47_7kq6u"]
-[ext_resource type="Texture2D" uid="uid://0e7ogahq7eev" path="res://pics/mine_scan.png" id="48_gpid7"]
-[ext_resource type="Texture2D" uid="uid://3vol044mwh2x" path="res://pics/not_mine_scan.png" id="49_rsq42"]
 [ext_resource type="Script" uid="uid://3ca1yi7dui2" path="res://map_generator.gd" id="50_53riq"]
 [ext_resource type="PackedScene" uid="uid://dw4srph7to3a5" path="res://border_in.tscn" id="50_oiuvo"]
 [ext_resource type="Script" uid="uid://crxob250ov8bt" path="res://shape.gd" id="51_lupeo"]
+[ext_resource type="Shader" uid="uid://cxjpn7mfvjwlm" path="res://background_tiles.gdshader" id="56_umckw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1x5yi"]
+shader = ExtResource("56_umckw")
+shader_parameter/position = Vector2(0, 0)
+shader_parameter/camera = Vector2(1, 1)
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/color1 = Color(0.373, 0.404, 0.49, 1)
+shader_parameter/color2 = Color(0.592, 0.616, 0.675, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c5xsv"]
 
@@ -69,7 +60,7 @@ shader_parameter/time = 0.0
 script = ExtResource("1_h44gt")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-visible = false
+layer = -1
 
 [node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
 visible = false
@@ -139,6 +130,7 @@ layout_mode = 2
 texture = ExtResource("7_umckw")
 
 [node name="normal_rez" type="Control" parent="CanvasLayer"]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 640.0
@@ -146,6 +138,7 @@ offset_bottom = 360.0
 mouse_filter = 2
 
 [node name="game" type="TextureRect" parent="CanvasLayer/normal_rez"]
+visible = false
 show_behind_parent = true
 layout_mode = 0
 offset_right = 640.0
@@ -232,6 +225,7 @@ theme_override_font_sizes/font_size = 11
 text = "1"
 
 [node name="upgrade_button" type="Button" parent="CanvasLayer/normal_rez"]
+visible = false
 layout_mode = 0
 offset_left = 113.0
 offset_top = 51.0
@@ -240,6 +234,7 @@ offset_bottom = 82.0
 text = "Upgrades"
 
 [node name="heart_container" type="HBoxContainer" parent="CanvasLayer/normal_rez"]
+visible = false
 layout_mode = 0
 offset_left = 40.0
 offset_top = 352.0
@@ -248,6 +243,7 @@ offset_bottom = 352.0
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="CanvasLayer"]
+visible = false
 offset_left = 18.0
 offset_top = 62.0
 offset_right = 60.0
@@ -258,6 +254,7 @@ text = "1000000"
 horizontal_alignment = 2
 
 [node name="Label2" type="Label" parent="CanvasLayer"]
+visible = false
 offset_left = 267.0
 offset_top = 61.0
 offset_right = 309.0
@@ -267,13 +264,20 @@ theme_override_font_sizes/font_size = 11
 text = "1000000"
 horizontal_alignment = 2
 
+[node name="background_tiles" type="ColorRect" parent="CanvasLayer"]
+visible = false
+z_index = -1
+material = SubResource("ShaderMaterial_1x5yi")
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="chunk_manager" type="Node2D" parent="."]
 script = ExtResource("50_53riq")
 
 [node name="sprites" type="Node2D" parent="chunk_manager"]
-visible = false
 
 [node name="new_sprites" type="Node2D" parent="chunk_manager/sprites"]
 
@@ -300,6 +304,7 @@ visible = false
 texture = ExtResource("18_53riq")
 
 [node name="hidden" type="Node2D" parent="chunk_manager/sprites/new_sprites"]
+visible = false
 
 [node name="hidden1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
 visible = false
@@ -364,78 +369,6 @@ texture = ExtResource("31_cumd2")
 hframes = 4
 frame = 1
 
-[node name="hidden" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("32_la0c1")
-
-[node name="mine" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("33_ofs7l")
-
-[node name="safe" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("34_0qfi3")
-
-[node name="hover" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("35_03k3n")
-
-[node name="mark" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("36_7rhug")
-
-[node name="1" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("37_8oijn")
-
-[node name="2" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("38_n4px5")
-
-[node name="3" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("39_f3hnb")
-
-[node name="4" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("40_s7ylq")
-
-[node name="5" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("41_j70ly")
-
-[node name="6" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("42_rx63s")
-
-[node name="7" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("43_8ix83")
-
-[node name="8" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("44_rf5jx")
-
-[node name="mine_right" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("45_8std4")
-
-[node name="mine_wrong" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("46_d7gql")
-
-[node name="press" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("47_7kq6u")
-
-[node name="mine_scan" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("48_gpid7")
-
-[node name="not_mine_scan" type="Sprite2D" parent="chunk_manager/sprites"]
-visible = false
-texture = ExtResource("49_rsq42")
-
 [node name="chunks" type="Node2D" parent="chunk_manager"]
 
 [node name="drones" type="Node2D" parent="."]
@@ -443,6 +376,7 @@ texture = ExtResource("49_rsq42")
 [node name="drills" type="Node2D" parent="."]
 
 [node name="screen" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="border_in" parent="screen" instance=ExtResource("50_oiuvo")]
 

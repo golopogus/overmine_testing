@@ -44,6 +44,8 @@ func create_neighbors(pos,x,y,dir):
 	var e = pos + Vector2(1,0) * Vector2(x,y)
 	
 	match dir:
+		'ABOVE':
+			pre_neighbors = [n]
 		'TOP':
 			pre_neighbors = [n,ne,nw]
 		'BOTTOM':
@@ -71,6 +73,15 @@ func convert_grid_to_pos(grid,pos):
 		new_grid.append(new_pos)
 		
 	return new_grid
+	
+func convert_pos_to_grid(tile_pos,chunk_pos):
+	
+	var new_pos = (tile_pos - chunk_pos) / Vector2(MapManager.x_length, MapManager.y_length)
+	
+	return new_pos
+
+
+		
 
 func get_chunk_grid():
 	
@@ -84,7 +95,7 @@ func get_chunk_grid():
 func get_node_from_pos(pos):
 	
 	var nearest_chunk_pos = get_nearest(pos, 'chunk')
-	var node_path = 'chunks/' +  MapManager.chunk_dict[nearest_chunk_pos]['name'] + '/' + MapManager.tile_dict[pos]['name']
+	var node_path = 'chunks/' +  MapManager.chunk_dict[nearest_chunk_pos]['name'] #+ '/' + MapManager.tile_dict[pos]['name']
 	#var node = get_node_from_path()
 	return get_node(node_path)
 

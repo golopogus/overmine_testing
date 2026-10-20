@@ -16,6 +16,7 @@ var all_upgrade_data = {}
 var all_store_data = {}
 var upgrade
 var timer = 5
+var offset_amount = Vector2()
 var used_mark = []
 var num_of_chunks
 var chunk_size
@@ -62,18 +63,17 @@ func _ready() -> void:
 
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
+	
 
 
 func _process(delta: float) -> void:
 	
-	$screen/draw_load.position = get_viewport().get_mouse_position()
-	$screen/Label.text = str(roundi($game_timer.time_left))
-	
+
+
 	if state == states.PANNING:
 		var difference = local_mous_pos - get_global_mouse_position()
 		$Camera2D.position += difference
 
-	
 	var nearest_chunk_pos = Vector2()
 	
 	var chunk_follow_pos = $Camera2D.position
@@ -175,11 +175,12 @@ func _unhandled_input(_event: InputEvent) -> void:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
 			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
 				$Camera2D.zoom += Vector2(.1,.1)
-		
+				
 	if _event is InputEventMouseButton:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
 			if $Camera2D.zoom.x >= .5 and $Camera2D.zoom.y >= .5:
 				$Camera2D.zoom -= Vector2(.1,.1)
+
 		
 					
 func update_lives(change):

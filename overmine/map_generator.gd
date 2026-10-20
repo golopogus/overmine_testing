@@ -20,13 +20,14 @@ enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
 
 	
 func _ready() -> void:
-
-	x_length = $sprites/new_sprites/hidden/hidden1.texture.get_width()
+	
+	x_length = 32
+	y_length = 32
+	#x_length = $sprites/new_sprites/hidden/hidden1.texture.get_width()
 	MapManager.x_length = x_length
 	
-	y_length = $sprites/new_sprites/hidden/hidden1.texture.get_height()
+	#y_length = $sprites/new_sprites/hidden/hidden1.texture.get_height()
 	MapManager.y_length = y_length
-	
 	
 	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
 	MapManager.chunk_size = chunk_size
@@ -53,7 +54,7 @@ func place_chunk_loc():
 			chunk_dict[chunk_position] = {
 				'name':'not_named',
 				'drawn': false,
-				'mines': false
+				'mines': false,
 				}
 	
 func place_tile_loc():
@@ -70,8 +71,8 @@ func place_tile_loc():
 			#if tile_dict.has(tile_pos) == false:
 				
 				tile_dict[tile_pos] = {
-					'name': 'none',
 					'type': tile_types.UNKNOWN,
+					'hidden_type': 1,
 					'value': 0,
 					'clicked': false,
 					'mark_state': mark_state,
@@ -99,14 +100,24 @@ func draw_initial_chunks(pos):
 		for x in chosen_grid_size[0]:
 			for y in chosen_grid_size[1]:
 			
-				var tile = tile_load.instantiate()
-				var global_pos = Vector2(x,y) * Vector2(x_length, y_length) + initial_pos + i
+				#var tile = tile_load.instantiate()
+				#var global_pos = Vector2(x,y) * Vector2(x_length, y_length) + initial_pos + i
+				chunk.set_cell(
+					Vector2i(x,y),
+					0,
+					Vector2i(1,1)
+				)
+				chunk.get_child(0).set_cell(
+					Vector2i(x,y),
+					0,
+					Vector2i((x+y) % 2,0)
+				)
+				#chunk.add_child(tile)
+				#tile.global_position = global_pos
+				#tile_dict[tile.global_position]['name'] = tile.name	
+			
+				#tile.texture = MapManager.texture_dict['hidden']['hidden1']
 				
-				chunk.add_child(tile)
-				tile.global_position = global_pos
-				tile_dict[tile.global_position]['name'] = tile.name	
-				#tile.get_child(0).texture = MapManager.texture_dict['hidden']['hidden4']
-				tile.texture = MapManager.texture_dict['hidden']['hidden1']
 	
 	MapManager.tile_dict = tile_dict
 	MapManager.chunk_dict = chunk_dict

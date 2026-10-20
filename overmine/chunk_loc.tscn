@@ -1,3 +1,44 @@
-[gd_scene format=3 uid="uid://cww8jwxptw5r5"]
+[gd_scene load_steps=7 format=3 uid="uid://cww8jwxptw5r5"]
 
-[node name="chunk_loc" type="Node2D"]
+[ext_resource type="Texture2D" uid="uid://j6001m7j63go" path="res://pics/tileset.png" id="1_srkhj"]
+[ext_resource type="Texture2D" uid="uid://d1uxh363rthr2" path="res://pics/tileset2.png" id="2_jptox"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jptox"]
+texture = ExtResource("1_srkhj")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_v0y1h"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_jptox")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_v0y1h"]
+texture = ExtResource("2_jptox")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_pr4dg"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_v0y1h")
+
+[node name="chunk_loc" type="TileMapLayer"]
+tile_set = SubResource("TileSet_v0y1h")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+z_index = -1
+tile_set = SubResource("TileSet_pr4dg")

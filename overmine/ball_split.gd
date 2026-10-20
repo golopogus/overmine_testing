@@ -95,10 +95,11 @@ func set_tiles(tile):
 
 		flip()
 	
-	print(health)	
+	
 	if health == 0:
 		#split()
-		queue_free()
+		pass
+		#queue_free()
 
 func place(pos):
 	
