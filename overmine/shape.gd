@@ -17,23 +17,36 @@ func _ready() -> void:
 	#initialize_shapes()
 	
 func _unhandled_input(_event: InputEvent) -> void:
-	if can_draw:
-		$shape_timer.stop()
-		if Input.is_action_pressed("left_click"):
-			
-			if drawing == false:
-				list_of_pts = []
-				drawing = true
-				to_draw = ''
+	pass
+	#if can_draw:
+		#$shape_timer.stop()
+		#if Input.is_action_pressed("left_click"):
+			#
+			#if drawing == false:
+				#list_of_pts = []
+				#drawing = true
+				#to_draw = ''
 		
-		if Input.is_action_just_released("left_click"):
-			if list_of_pts.size() > 0:
-				var updated_list = initialize_pts(list_of_pts)
-				handler(updated_list)
-				drawing = false
-				can_draw = false
+		#if Input.is_action_just_released("left_click"):
+			#if list_of_pts.size() > 0:
+				#var updated_list = initialize_pts(list_of_pts)
+				#handler(updated_list)
+				#drawing = false
+				#can_draw = false
 func draw_true():
 	can_draw = true
+	if drawing == false:
+		list_of_pts = []
+		drawing = true
+		to_draw = ''
+
+func finish_drawing():
+	if list_of_pts.size() > 0:
+		var updated_list = initialize_pts(list_of_pts)
+		handler(updated_list)
+		drawing = false
+		can_draw = false
+		
 func _process(_delta: float) -> void:
 	
 	if drawing == true:

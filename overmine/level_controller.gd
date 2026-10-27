@@ -36,7 +36,7 @@ var drone_load = preload('res://drone.tscn')
 var ball_split_load = preload("res://ball_split.tscn")
 var mouse_in = true
 var custom_time = 0.0
-enum states {HOVERING, HOLDING, DRAWING, CLICKING, PANNING}
+enum states {HOVERING, HOLDING, DRAWING, CLICKING, PANNING,PLACING}
 var state: states = states.HOVERING: set = set_state
 var book_spawned = false
 var mark_selected = false
@@ -138,6 +138,9 @@ func _unhandled_input(_event: InputEvent) -> void:
 		
 		if GameManager.book_collected == false:
 			check_if_book(nearest_tile_pos)
+		
+		if state == states.HOLDING:
+			state = states.PLACING
 			
 			
 
@@ -155,7 +158,10 @@ func _unhandled_input(_event: InputEvent) -> void:
 				
 	if Input.is_action_just_released("left_click"):
 		
-		if state == states.HOLDING:
+		if state == states.DRAWING:
+			$shapes.finish_drawing()
+		
+		elif state == states.PLACING:
 			
 			if tile_dict[nearest_tile_pos]['clicked'] == true:
 				upgrade.place(nearest_tile_pos)
@@ -166,7 +172,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 				upgrade = 'NONE'
 				state = states.HOVERING
 				
-		if state == states.HOVERING:
+		elif state == states.HOVERING:
 			if nearest_tile_pos == stored_pos:
 				if gamestart == false:
 					MapManager.first_click(nearest_tile_pos,nearest_chunk_pos)
@@ -204,14 +210,26 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 		
 	# LAPTOP
+	if Input.is_action_just_pressed("mac_middle_mouse"):
+		
+		if state == states.HOVERING:
+			state = states.PANNING
+			local_mous_pos = get_global_mouse_position()
+
+	if Input.is_action_just_released("mac_middle_mouse"):
+		
+		if state == states.PANNING:
+			state = states.HOVERING
+			
+	if Input.is_action_just_pressed('zoom_up'):
+			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
+				$Camera2D.zoom += Vector2(.1,.1)
 	
-	#if Input.is_action_just_pressed('zoom_in'):
-			#if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:
-				#$Camera2D.zoom *= 2
-	#
-	#if Input.is_action_just_pressed('zoom_out'):
-			#if $Camera2D.zoom.x > .5 and $Camera2D.zoom.y > .5:
-				#$Camera2D.zoom /= 2
+	if Input.is_action_just_pressed('zoom_down'):
+			if $Camera2D.zoom.x >= .1 and $Camera2D.zoom.y >= .1:
+				$Camera2D.zoom -= Vector2(.1,.1)
+	
+	#PC
 	if _event is InputEventMouseButton:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_UP and _event.pressed:
 			if $Camera2D.zoom.x < 2.0 and $Camera2D.zoom.y < 2.0:

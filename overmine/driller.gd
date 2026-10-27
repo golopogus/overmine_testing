@@ -4,9 +4,10 @@ var drilling = false
 
 var speed = 0
 var move_speed = 0
-
+var offset_after_placed = Vector2(32,28)
+var offset_holding = Vector2(16,16)
 var dir = Vector2.LEFT
-var next_pos = Vector2()
+var next_pos = Vector2(32,32)
 var reade = false
 var click = false
 var health = 1
@@ -19,11 +20,11 @@ enum mark_states {UNMARKED,MARKED,SELECTED,USED}
 func _ready() -> void:
 	initialize_stats()
 func initialize_stats():
+	offset = offset_holding
 	move_speed = GameManager.all_upgrade_data['driller_speed']['current'] + 1
 	health = GameManager.all_upgrade_data['driller_dur']['current'] + 1
 	
 func _process(_delta: float) -> void:
-	
 	if state == states.SELECTED:
 		position = get_global_mouse_position() - Vector2(16,16)
 		if Input.is_action_just_pressed("rotate"):
@@ -68,6 +69,7 @@ func set_state(new_state):
 	
 func place(pos):
 	
+	offset = offset_after_placed
 	state = states.MOVING
 	position = pos
 	check_block()

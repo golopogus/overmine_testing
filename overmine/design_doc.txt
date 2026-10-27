@@ -1,1 +1,130 @@
 sprite sizes are 64 by 64 atm
+
+gameplay:
+	possibly take damage if mouse is on explosions when they happen,
+	makes it so there is some negative to using so many upgrades
+	
+	crazy idea that mines exploding cause bullet hell to dodge with mouse
+	makes it crazy to dodge and expect , could be too much
+	
+	on top of that maybe each mine hit has a chance of adding a challenge 
+	to make game more hectic
+		timed easy minesweeper level
+		
+	each mine sends one projectile - as the game gets bigger and faster
+	more projectiles will be shot
+	
+	only 3 summons can be used per playthrough? so runs have to be different?
+	
+	each spell has a cost:
+		if there are enough marked tiles, the nearest amount equal to the 
+		cost will be used. much easier than selecting them (slows down play
+		too much). random or nearest - will see what seems more visually appealling
+		but leaning towards nearest
+	
+	spells can have levels:
+		level up based on:
+			amount of times casted
+			amount of mines hit
+			amount of tiles cleared/scanned
+		level ups allow upgrades to that spell
+		upgrades can change the look of spells to be more advanced
+	
+	placing summons on specific tiles changes what they do?
+	
+	tiles give money to player when clicked and xp to summons when they break
+	
+	money used in shops (randomly spawned on safe tiles)
+		shop is random but can be refreshed for money
+			buy passives
+			xp
+			spell pages (more spells, start with none)
+		disappears after a time so players cant wait for them
+		
+	add diffrerent biomes that provide different challenges to the play
+		things flicker, sight is reduced, mouse cant move outside unclicked tiles
+		numbers are shapes or clues number of pictures in square
+		number of mines increase as you get out of the center
+	
+	maybe mouse is always limited by a soul lantern it is attached to
+	so you can moved beyond unclicked boxes
+	must destroy missiles with mouse then?
+	
+	ignore art until get more done. enough to look fine
+	
+		
+list of upgrades:
+	* world
+		1. elemental add
+			add fire, electric, ice to summons to change their effect
+		2. number tiles can have effects when summons are placed on them
+			add extra xp
+			extra speed
+			extra health
+			increase all odds of summon
+			increase money gained
+		3. slow field around mouse so bullets slow down (if bullet hell)
+		4. chance mine will do nothing
+		5. combo meter (consistent and correct clicks will add multiplier to money)
+		6. chain lightning
+			clicks have chance to spawn lightning that can click random "warning" tiles
+				increase chance
+				increase chain size
+				odds of chains chaining
+				increase number of chains
+			
+		
+	* Ball:
+		1. health
+		2. speed
+		3. chance ball splits on death
+			1. split ball health
+			2. split ball speed
+			3. split balls have chance of splits
+				1. increase chance
+			4. number of ball splits
+			5. chance splits are copies of parent
+		4. less cost
+		5. spikes can damage projectiles and protect player
+			
+			
+	* Driller:
+		1. health
+		2. movement speed
+		3. chance of detecting mine and avoiding/moving
+			1. increase chance
+		4. decrease delay between destroying blocks
+		5. radius of destruction
+		6. explodes on death
+		7. less cost
+	
+	* Eye:
+		1. movement speed
+		2. scanning speed
+		3. radius
+		4. chance to reveal safe spots
+			1. increase chance
+		5. eye doesnt despawn - all stats lowered by x percent
+								limit amount to have total
+		
+		(may be normal behavior so its not all good)
+		6. if placed on mine - becomes aggressive and starts shooting marked tiles
+								or helpful but aggressive, shooting randomly
+		7. if placed on safe - stats boosted
+		8. if placed on number - does normal scanning
+		9. less cost
+	
+	* Protector - helps save mouse from projectiles
+	from mines homes in on them
+		1. amount of projectiles blocked
+		2. time lasted
+		3. speed of traversal to block
+		4. blocked projectiles have chance of exploding tiles underneath
+		
+		
+	* Missiles - shoots missiles at random spots in current chunk
+		1. number of missiles shot
+		2. speed of missiles
+		3. radius of missiles
+		
+			

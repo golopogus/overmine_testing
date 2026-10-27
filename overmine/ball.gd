@@ -105,7 +105,7 @@ func place(pos):
 	get_rand_dir()
 	velocity = speed * dir
 	calculate_pts()
-	position = pos
+	position = pos + Vector2(32,32)
 	state = states.MOVING
 	
 func set_state(new_state):

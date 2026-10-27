@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://15d6kjfxhuns"]
+[gd_scene format=3 uid="uid://15d6kjfxhuns"]
 
 [ext_resource type="Script" uid="uid://ekk4tvoietwe" path="res://level_controller.gd" id="1_h44gt"]
 [ext_resource type="Texture2D" uid="uid://ctyqkxt2peg5h" path="res://pics/fineSmiley.png" id="2_2hox4"]
@@ -56,31 +56,31 @@ shader_parameter/color2 = Color(0.592, 0.616, 0.675, 1)
 shader = ExtResource("32_84hvi")
 shader_parameter/time = 0.0
 
-[node name="level" type="Node2D"]
+[node name="level" type="Node2D" unique_id=150839870]
 script = ExtResource("1_h44gt")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=663733050]
 layer = -1
 
-[node name="sprite_holder" type="Node2D" parent="CanvasLayer"]
+[node name="sprite_holder" type="Node2D" parent="CanvasLayer" unique_id=239564014]
 visible = false
 z_index = 1
 position = Vector2(80.5, 68.5)
 metadata/_edit_group_ = true
 
-[node name="normal" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
+[node name="normal" type="Sprite2D" parent="CanvasLayer/sprite_holder" unique_id=1407182277]
 visible = false
 texture = ExtResource("2_2hox4")
 
-[node name="clicked" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
+[node name="clicked" type="Sprite2D" parent="CanvasLayer/sprite_holder" unique_id=1904693091]
 visible = false
 texture = ExtResource("3_84hvi")
 
-[node name="bomb" type="Sprite2D" parent="CanvasLayer/sprite_holder"]
+[node name="bomb" type="Sprite2D" parent="CanvasLayer/sprite_holder" unique_id=1911652009]
 visible = false
 texture = ExtResource("4_53riq")
 
-[node name="off_rez" type="Control" parent="CanvasLayer"]
+[node name="off_rez" type="Control" parent="CanvasLayer" unique_id=1368431047]
 visible = false
 layout_mode = 3
 anchors_preset = 0
@@ -88,7 +88,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 
-[node name="mid_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
+[node name="mid_box" type="HBoxContainer" parent="CanvasLayer/off_rez" unique_id=1684487867]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -102,11 +102,11 @@ offset_bottom = 700.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="mid" type="TextureRect" parent="CanvasLayer/off_rez/mid_box"]
+[node name="mid" type="TextureRect" parent="CanvasLayer/off_rez/mid_box" unique_id=1956255226]
 layout_mode = 2
 texture = ExtResource("5_h44gt")
 
-[node name="right_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
+[node name="right_box" type="HBoxContainer" parent="CanvasLayer/off_rez" unique_id=817927624]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -116,20 +116,20 @@ offset_right = 1240.0
 offset_bottom = 720.0
 grow_horizontal = 0
 
-[node name="right" type="TextureRect" parent="CanvasLayer/off_rez/right_box"]
+[node name="right" type="TextureRect" parent="CanvasLayer/off_rez/right_box" unique_id=807016754]
 layout_mode = 2
 texture = ExtResource("6_dqaf4")
 
-[node name="left_box" type="HBoxContainer" parent="CanvasLayer/off_rez"]
+[node name="left_box" type="HBoxContainer" parent="CanvasLayer/off_rez" unique_id=1441412581]
 layout_mode = 0
 offset_right = 382.0
 offset_bottom = 720.0
 
-[node name="left" type="TextureRect" parent="CanvasLayer/off_rez/left_box"]
+[node name="left" type="TextureRect" parent="CanvasLayer/off_rez/left_box" unique_id=1538548944]
 layout_mode = 2
 texture = ExtResource("7_umckw")
 
-[node name="normal_rez" type="Control" parent="CanvasLayer"]
+[node name="normal_rez" type="Control" parent="CanvasLayer" unique_id=842576446]
 visible = false
 layout_mode = 3
 anchors_preset = 0
@@ -137,7 +137,7 @@ offset_right = 640.0
 offset_bottom = 360.0
 mouse_filter = 2
 
-[node name="game" type="TextureRect" parent="CanvasLayer/normal_rez"]
+[node name="game" type="TextureRect" parent="CanvasLayer/normal_rez" unique_id=648925799]
 visible = false
 show_behind_parent = true
 layout_mode = 0
@@ -146,7 +146,7 @@ offset_bottom = 360.0
 mouse_filter = 2
 texture = ExtResource("8_1x5yi")
 
-[node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game"]
+[node name="TextureButton" type="TextureButton" parent="CanvasLayer/normal_rez/game" unique_id=1511167266]
 visible = false
 layout_mode = 0
 offset_left = 8.0
@@ -156,13 +156,13 @@ offset_bottom = 38.0
 texture_normal = ExtResource("9_oif8o")
 texture_hover = ExtResource("10_oedhs")
 
-[node name="drill_buttons" type="Control" parent="CanvasLayer/normal_rez/game"]
+[node name="drill_buttons" type="Control" parent="CanvasLayer/normal_rez/game" unique_id=240027892]
 visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="drill_button" type="TextureButton" parent="CanvasLayer/normal_rez/game/drill_buttons"]
+[node name="drill_button" type="TextureButton" parent="CanvasLayer/normal_rez/game/drill_buttons" unique_id=1590009058]
 layout_mode = 0
 offset_left = 531.0
 offset_top = 54.0
@@ -171,7 +171,7 @@ offset_bottom = 80.0
 texture_normal = ExtResource("11_v5bkr")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drill_buttons/drill_button"]
+[node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drill_buttons/drill_button" unique_id=1097146758]
 layout_mode = 0
 offset_left = 27.0
 offset_top = 24.0
@@ -182,7 +182,7 @@ theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 11
 text = "1"
 
-[node name="buy_drill" type="Button" parent="CanvasLayer/normal_rez/game/drill_buttons"]
+[node name="buy_drill" type="Button" parent="CanvasLayer/normal_rez/game/drill_buttons" unique_id=1469898035]
 layout_mode = 0
 offset_left = 485.0
 offset_top = 50.0
@@ -190,13 +190,13 @@ offset_right = 525.0
 offset_bottom = 81.0
 text = "$"
 
-[node name="drone_buttons" type="Control" parent="CanvasLayer/normal_rez/game"]
+[node name="drone_buttons" type="Control" parent="CanvasLayer/normal_rez/game" unique_id=1286681458]
 visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="buy_drone" type="Button" parent="CanvasLayer/normal_rez/game/drone_buttons"]
+[node name="buy_drone" type="Button" parent="CanvasLayer/normal_rez/game/drone_buttons" unique_id=1165757686]
 layout_mode = 0
 offset_left = 306.0
 offset_top = 51.0
@@ -204,7 +204,7 @@ offset_right = 346.0
 offset_bottom = 82.0
 text = "$"
 
-[node name="drone_button" type="TextureButton" parent="CanvasLayer/normal_rez/game/drone_buttons"]
+[node name="drone_button" type="TextureButton" parent="CanvasLayer/normal_rez/game/drone_buttons" unique_id=1927311637]
 layout_mode = 0
 offset_left = 349.0
 offset_top = 49.0
@@ -213,7 +213,7 @@ offset_bottom = 81.0
 texture_normal = ExtResource("13_wif62")
 stretch_mode = 0
 
-[node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drone_buttons/drone_button"]
+[node name="Label" type="Label" parent="CanvasLayer/normal_rez/game/drone_buttons/drone_button" unique_id=748749271]
 layout_mode = 0
 offset_left = 27.0
 offset_top = 24.0
@@ -224,7 +224,7 @@ theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 11
 text = "1"
 
-[node name="upgrade_button" type="Button" parent="CanvasLayer/normal_rez"]
+[node name="upgrade_button" type="Button" parent="CanvasLayer/normal_rez" unique_id=717178519]
 visible = false
 layout_mode = 0
 offset_left = 113.0
@@ -233,7 +233,7 @@ offset_right = 229.0
 offset_bottom = 82.0
 text = "Upgrades"
 
-[node name="heart_container" type="HBoxContainer" parent="CanvasLayer/normal_rez"]
+[node name="heart_container" type="HBoxContainer" parent="CanvasLayer/normal_rez" unique_id=649258607]
 visible = false
 layout_mode = 0
 offset_left = 40.0
@@ -242,7 +242,7 @@ offset_right = 40.0
 offset_bottom = 352.0
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="CanvasLayer"]
+[node name="Label" type="Label" parent="CanvasLayer" unique_id=1685976021]
 visible = false
 offset_left = 18.0
 offset_top = 62.0
@@ -253,7 +253,7 @@ theme_override_font_sizes/font_size = 11
 text = "1000000"
 horizontal_alignment = 2
 
-[node name="Label2" type="Label" parent="CanvasLayer"]
+[node name="Label2" type="Label" parent="CanvasLayer" unique_id=1151762974]
 visible = false
 offset_left = 267.0
 offset_top = 61.0
@@ -264,7 +264,7 @@ theme_override_font_sizes/font_size = 11
 text = "1000000"
 horizontal_alignment = 2
 
-[node name="background_tiles" type="ColorRect" parent="CanvasLayer"]
+[node name="background_tiles" type="ColorRect" parent="CanvasLayer" unique_id=1790365389]
 visible = false
 z_index = -1
 material = SubResource("ShaderMaterial_1x5yi")
@@ -272,115 +272,115 @@ offset_right = 1920.0
 offset_bottom = 1080.0
 mouse_filter = 2
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=171596572]
 
-[node name="chunk_manager" type="Node2D" parent="."]
+[node name="chunk_manager" type="Node2D" parent="." unique_id=95672101]
 script = ExtResource("50_53riq")
 
-[node name="sprites" type="Node2D" parent="chunk_manager"]
+[node name="sprites" type="Node2D" parent="chunk_manager" unique_id=1122639135]
 
-[node name="new_sprites" type="Node2D" parent="chunk_manager/sprites"]
+[node name="new_sprites" type="Node2D" parent="chunk_manager/sprites" unique_id=1158477246]
 
-[node name="mark" type="Node2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="mark" type="Node2D" parent="chunk_manager/sprites/new_sprites" unique_id=1338440697]
 
-[node name="mark0" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
+[node name="mark0" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark" unique_id=386155292]
 material = SubResource("ShaderMaterial_c5xsv")
 texture = ExtResource("14_40yk4")
 
-[node name="mark1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
+[node name="mark1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark" unique_id=2032131527]
 visible = false
 texture = ExtResource("15_njfgp")
 
-[node name="mark2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
+[node name="mark2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark" unique_id=1599948725]
 visible = false
 texture = ExtResource("16_rw15y")
 
-[node name="mark3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
+[node name="mark3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark" unique_id=1144445063]
 visible = false
 texture = ExtResource("17_t8qre")
 
-[node name="mark4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark"]
+[node name="mark4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/mark" unique_id=1646478107]
 visible = false
 texture = ExtResource("18_53riq")
 
-[node name="hidden" type="Node2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="hidden" type="Node2D" parent="chunk_manager/sprites/new_sprites" unique_id=43248410]
 visible = false
 
-[node name="hidden1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
+[node name="hidden1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden" unique_id=1594133847]
 visible = false
 texture = ExtResource("18_562xt")
 
-[node name="hidden2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
+[node name="hidden2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden" unique_id=480528896]
 visible = false
 texture = ExtResource("19_0sd67")
 
-[node name="hidden3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
+[node name="hidden3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden" unique_id=1535099216]
 visible = false
 texture = ExtResource("20_qh1jm")
 
-[node name="hidden4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden"]
+[node name="hidden4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites/hidden" unique_id=1887692337]
 visible = false
 texture = ExtResource("23_dqaf4")
 
-[node name="1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="1" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=31995362]
 visible = false
 texture = ExtResource("21_hspc6")
 
-[node name="2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="2" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=86721062]
 visible = false
 texture = ExtResource("22_2mem0")
 
-[node name="3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="3" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=834602630]
 visible = false
 texture = ExtResource("23_1acxm")
 
-[node name="4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="4" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=33121128]
 visible = false
 texture = ExtResource("24_ymw0v")
 
-[node name="5" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="5" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=1536354628]
 visible = false
 texture = ExtResource("25_w2ykt")
 
-[node name="6" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="6" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=1956178482]
 visible = false
 texture = ExtResource("26_lojl8")
 
-[node name="7" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="7" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=1872166485]
 visible = false
 texture = ExtResource("27_u38so")
 
-[node name="8" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="8" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=306638864]
 visible = false
 texture = ExtResource("28_3s4rp")
 
-[node name="click_mine" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="click_mine" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=162433986]
 visible = false
 texture = ExtResource("29_b68vv")
 hframes = 6
 
-[node name="safe" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="safe" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=688745631]
 visible = false
 texture = ExtResource("30_dv2ly")
 
-[node name="mine" type="Sprite2D" parent="chunk_manager/sprites/new_sprites"]
+[node name="mine" type="Sprite2D" parent="chunk_manager/sprites/new_sprites" unique_id=1463425163]
 visible = false
 texture = ExtResource("31_cumd2")
 hframes = 4
 frame = 1
 
-[node name="chunks" type="Node2D" parent="chunk_manager"]
+[node name="chunks" type="Node2D" parent="chunk_manager" unique_id=1590671522]
 
-[node name="drones" type="Node2D" parent="."]
+[node name="drones" type="Node2D" parent="." unique_id=366389344]
 
-[node name="drills" type="Node2D" parent="."]
+[node name="drills" type="Node2D" parent="." unique_id=1157940174]
 
-[node name="screen" type="CanvasLayer" parent="."]
+[node name="screen" type="CanvasLayer" parent="." unique_id=670824974]
 visible = false
 
-[node name="border_in" parent="screen" instance=ExtResource("50_oiuvo")]
+[node name="border_in" parent="screen" unique_id=1703602875 instance=ExtResource("50_oiuvo")]
 
-[node name="vignette" type="ColorRect" parent="screen"]
+[node name="vignette" type="ColorRect" parent="screen" unique_id=1542916344]
 visible = false
 top_level = true
 z_as_relative = false
@@ -390,7 +390,7 @@ offset_bottom = 1080.0
 focus_behavior_recursive = 1
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="screen"]
+[node name="Label" type="Label" parent="screen" unique_id=1538402321]
 offset_left = 83.0
 offset_top = 60.0
 offset_right = 472.0
@@ -399,7 +399,7 @@ theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 66
 text = "ererere"
 
-[node name="Quit" type="Label" parent="screen"]
+[node name="Quit" type="Label" parent="screen" unique_id=1932887457]
 visible = false
 offset_left = 1467.0
 offset_top = 49.0
@@ -409,14 +409,14 @@ theme_override_fonts/font = ExtResource("12_qr3w1")
 theme_override_font_sizes/font_size = 66
 text = "Quit"
 
-[node name="draw_load" type="Sprite2D" parent="screen"]
+[node name="draw_load" type="Sprite2D" parent="screen" unique_id=1709780154]
 visible = false
 top_level = true
 material = SubResource("ShaderMaterial_84hvi")
 texture = ExtResource("33_53riq")
 offset = Vector2(32, 32)
 
-[node name="quit_button" type="Button" parent="screen"]
+[node name="quit_button" type="Button" parent="screen" unique_id=359294999]
 offset_left = 1703.0
 offset_top = 32.0
 offset_right = 1874.0
@@ -424,25 +424,25 @@ offset_bottom = 147.0
 theme_override_font_sizes/font_size = 78
 text = "Quit"
 
-[node name="game_timer" type="Timer" parent="."]
+[node name="game_timer" type="Timer" parent="." unique_id=686232830]
 wait_time = 300.0
 one_shot = true
 
-[node name="shapes" type="Node2D" parent="."]
+[node name="shapes" type="Node2D" parent="." unique_id=1077391569]
 script = ExtResource("51_lupeo")
 
-[node name="shape_timer" type="Timer" parent="shapes"]
+[node name="shape_timer" type="Timer" parent="shapes" unique_id=483178953]
 one_shot = true
 
-[node name="draw_load_timers" type="Node2D" parent="."]
+[node name="draw_load_timers" type="Node2D" parent="." unique_id=240593327]
 
-[node name="click_timer" type="Timer" parent="draw_load_timers"]
+[node name="click_timer" type="Timer" parent="draw_load_timers" unique_id=403264398]
 wait_time = 1.35
 
-[node name="shader_buffer" type="Timer" parent="draw_load_timers"]
+[node name="shader_buffer" type="Timer" parent="draw_load_timers" unique_id=304258523]
 wait_time = 0.15
 
-[node name="book" type="Node2D" parent="."]
+[node name="book" type="Node2D" parent="." unique_id=1925670363]
 
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/normal_rez/game/drill_buttons/drill_button" to="." method="_on_drill_button_pressed"]
