@@ -98,8 +98,7 @@ func set_tiles(tile):
 	
 	if health == 0:
 		#split()
-		pass
-		#queue_free()
+		queue_free()
 
 func place(pos):
 	

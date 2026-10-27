@@ -47,7 +47,7 @@ func _process(_delta: float) -> void:
 		
 
 func check_block():
-	next_pos = position + dir * 32
+	next_pos = position + dir * 64
 	if MapManager.tile_dict[next_pos]['clicked'] == false:
 		state = states.ATTACKING
 		speed = 0

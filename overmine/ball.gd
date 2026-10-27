@@ -128,7 +128,7 @@ func get_rand_dir():
 
 func split():
 	
-	get_parent().spawn_balls(500,position)
+	get_parent().spawn_balls(num_split,position)
 	
 	
 

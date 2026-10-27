@@ -41,7 +41,8 @@ var state: states = states.HOVERING: set = set_state
 var book_spawned = false
 var mark_selected = false
 var banned_from_summons = false
-
+var upgrade_held
+var camera_bounds = [Vector2(),Vector2()] #[min,max]
 
 func _notification(what: int) -> void:
 	
@@ -52,6 +53,8 @@ func _notification(what: int) -> void:
 		mouse_in = false
 		
 func _ready() -> void:
+	
+	
 	
 	GameManager.connect("shape_guess",create_summon)
 	x_length = MapManager.x_length
@@ -64,6 +67,8 @@ func _ready() -> void:
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
 	
+	camera_bounds = [Vector2(0.0,chunk_size.x * num_of_chunks.x),Vector2(0.0,chunk_size.y * num_of_chunks.y)]
+	
 
 
 func _process(delta: float) -> void:
@@ -71,8 +76,17 @@ func _process(delta: float) -> void:
 
 
 	if state == states.PANNING:
-		var difference = local_mous_pos - get_global_mouse_position()
-		$Camera2D.position += difference
+		var new_mouse_pos = get_global_mouse_position()
+		var inner_bounds = Vector2(chunk_size.x * 1.5,chunk_size.y * 1.5)
+		var outer_bounds = Vector2(chunk_size.x * (num_of_chunks.x - 2.5),chunk_size.y * (num_of_chunks.y - 2.5))
+		var bounds = Rect2(inner_bounds,outer_bounds)
+		var difference = local_mous_pos - new_mouse_pos
+		var next_camera_pos = $Camera2D.position + difference
+		
+		if bounds.has_point(Vector2(next_camera_pos.x,$Camera2D.position.y)):
+			$Camera2D.position.x = next_camera_pos.x
+		if bounds.has_point(Vector2($Camera2D.position.x,next_camera_pos.y)):
+			$Camera2D.position.y = next_camera_pos.y
 
 	var nearest_chunk_pos = Vector2()
 	
@@ -81,9 +95,13 @@ func _process(delta: float) -> void:
 	nearest_chunk_pos = MapCalculator.get_nearest(chunk_follow_pos,'chunk')
 	
 	
-	if nearest_chunk_pos != current_chunk:
-		current_chunk = nearest_chunk_pos
-		MapManager.update_chunk_pos(current_chunk)
+	if nearest_chunk_pos != null:
+		if nearest_chunk_pos != current_chunk:
+			current_chunk = nearest_chunk_pos
+			
+			MapManager.update_chunk_pos(current_chunk)
+		
+
 		
 	
 func _unhandled_input(_event: InputEvent) -> void:
@@ -93,6 +111,27 @@ func _unhandled_input(_event: InputEvent) -> void:
 	var nearest_tile_pos = MapCalculator.get_nearest(mouse_pos, 'tile')
 	var nearest_chunk_pos = MapCalculator.get_nearest(nearest_tile_pos,'chunk')
 	
+
+	#cheats
+	
+	if Input.is_action_just_pressed("b"):
+		GameManager.collect_book()	
+		
+	if Input.is_action_just_pressed("restart"):
+		get_tree().reload_current_scene()
+	
+	if Input.is_action_just_pressed("add"):
+		update_lives(1)
+		
+	if Input.is_action_just_pressed("subtract"):
+		var ball = ball_load.instantiate()
+		add_child(ball)
+	
+	if Input.is_action_just_pressed("esc"):
+		get_tree().change_scene_to_file("res://home.tscn")
+	
+	# end cheats
+	
 	if Input.is_action_just_pressed("left_click"):
 		stored_mous_pos = get_global_mouse_position()
 		stored_pos = nearest_tile_pos
@@ -100,14 +139,8 @@ func _unhandled_input(_event: InputEvent) -> void:
 		if GameManager.book_collected == false:
 			check_if_book(nearest_tile_pos)
 			
-		if state == states.HOLDING:
-			if tile_dict[nearest_tile_pos]['clicked'] == true:
-				upgrade.place(nearest_tile_pos)
-				upgrade = 'NONE'
-				state = states.HOVERING
 			
-	if Input.is_action_just_pressed("b"):
-		GameManager.collect_book()
+
 	
 	if Input.is_action_pressed("left_click"):
 
@@ -121,6 +154,18 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 				
 	if Input.is_action_just_released("left_click"):
+		
+		if state == states.HOLDING:
+			
+			if tile_dict[nearest_tile_pos]['clicked'] == true:
+				upgrade.place(nearest_tile_pos)
+				upgrade = 'NONE'
+				state = states.HOVERING
+			elif upgrade_held == 'drone':
+				upgrade.place(nearest_tile_pos)
+				upgrade = 'NONE'
+				state = states.HOVERING
+				
 		if state == states.HOVERING:
 			if nearest_tile_pos == stored_pos:
 				if gamestart == false:
@@ -132,14 +177,18 @@ func _unhandled_input(_event: InputEvent) -> void:
 						if MapManager.revealed_tiles.size() >= 6:
 							book_chance()
 			MapManager.revealed_tiles = []
-		
+	
 	if Input.is_action_just_pressed("right_click"):
+		stored_mous_pos = get_global_mouse_position()
+		stored_pos = nearest_tile_pos
+			
+	if Input.is_action_just_released("right_click"):
 		
-		MapManager.change_mark_state(nearest_tile_pos, nearest_chunk_pos,'flip')
+		if state == states.HOVERING:
+			if nearest_tile_pos == stored_pos:
+				MapManager.change_mark_state(nearest_tile_pos, nearest_chunk_pos,'flip')
 
-	if Input.is_action_just_pressed("restart"):
-		
-		get_tree().reload_current_scene()
+
 	
 	if Input.is_action_just_pressed("pan"):
 		
@@ -152,15 +201,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		if state == states.PANNING:
 			state = states.HOVERING
 	
-	if Input.is_action_just_pressed("add"):
-		update_lives(1)
-		
-	if Input.is_action_just_pressed("subtract"):
-		var ball = ball_load.instantiate()
-		add_child(ball)
-	
-	if Input.is_action_just_pressed("esc"):
-		get_tree().change_scene_to_file("res://home.tscn")
+
 		
 	# LAPTOP
 	
@@ -178,7 +219,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 				
 	if _event is InputEventMouseButton:
 		if _event.button_index == MOUSE_BUTTON_WHEEL_DOWN and _event.pressed:
-			if $Camera2D.zoom.x >= .5 and $Camera2D.zoom.y >= .5:
+			if $Camera2D.zoom.x >= .1 and $Camera2D.zoom.y >= .1:
 				$Camera2D.zoom -= Vector2(.1,.1)
 
 		
@@ -225,19 +266,21 @@ func create_summon(shape):
 			add_child(ball)
 			state = states.HOLDING
 			upgrade = ball
+			upgrade_held = 'ball'
 			
 		if shape == 'square':
 			var driller = drill_load.instantiate()
 			add_child(driller)
 			state = states.HOLDING
 			upgrade = driller
+			upgrade_held = 'driller'
 		
 		if shape == 'triangle':
 			var drone = drone_load.instantiate()
 			add_child(drone)
 			state = states.HOLDING
 			upgrade = drone
-			#drone.clicked()
+			upgrade_held = 'drone'
 		
 	else:
 		banned_from_summons = true

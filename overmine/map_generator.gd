@@ -21,8 +21,8 @@ enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
 	
 func _ready() -> void:
 	
-	x_length = 32
-	y_length = 32
+	x_length = 64
+	y_length = 64
 	#x_length = $sprites/new_sprites/hidden/hidden1.texture.get_width()
 	MapManager.x_length = x_length
 	

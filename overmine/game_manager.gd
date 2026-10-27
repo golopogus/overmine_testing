@@ -141,7 +141,7 @@ func initialize_upgrade_data():
 		'eye_size': {
 			'name': 'Eye Size',
 			'description': '',
-			'current': 1.0,
+			'current': 0,
 			'max': 10,
 			'cost': 10,
 			'owner': 'eye'

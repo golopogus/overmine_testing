@@ -31,10 +31,10 @@ enum states {SELECTED,IDLE,MOVING,SCANNING,DEAD}
 var state = states.SELECTED: set = set_state
 
 func _ready() -> void:
-	#initialize_values()
+	set_area_size()
 	$body_animation.play("always")
-	x_length = 16
-	y_length = 16
+	x_length = 0
+	y_length = 0
 	chunk_size = Vector2(chosen_grid_size[0],chosen_grid_size[1]) * Vector2(x_length,y_length)
 
 func _process(_delta: float) -> void:
@@ -59,8 +59,13 @@ func set_state(new_state):
 	state = new_state
 	if state == states.SCANNING:
 		start_scanning()
-	elif state == states.IDLE:
-		get_grid(scan_area)
+	if state == states.IDLE:
+		get_grid()
+	if  state == states.SELECTED:
+		$area.visible = true
+	else:
+		$area.visible = false
+	
 
 func start_scanning():
 	
@@ -142,33 +147,35 @@ func scan_tile():
 	#var convert_scan_size = 6 * scan_size + 7
 	#area_2_scan = get_grid(convert_scan_size)
 
+
+func set_area_size():
+	scan_area = 2 * GameManager.all_upgrade_data['eye_size']['current'] + 3#6 * GameManager.all_upgrade_data['eye_size']['current'] + 7
+	update_area(scan_area)
+	
 func initialize_values():
 	speed = 1.0/pow(0.8,GameManager.all_upgrade_data['eye_speed']['current'])
 	scan_speed = 1.0/pow(0.8,GameManager.all_upgrade_data['eye_speed']['current'])
-	#battery = 1
-	scan_area = 6 * GameManager.all_upgrade_data['eye_size']['current'] + 7
-	#print(convert_scan_size)
-	get_grid(scan_area)
-	print('o')
-	update_area(scan_area)
+	get_grid()
+	
 	
 
-func get_grid(scan_area):
+func get_grid():
 	
 	var center_pos = home_pos
 	var away_from_center = (scan_area - 1)/2.0
-	var start = center_pos - Vector2(away_from_center,away_from_center) * 32
+	var start = center_pos - Vector2(away_from_center,away_from_center) * 64
 	scan = []
 	var tile_pos
 	for x in scan_area:
 		for y in scan_area:
-			tile_pos = start + Vector2(32,32) * Vector2(x,y)
+			tile_pos = start + Vector2(64,64) * Vector2(x,y)
 			scan.append(tile_pos)
 	
 	var tiles = MapManager.check_scan(scan)
 	find_scan_tile(tiles)
 
 func find_scan_tile(tiles):
+	
 	
 	if len(tiles) > 0:
 		
@@ -204,13 +211,14 @@ func place(pos):
 	home_pos = pos
 	state = states.DEAD
 	position = pos
-	$area.visible = false
+	$body.offset = Vector2(32,32)
+	$scanner.offset = Vector2(32,32)
 	initialize_values()
 	
 	
 
 func update_area(scan_scale):
-	$area.scale = Vector2(1,1) * scan_scale
+	$area.scale = (Vector2(1,1) * scan_scale) * 2
 	$area.visible = true
 
 				

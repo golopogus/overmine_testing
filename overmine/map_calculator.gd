@@ -11,10 +11,12 @@ func create_bounds(initial_pos,chunk_size,num_of_chunks):
 	bounds = Rect2(inner,outer)
 	
 	
+	
 func get_nearest(pos, type):
 
 	if check_in_bounds(pos):
 		var nearest = Vector2()
+		
 		match type:
 			'chunk':
 				nearest = floor(pos / MapManager.chunk_size) * MapManager.chunk_size + MapManager.initial_pos
@@ -22,8 +24,7 @@ func get_nearest(pos, type):
 				nearest = floor(pos / Vector2(MapManager.x_length,MapManager.y_length)) * Vector2(MapManager.x_length,MapManager.y_length) + MapManager.initial_pos
 			
 		return nearest
-	else:
-		pass
+
 	
 func check_in_bounds(pos):
 	if pos != null and bounds.has_point(pos):
@@ -33,6 +34,7 @@ func check_in_bounds(pos):
 	
 func create_neighbors(pos,x,y,dir):
 	
+
 	var pre_neighbors
 	var n = pos + Vector2(0,-1) * Vector2(x,y)
 	var ne = pos + Vector2(1,-1) * Vector2(x,y)
@@ -62,6 +64,7 @@ func create_neighbors(pos,x,y,dir):
 		if check_in_bounds(i):
 		#var nearest_chunk_pos = get_nearest(i,'chunk')
 			neighbors.append(i)
+
 		
 	return neighbors
 	

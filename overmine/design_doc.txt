@@ -1,0 +1,1 @@
+sprite sizes are 64 by 64 atm

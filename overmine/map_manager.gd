@@ -99,7 +99,9 @@ func update_chunk_pos(pos):
 	
 	var pos_to_move = []
 	
+	
 	current_neighbors = MapCalculator.create_neighbors(pos,chunk_size.x,chunk_size.y, 'ALL')
+
 	current_neighbors.append(pos)
 	
 	var chunks_to_move = move_chunks(current_neighbors)
@@ -126,9 +128,12 @@ func update_chunk_pos(pos):
 		
 				randomize_mine_placement(chunks_to_move[i].position)
 				#call_deferred('randomize_mine_placement',chunks_to_move[i].position)
+	
+	#
 
 		
 	for chunk in chunks_to_move:
+	
 		change_all_textures(chunk)
 		#var chunk_children = chunk.get_children()
 		#for child in chunk_children:
@@ -199,13 +204,14 @@ func change_texture(tile_pos):
 				Vector2(tile['hidden_type'] + 6,1)
 				)
 		elif tile['mark_state'] != mark_states.UNMARKED:
-			print(Vector2(tile['hidden_type'] + 4,1))
+			
 			node.set_cell(
 				tile_pos_in_chunk,
 				0,
 				Vector2(tile['hidden_type'] + 4,1)
 				)
 		else:
+		
 			node.set_cell(
 					tile_pos_in_chunk,
 					0,
@@ -276,7 +282,10 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 					var tile_above = MapCalculator.create_neighbors(nearest_tile_pos,x_length,y_length,'ABOVE')	
 					if tile_dict[tile_above[0]]['clicked'] == false:
 						tile_dict[tile_above[0]]['hidden_type'] = 0 
-						change_texture(tile_above[0])
+						var tile_above_chunk = MapCalculator.get_nearest(tile_above[0],'chunk')
+						if chunk_dict[tile_above_chunk]['drawn'] == true:
+							change_texture(tile_above[0])
+						
 					tile['clicked'] = true
 					change_texture(nearest_tile_pos)
 					var mine_radius = GameManager.get_upgrade_data('mine_radius')
@@ -299,7 +308,9 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 					var tile_above = MapCalculator.create_neighbors(nearest_tile_pos,x_length,y_length,'ABOVE')	
 					if tile_dict[tile_above[0]]['clicked'] == false:
 						tile_dict[tile_above[0]]['hidden_type'] = 0 
-						change_texture(tile_above[0])
+						var tile_above_chunk = MapCalculator.get_nearest(tile_above[0],'chunk')
+						if chunk_dict[tile_above_chunk]['drawn'] == true:
+							change_texture(tile_above[0])
 				tile['clicked'] = true
 				change_texture(nearest_tile_pos)
 				
@@ -324,6 +335,7 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 	
 				
 	elif chunk_dict[nearest_chunk_pos]['drawn'] == false:
+
 		tile_dict[nearest_tile_pos]['clicked'] = true
 		total_clicked += 1
 		if chunk_dict[nearest_chunk_pos]['mines'] == false:
@@ -335,20 +347,30 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 		if tile_dict[nearest_tile_pos]['type'] == tile_types.UNKNOWN:
 				tile_dict[nearest_tile_pos]['type'] = tile_types.SAFE
 
-		if tile_dict[nearest_tile_pos]['type'] == tile_types.MINE:
-			var mine_radius = GameManager.all_upgrade_data['mine_radius']['current']
-			if mine_radius > 0:
-				update_neighbors(nearest_tile_pos,tile_types.MINE)
+		else:
+			if tile_dict[nearest_tile_pos]['type'] == tile_types.MINE:
+				var mine_radius = GameManager.all_upgrade_data['mine_radius']['current']
+				if mine_radius > 0:
+					update_neighbors(nearest_tile_pos,tile_types.MINE)
+			
+			var tile_above = MapCalculator.create_neighbors(nearest_tile_pos,x_length,y_length,'ABOVE')	
+			if tile_dict[tile_above[0]]['clicked'] == false:
+				tile_dict[tile_above[0]]['hidden_type'] = 0 
+				var tile_above_chunk = MapCalculator.get_nearest(tile_above[0],'chunk')
+				if chunk_dict[tile_above_chunk]['drawn'] == true:
+					change_texture(tile_above[0])
+			
 				
 	if tile_dict[nearest_tile_pos]['type'] == tile_types.SAFE:
 		
-		update_neighbors(nearest_tile_pos,tile_types.SAFE)					
+		update_neighbors(nearest_tile_pos,tile_types.SAFE)		
+				
 	
 
 func update_neighbors(pos,type):	
 
 	var nearest_chunk_pos = MapCalculator.get_nearest(pos, 'chunk')
-	#print(nearest_chunk_pos)
+
 	if chunk_dict[nearest_chunk_pos]['mines'] == false:
 		await randomize_mine_placement(nearest_chunk_pos)
 	
