@@ -136,7 +136,7 @@ func _on_animation_player_animation_finished(_anim_name: StringName) -> void:
 	
 func scan_tile():
 	var nearest_chunk = MapCalculator.get_nearest(scan_pos,'chunk')
-	MapManager.change_mark_state(scan_pos,nearest_chunk,'flip')
+	MapManager.change_mark_state(scan_pos,'flip')
 	state = states.IDLE
 	
 	

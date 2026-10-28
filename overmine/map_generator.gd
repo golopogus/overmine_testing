@@ -39,7 +39,7 @@ func _ready() -> void:
 	
 	initial_chunk_pos = MapCalculator.get_nearest(Vector2(chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0,chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0),'chunk')
 	MapManager.initial_chunk_pos = initial_chunk_pos
-	initialize_textures()
+	#initialize_textures()
 	place_chunk_loc()
 	place_tile_loc()
 
@@ -122,31 +122,31 @@ func draw_initial_chunks(pos):
 	MapManager.tile_dict = tile_dict
 	MapManager.chunk_dict = chunk_dict
 
-func initialize_textures():
-		MapManager.texture_dict = {
-		'mark' = {
-			'mark0' = $sprites/new_sprites/mark/mark0.texture,
-			'mark1' = $sprites/new_sprites/mark/mark1.texture,
-			'mark2' = $sprites/new_sprites/mark/mark2.texture,
-			'mark3' = $sprites/new_sprites/mark/mark3.texture,
-			'mark4' = $sprites/new_sprites/mark/mark4.texture
-		},
-		'hidden' = {
-			'hidden1' = $sprites/new_sprites/hidden/hidden1.texture,
-			'hidden2' = $sprites/new_sprites/hidden/hidden2.texture,
-			'hidden3' = $sprites/new_sprites/hidden/hidden3.texture,
-			'hidden4' = $sprites/new_sprites/hidden/hidden4.texture
-		},
-		'1' = $"sprites/new_sprites/1".texture,
-		'2' = $"sprites/new_sprites/2".texture,
-		'3' = $"sprites/new_sprites/3".texture,
-		'4' = $"sprites/new_sprites/4".texture,
-		'5' = $"sprites/new_sprites/5".texture,
-		'6' = $"sprites/new_sprites/6".texture,
-		'7' = $"sprites/new_sprites/7".texture,
-		'8' = $"sprites/new_sprites/8".texture,
-		'safe' = $sprites/new_sprites/safe.texture,
-		'mine' = $sprites/new_sprites/mine.texture
-	}
+#func initialize_textures():
+		#MapManager.texture_dict = {
+		#'mark' = {
+			#'mark0' = $sprites/new_sprites/mark/mark0.texture,
+			#'mark1' = $sprites/new_sprites/mark/mark1.texture,
+			#'mark2' = $sprites/new_sprites/mark/mark2.texture,
+			#'mark3' = $sprites/new_sprites/mark/mark3.texture,
+			#'mark4' = $sprites/new_sprites/mark/mark4.texture
+		#},
+		#'hidden' = {
+			#'hidden1' = $sprites/new_sprites/hidden/hidden1.texture,
+			#'hidden2' = $sprites/new_sprites/hidden/hidden2.texture,
+			#'hidden3' = $sprites/new_sprites/hidden/hidden3.texture,
+			#'hidden4' = $sprites/new_sprites/hidden/hidden4.texture
+		#},
+		#'1' = $"sprites/new_sprites/1".texture,
+		#'2' = $"sprites/new_sprites/2".texture,
+		#'3' = $"sprites/new_sprites/3".texture,
+		#'4' = $"sprites/new_sprites/4".texture,
+		#'5' = $"sprites/new_sprites/5".texture,
+		#'6' = $"sprites/new_sprites/6".texture,
+		#'7' = $"sprites/new_sprites/7".texture,
+		#'8' = $"sprites/new_sprites/8".texture,
+		#'safe' = $sprites/new_sprites/safe.texture,
+		#'mine' = $sprites/new_sprites/mine.texture
+	#}
 
 	

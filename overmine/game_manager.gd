@@ -4,7 +4,6 @@ signal eye_ready
 signal drill_ready
 signal ready_to_click
 signal eye_ready_for_check
-signal timer_for_border
 signal shape_guess
 var all_upgrade_data
 var spell_book

@@ -60,7 +60,7 @@ var mouse_in = true
 var view_port_size
 var custom_time = 0.0
 var mine_thread
-var texture_dict
+#var texture_dict
 enum mark_states {UNMARKED,MARKED,SELECTED,USED}
 enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
 var selected_mark = []
@@ -413,11 +413,11 @@ func move_chunks(dont_erase):
 	return chunks_to_move
 
 			
-func change_mark_state(pos,chunk_pos,action):	
+func change_mark_state(pos,action):	
 	
 
-	var node_path = 'chunk_manager/chunks/' +  chunk_dict[chunk_pos]['name']# + '/' + tile_dict[pos]['name']
-	var tile_node = MapCalculator.get_node_from_path(node_path)
+	#var node_path = 'chunk_manager/chunks/' +  chunk_dict[chunk_pos]['name']# + '/' + tile_dict[pos]['name']
+	#var tile_node = MapCalculator.get_node_from_path(node_path)
 	var tile = tile_dict[pos]
 	
 	if tile['clicked'] == false:

@@ -52,6 +52,12 @@ gameplay:
 	
 	ignore art until get more done. enough to look fine
 	
+	your player moves as a ghoul/ghost the mouse moves the hand
+	the hand protects the player and opens the tiles. mines, if opened
+	by hand, stun the hand
+	mines send ghouls at the play. player must move to avoid and the hand 
+	can disperse them
+	
 		
 list of upgrades:
 	* world

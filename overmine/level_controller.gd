@@ -62,7 +62,7 @@ func _ready() -> void:
 	chunk_size = MapManager.chunk_size
 	current_chunk = MapManager.current_chunk
 	num_of_chunks = MapManager.num_of_chunks
-	update_lives(0)
+	#update_lives(0)
 
 	$Camera2D.position.x = chunk_size.x * num_of_chunks.x/2.0 + chunk_size.x/2.0
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
@@ -71,7 +71,7 @@ func _ready() -> void:
 	
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	
 
 
@@ -120,12 +120,12 @@ func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("restart"):
 		get_tree().reload_current_scene()
 	
-	if Input.is_action_just_pressed("add"):
-		update_lives(1)
+	#if Input.is_action_just_pressed("add"):
+		#update_lives(1)
 		
-	if Input.is_action_just_pressed("subtract"):
-		var ball = ball_load.instantiate()
-		add_child(ball)
+	#if Input.is_action_just_pressed("subtract"):
+		#var ball = ball_load.instantiate()
+		#add_child(ball)
 	
 	if Input.is_action_just_pressed("esc"):
 		get_tree().change_scene_to_file("res://home.tscn")
@@ -177,6 +177,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 				if gamestart == false:
 					MapManager.first_click(nearest_tile_pos,nearest_chunk_pos)
 					gamestart = true
+					$player.position = nearest_tile_pos
 				else:
 					MapManager.clicked(nearest_tile_pos,nearest_chunk_pos)
 					if GameManager.book_collected == false and book_spawned == false:
@@ -192,7 +193,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 		
 		if state == states.HOVERING:
 			if nearest_tile_pos == stored_pos:
-				MapManager.change_mark_state(nearest_tile_pos, nearest_chunk_pos,'flip')
+				MapManager.change_mark_state(nearest_tile_pos,'flip')
 
 
 	
@@ -242,23 +243,23 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 		
 					
-func update_lives(change):
-	
-	var heart_holder = $CanvasLayer/normal_rez/heart_container
-	
-	if change == 1 or change == 0:
-		
-		var heart_load = preload("res://heart.tscn")
-		var heart = heart_load.instantiate()
-		heart_holder.add_child(heart)
-		heart.position.x = (heart_holder.get_child_count()-1) * 20
-		
-	if change == -1:
-		
-		if heart_holder.get_child_count() > 0:
-			heart_holder.get_child(heart_holder.get_child_count()-1).queue_free()
-	
-	lives += change
+#func update_lives(change):
+	#
+	#var heart_holder = $CanvasLayer/normal_rez/heart_container
+	#
+	#if change == 1 or change == 0:
+		#
+		#var heart_load = preload("res://heart.tscn")
+		#var heart = heart_load.instantiate()
+		##heart_holder.add_child(heart)
+		##heart.position.x = (heart_holder.get_child_count()-1) * 20
+		#
+	#if change == -1:
+		#
+		#if heart_holder.get_child_count() > 0:
+			#heart_holder.get_child(heart_holder.get_child_count()-1).queue_free()
+	#
+	#lives += change
 
 func book_chance():
 	chance -= 1
@@ -307,7 +308,7 @@ func create_summon(shape):
 	
 	for i in selected_mark:
 		var nearest_chunk_pos = MapCalculator.get_nearest(i, 'chunk')
-		MapManager.change_mark_state(i,nearest_chunk_pos,'use')
+		MapManager.change_mark_state(i,'use')
 
 	
 func handle_draw_load(vis):
@@ -344,5 +345,14 @@ func spawn_balls(num_of_spawn,pos):
 		var ball_split = ball_split_load.instantiate()
 		add_child(ball_split)
 		ball_split.place(pos)
+
+var smee 
+func draw_recti(boo):
+	
+	smee = boo
+	queue_redraw()
+func _draw() -> void:
+	if smee != null:
+		draw_rect(smee,Color(.1,.2,.3),false,2.0)
 	
 	
