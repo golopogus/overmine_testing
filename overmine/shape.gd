@@ -10,6 +10,7 @@ var to_draw = ''
 var can_draw = false
 var center = Vector2()
 enum states {IDLE,DRAWING}
+var mouse_diff
 
 func _ready() -> void:
 	
@@ -33,7 +34,8 @@ func _unhandled_input(_event: InputEvent) -> void:
 				#handler(updated_list)
 				#drawing = false
 				#can_draw = false
-func draw_true():
+func draw_true(diff):
+	mouse_diff = diff
 	can_draw = true
 	if drawing == false:
 		list_of_pts = []
@@ -50,7 +52,7 @@ func finish_drawing():
 func _process(_delta: float) -> void:
 	
 	if drawing == true:
-		var mouse_pos = get_global_mouse_position()		
+		var mouse_pos = get_global_mouse_position() - mouse_diff		
 		if current_pos != mouse_pos:
 			current_pos = mouse_pos
 			list_of_pts.append(current_pos)

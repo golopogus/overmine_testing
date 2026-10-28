@@ -1,7 +1,14 @@
 extends Node2D
 
 #notes for changing textures
-
+var player_position
+var radius
+var max_mouse_dist = 0
+var radius_center
+var off_center = false
+var mouse_diff = Vector2()
+var center
+var used_mouse_pos
 var flag_correct = true
 var lives = 1
 var test
@@ -43,6 +50,10 @@ var mark_selected = false
 var banned_from_summons = false
 var upgrade_held
 var camera_bounds = [Vector2(),Vector2()] #[min,max]
+var smee_bounds = Rect2(Vector2(),Vector2())
+var nearest_chunk_pos = Vector2()
+
+var mouse_radius
 
 func _notification(what: int) -> void:
 	
@@ -53,7 +64,7 @@ func _notification(what: int) -> void:
 		mouse_in = false
 		
 func _ready() -> void:
-	
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
 	
 	GameManager.connect("shape_guess",create_summon)
@@ -68,13 +79,14 @@ func _ready() -> void:
 	$Camera2D.position.y = chunk_size.y * num_of_chunks.y/2.0 + chunk_size.y/2.0
 	
 	camera_bounds = [Vector2(0.0,chunk_size.x * num_of_chunks.x),Vector2(0.0,chunk_size.y * num_of_chunks.y)]
-	
+	player_position = $player.position
+	mouse_radius = $player/reach_area/CollisionShape2D.shape.radius
 
 
 func _process(_delta: float) -> void:
 	
 
-
+	
 	if state == states.PANNING:
 		var new_mouse_pos = get_global_mouse_position()
 		var inner_bounds = Vector2(chunk_size.x * 1.5,chunk_size.y * 1.5)
@@ -87,27 +99,65 @@ func _process(_delta: float) -> void:
 			$Camera2D.position.x = next_camera_pos.x
 		if bounds.has_point(Vector2($Camera2D.position.x,next_camera_pos.y)):
 			$Camera2D.position.y = next_camera_pos.y
-
-	var nearest_chunk_pos = Vector2()
 	
 	var chunk_follow_pos = $Camera2D.position
 
-	nearest_chunk_pos = MapCalculator.get_nearest(chunk_follow_pos,'chunk')
+	if smee_bounds.has_point(chunk_follow_pos):
+		pass
+	else:
+		find_new_bounds(chunk_follow_pos)
+		
+	#nearest_chunk_pos = MapCalculator.get_nearest(chunk_follow_pos,'chunk')
 	
 	
-	if nearest_chunk_pos != null:
-		if nearest_chunk_pos != current_chunk:
-			current_chunk = nearest_chunk_pos
+	#if nearest_chunk_pos != null:
+		#if nearest_chunk_pos != current_chunk:
+			#current_chunk = nearest_chunk_pos
+			#
+			#MapManager.update_chunk_pos(current_chunk)
+	if state != states.PANNING:
+		center = $player.position
+		radius = 200
+		var mouse_sprite = get_global_mouse_position()
+		used_mouse_pos = mouse_sprite - mouse_diff
+		
+		if gamestart == true:
 			
-			MapManager.update_chunk_pos(current_chunk)
+			
+			var mouse_dist = (used_mouse_pos - center).length()
+			
+			if mouse_dist < radius:
+				pass
+				$mouse.position = used_mouse_pos
+			
+			else:
 		
-
+				if mouse_dist >= max_mouse_dist:
+					max_mouse_dist = mouse_dist
+			
+				
+				var new_pos = center + (used_mouse_pos - center).normalized() * radius
+				mouse_diff = mouse_sprite - new_pos
+				max_mouse_dist = 0
+				
+				$mouse.position = center + (used_mouse_pos - center).normalized() * radius
+			
 		
+				
+		else:
+			$mouse.position = mouse_sprite
+		
+func find_new_bounds(pos):
+	
+	nearest_chunk_pos = MapCalculator.get_nearest(pos,'chunk')
+	smee_bounds = Rect2(nearest_chunk_pos,chunk_size)
+	MapManager.update_chunk_pos(nearest_chunk_pos)
+	
 	
 func _unhandled_input(_event: InputEvent) -> void:
 
 	var tile_dict = MapManager.tile_dict
-	var mouse_pos = get_global_mouse_position()
+	var mouse_pos = used_mouse_pos
 	var nearest_tile_pos = MapCalculator.get_nearest(mouse_pos, 'tile')
 	var nearest_chunk_pos = MapCalculator.get_nearest(nearest_tile_pos,'chunk')
 	
@@ -153,7 +203,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 			var diff = (mouse_pos - stored_mous_pos).length()
 			if diff > 10:
 				state = states.DRAWING
-				$shapes.draw_true()
+				$shapes.draw_true(mouse_diff)
 
 				
 	if Input.is_action_just_released("left_click"):

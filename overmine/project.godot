@@ -17,6 +17,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="overmineGame"
 run/main_scene="uid://15d6kjfxhuns"
 config/features=PackedStringArray("4.7", "Forward Plus")
+run/max_fps=60
 config/icon="res://icon.svg"
 
 [autoload]
@@ -35,6 +36,8 @@ settings/gdscript/always_track_local_variables=true
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
+window/vsync/vsync_mode=3
+mouse_cursor/custom_image_hotspot=Vector2(64, 64)
 
 [input]
 
