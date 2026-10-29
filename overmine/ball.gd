@@ -21,12 +21,13 @@ enum states {SELECTED,IDLE,MOVING,ATTACKING,DEAD}
 var state = states.SELECTED: set = set_state
 enum mark_states {UNMARKED,MARKED,SELECTED,USED}
 var num_split
+var diff = Vector2()
 
 
 func _ready() -> void:
 	
 	initialize_stats()
-	position = get_global_mouse_position()
+	position = get_global_mouse_position() - diff
 
 func initialize_stats():
 	
@@ -37,11 +38,13 @@ func initialize_stats():
 	num_split = GameManager.all_upgrade_data['roller_split']['current'] + 1
 	tile_size = Vector2(MapManager.x_length,MapManager.y_length)
 	radius = tile_size.x / 2.0
-	
+
+func send_diff(mouse_diff):
+	diff = mouse_diff
 func _process(delta: float) -> void:
 	
 	if state == states.SELECTED:
-		position = get_global_mouse_position()
+		position = get_global_mouse_position() - diff
 	elif state == states.MOVING:
 		rotation_degrees += 1000 * delta
 		for i in len(current_pts):

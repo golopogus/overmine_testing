@@ -66,7 +66,7 @@ func _notification(what: int) -> void:
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
 	
-	
+	GameManager.connect('g_player_pos',send_player_pos)
 	GameManager.connect("shape_guess",create_summon)
 	x_length = MapManager.x_length
 	y_length = MapManager.y_length
@@ -182,6 +182,15 @@ func _unhandled_input(_event: InputEvent) -> void:
 	
 	# end cheats
 	
+	if _event is InputEventMouseButton:
+		if _event.button_index == MOUSE_BUTTON_RIGHT and _event.pressed:
+			stored_mous_pos = get_global_mouse_position()
+			stored_pos = nearest_tile_pos
+		if _event.button_index == MOUSE_BUTTON_RIGHT and not _event.pressed:
+			if state == states.HOVERING:
+				if nearest_tile_pos == stored_pos:
+					MapManager.change_mark_state(nearest_tile_pos,'flip')
+					
 	if Input.is_action_just_pressed("left_click"):
 		stored_mous_pos = get_global_mouse_position()
 		stored_pos = nearest_tile_pos
@@ -235,15 +244,16 @@ func _unhandled_input(_event: InputEvent) -> void:
 							book_chance()
 			MapManager.revealed_tiles = []
 	
-	if Input.is_action_just_pressed("right_click"):
-		stored_mous_pos = get_global_mouse_position()
-		stored_pos = nearest_tile_pos
-			
-	if Input.is_action_just_released("right_click"):
-		
-		if state == states.HOVERING:
-			if nearest_tile_pos == stored_pos:
-				MapManager.change_mark_state(nearest_tile_pos,'flip')
+	#if Input.is_action_just_pressed("right_click"):
+		#
+		#stored_mous_pos = get_global_mouse_position()
+		#stored_pos = nearest_tile_pos
+			#
+	#if Input.is_action_just_released("right_click"):
+		#
+		#if state == states.HOVERING:
+			#if nearest_tile_pos == stored_pos:
+				#MapManager.change_mark_state(nearest_tile_pos,'flip')
 
 
 	
@@ -333,6 +343,7 @@ func create_summon(shape):
 		if shape == 'circle':
 			var ball = ball_load.instantiate()
 			add_child(ball)
+			ball.send_diff(mouse_diff)
 			state = states.HOLDING
 			upgrade = ball
 			upgrade_held = 'ball'
@@ -340,6 +351,7 @@ func create_summon(shape):
 		if shape == 'square':
 			var driller = drill_load.instantiate()
 			add_child(driller)
+			driller.send_diff(mouse_diff)
 			state = states.HOLDING
 			upgrade = driller
 			upgrade_held = 'driller'
@@ -347,6 +359,7 @@ func create_summon(shape):
 		if shape == 'triangle':
 			var drone = drone_load.instantiate()
 			add_child(drone)
+			drone.send_diff(mouse_diff)
 			state = states.HOLDING
 			upgrade = drone
 			upgrade_held = 'drone'
@@ -404,5 +417,9 @@ func draw_recti(boo):
 func _draw() -> void:
 	if smee != null:
 		draw_rect(smee,Color(.1,.2,.3),false,2.0)
+
+func send_player_pos():
+	GameManager.send_pos($player.position)
+
 	
 	

@@ -29,6 +29,7 @@ var initialized = false
 enum tile_types {UNKNOWN,SAFE,WARNING,MINE}
 enum states {SELECTED,IDLE,MOVING,SCANNING,DEAD}
 var state = states.SELECTED: set = set_state
+var diff = Vector2()
 
 func _ready() -> void:
 	set_area_size()
@@ -40,7 +41,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	
 	if state == states.SELECTED:
-		position = get_global_mouse_position()
+		position = get_global_mouse_position() - diff
 	
 	elif state == states.MOVING:
 		var dir = get_dir_to()
@@ -66,7 +67,8 @@ func set_state(new_state):
 	else:
 		$area.visible = false
 	
-
+func send_diff(mouse_diff):
+	diff = mouse_diff
 func start_scanning():
 	
 	if MapManager.check_scan([scan_pos]):

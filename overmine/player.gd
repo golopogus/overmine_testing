@@ -1,6 +1,6 @@
 extends Area2D
 
-var speed = 2
+var speed = 5
 var current_tile_pos = Vector2()
 var x_length = 64
 var y_length = 64

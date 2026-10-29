@@ -5,6 +5,8 @@ signal drill_ready
 signal ready_to_click
 signal eye_ready_for_check
 signal shape_guess
+signal g_player_pos
+signal send_player_pos
 var all_upgrade_data
 var spell_book
 var shape_dict
@@ -14,6 +16,12 @@ var custom_time = 0.0
 var game_started = false
 
 
+func get_player_position():
+	emit_signal('g_player_pos')
+	
+func send_pos(pos):
+	emit_signal('send_player_pos',pos)
+	
 func _ready() -> void:
 	initialize_upgrade_data()
 	initialize_spell_book_data()
@@ -80,7 +88,7 @@ func initialize_upgrade_data():
 		'roller_speed': {
 			'name': 'Roller Speed',
 			'description': '',
-			'current': 1,
+			'current': 3,
 			'max': 3,
 			'cost': 10,
 			'owner': 'roller'
@@ -166,7 +174,7 @@ func initialize_upgrade_data():
 		'driller_speed': {
 			'name': 'Driller Speed',
 			'description': '',
-			'current': 0,
+			'current': 2,
 			'max': 3,
 			'cost': 10,
 			'owner': 'driller'
@@ -174,7 +182,7 @@ func initialize_upgrade_data():
 		'driller_dur': {
 			'name': 'Driller Durability',
 			'description': '',
-			'current': 0,
+			'current': 2,
 			'max': 3,
 			'cost': 10,
 			'owner': 'driller'

@@ -23,7 +23,7 @@ var used_mark = []
 const grid_size_options = [[40,20],[4,4],[8,8]]
 var chosen_grid_size = grid_size_options[0]
 #var num_of_chunks = Vector2(25,50)
-var num_of_chunks = Vector2(10,10)
+var num_of_chunks = Vector2(5,5)
 var chunk_split
 var initial_pos = Vector2(0,0)
 var chunk_size = Vector2()
@@ -34,7 +34,7 @@ var chunk_dict = {}
 var game_started = false
 var revealed_tiles = []
 var initial_chunk_pos 
-var number_of_mines_per_chunk = 220
+var number_of_mines_per_chunk = 168
 var moveable = false
 var local_mous_pos
 var current_neighbors = []
@@ -56,6 +56,7 @@ var mat = load('res://mark.gdshader')
 var mat2 = load("res://load.gdshader")
 var drill_load = preload('res://driller.tscn')
 var drone_base_load = preload('res://drone_base.tscn')
+var basic_enemy_load = preload("res://mine_enemy.tscn")
 var mouse_in = true
 var view_port_size
 var custom_time = 0.0
@@ -289,6 +290,7 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 					tile['clicked'] = true
 					change_texture(nearest_tile_pos)
 					var mine_radius = GameManager.get_upgrade_data('mine_radius')
+					spawn_enemy(nearest_tile_pos)
 					if mine_radius > 0:
 						update_neighbors(nearest_tile_pos,tile_types.MINE)
 					
@@ -314,7 +316,7 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 				tile['clicked'] = true
 				change_texture(nearest_tile_pos)
 				
-
+			
 			
 
 		elif tile['clicked'] == true:
@@ -354,11 +356,12 @@ func clicked(nearest_tile_pos,nearest_chunk_pos):
 					update_neighbors(nearest_tile_pos,tile_types.MINE)
 			
 			var tile_above = MapCalculator.create_neighbors(nearest_tile_pos,x_length,y_length,'ABOVE')	
-			if tile_dict[tile_above[0]]['clicked'] == false:
-				tile_dict[tile_above[0]]['hidden_type'] = 0 
-				var tile_above_chunk = MapCalculator.get_nearest(tile_above[0],'chunk')
-				if chunk_dict[tile_above_chunk]['drawn'] == true:
-					change_texture(tile_above[0])
+			if tile_above.size() > 0:
+				if tile_dict[tile_above[0]]['clicked'] == false:
+					tile_dict[tile_above[0]]['hidden_type'] = 0 
+					var tile_above_chunk = MapCalculator.get_nearest(tile_above[0],'chunk')
+					if chunk_dict[tile_above_chunk]['drawn'] == true:
+						change_texture(tile_above[0])
 			
 				
 	if tile_dict[nearest_tile_pos]['type'] == tile_types.SAFE:
@@ -457,6 +460,12 @@ func check_scan(all_tile_positions):
 					tiles.append(tile_pos)
 		
 		return tiles
+
+func spawn_enemy(pos):
+	var enemy = basic_enemy_load.instantiate()
+	add_child(enemy)
+	enemy.position = pos
+	
 
 
 	

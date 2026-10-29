@@ -14,6 +14,19 @@ radius = 100.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0k8ko"]
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ly3ll"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 7.73
+direction = Vector3(0, 0, 0)
+spread = 0.0
+flatness = 0.544
+initial_velocity_min = 25.75
+initial_velocity_max = 25.75
+angular_velocity_min = -1.6093254e-05
+angular_velocity_max = -1.6093254e-05
+gravity = Vector3(0, 0, 0)
+
 [node name="level" type="Node2D" unique_id=150839870]
 script = ExtResource("1_h44gt")
 
@@ -50,6 +63,7 @@ disabled = true
 
 [node name="mouse" type="Area2D" parent="." unique_id=1817240497]
 z_index = 3
+collision_layer = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="mouse" unique_id=178108921]
 position = Vector2(20, 14)
@@ -57,5 +71,12 @@ texture = ExtResource("7_km5ld")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="mouse" unique_id=1050074966]
 shape = SubResource("CircleShape2D_0k8ko")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=207401076]
+emitting = false
+amount = 20
+one_shot = true
+explosiveness = 0.68
+process_material = SubResource("ParticleProcessMaterial_ly3ll")
 
 [connection signal="timeout" from="shapes/shape_timer" to="shapes" method="_on_shape_timer_timeout"]
